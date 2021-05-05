@@ -3,11 +3,11 @@ defmodule BankApi.Repo.Migrations.Usuario do
 
   def change do
     create table(:usuarios, primary_key: false) do
-        add :id, :uuid, primary_key: true
-        add :email, :string
-        add :name, :string
-        add :password_hash, :string
-        timestamps()
+      add :id, :uuid, primary_key: true
+      add :email, :string
+      add :name, :string
+      add :password_hash, :string
+      timestamps()
     end
 
   end
