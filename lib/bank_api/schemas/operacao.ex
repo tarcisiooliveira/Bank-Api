@@ -1,11 +1,11 @@
 defmodule BankApi.Schemas.Operacao do
   use Ecto.Schema
-  # import Ecto.Changeset
+  alias BankApi.Schemas.{Conta, Transacao}
 
-  @primary_key {:id, Ecto.UUID, autogenerate: true}
-  @foreign_key_type Ecto.UUID
-  schema "operacoes" do
+  schema "operacao" do
     field :nome_operacao, :string, null: false
+    has_many(:conta, Conta)
+    has_many(:transacao, Transacao)
     timestamps()
   end
 end

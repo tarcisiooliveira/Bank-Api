@@ -1,12 +1,10 @@
 defmodule BankApi.Schemas.TipoConta do
   use Ecto.Schema
-  # import Ecto.Changeset
+  alias BankApi.Schemas.Conta
 
-  @primary_key {:id, Ecto.UUID, autogenerate: true}
-  @foreign_key_type Ecto.UUID
-  schema "tipo_contas" do
-    field :nome_tipo_conta, :string
+  schema "tipo_conta" do
+    field :nome_tipo_conta, :string, null: false
+    has_many(:conta, Conta)
     timestamps()
   end
-
 end

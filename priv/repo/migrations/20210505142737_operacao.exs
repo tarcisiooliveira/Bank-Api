@@ -2,10 +2,10 @@ defmodule BankApi.Repo.Migrations.Operacao do
   use Ecto.Migration
 
   def change do
-    create table(:operacoes, primary_key: false) do
-      add :id, :uuid, primary_key: true
-      add :nome_operacao, :string
+    create table(:operacoes) do
+      add :nome_operacao, :string, null: false
       timestamps()
-  end
+    end
+    create unique_index(:operacoes, [:nome_operacao])
   end
 end
