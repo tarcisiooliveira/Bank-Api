@@ -1,16 +1,20 @@
 defmodule BankApi.Schemas.Conta do
   use Ecto.Schema
-  alias BankApi.Schemas.{Usuario, TipoConta, Moeda, Transacao, Operacao}
+  alias BankApi.Schemas.{Usuario, TipoConta, Moeda}
+  import Ecto.Changeset
 
-    schema "usuarios" do
-      field :saldo_conta,    :integer, null: false
+  schema "contas" do
+    field :saldo_conta, :integer, default: 100_000
+    belongs_to(:usuario, Usuario)
+    belongs_to(:tipo_conta, TipoConta)
+    belongs_to(:moeda, Moeda)
+    timestamps()
+  end
 
-      belongs_to(:trainer, Usuario)
-      belongs_to(:tipo_conta, TipoConta)
-      belongs_to(:moeda, Moeda)
-      belongs_to(:transacao, Transacao)
-      belongs_to(:operacao, Operacao)
-      timestamps()
-    end
-
+  @request_params [:saldo_conta, :usuario_id, :tipo_conta_id, :moeda_id]
+  def changeset(params) do
+    %__MODULE__{}
+    |> cast(params, @request_params)
+    |> validate_required(@request_params)
+  end
 end

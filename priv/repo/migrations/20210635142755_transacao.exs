@@ -9,4 +9,5 @@ defmodule BankApi.Repo.Migrations.Transacao do
       timestamps()
     end
   end
+
 end

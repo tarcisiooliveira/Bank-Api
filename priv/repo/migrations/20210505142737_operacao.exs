@@ -8,4 +8,5 @@ defmodule BankApi.Repo.Migrations.Operacao do
     end
     create unique_index(:operacoes, [:nome_operacao])
   end
+
 end
