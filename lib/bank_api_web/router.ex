@@ -5,9 +5,34 @@ defmodule BankApiWeb.Router do
     plug :accepts, ["json"]
   end
 
+  # pipeline :auth do
+  #   plug BankApiWeb.Auth.Pipeline
+  # end
+
+  scope "/", BankApiWeb do
+    pipe_through :api
+    get "/", WelcomeController, :index
+  end
+
   scope "/api", BankApiWeb do
     pipe_through :api
+    get "/", WelcomeController, :index
+    get "/instrucoes", WelcomeController, :index
+    resources "/usuarios", UsuariosController, only: [:new, :show, :delete, :update, :index, :create]
+
   end
+
+  # scope "/api", BankApiWeb do
+  #   pipe_through [:api, :auth]
+  #   resources "/trainers", TrainersController, only: [:show, :delete, :update]
+
+  #   resources "/trainer_pokemons", TrainerPokemonsController,
+  #     only: [:create, :show, :delete, :update]
+  # end
+
+  # scope "/api", BankApiWeb do
+  #   pipe_through :api
+  # end
 
   # Enables LiveDashboard only for development
   #

@@ -9,11 +9,18 @@ defmodule BankApi.Schemas.Usuario do
     field :name, :string, null: false
     field :password, :string, virtual: true
     field :password_hash, :string
+    field :visivel, :boolean, default: :true
     has_many(:conta, Conta)
     timestamps()
   end
 
   @request_params [:email, :name, :password]
+
+  def build(params) do
+    params
+    |> changeset()
+    |> apply_action!(:insert)
+  end
 
   def changeset(params) do
     %__MODULE__{}
@@ -22,6 +29,11 @@ defmodule BankApi.Schemas.Usuario do
     |> validate_format(:email, ~r/@/)
     |> unique_constraint(:email)
     |> put_pass_hash
+  end
+  def update_changeset(usuario, params) do
+    usuario
+    |> cast(params, [:visivel])
+    |> validate_required([:visivel])
   end
 
   defp put_pass_hash(%Ecto.Changeset{valid?: true, changes: %{password: password}} = changeset) do

@@ -9,6 +9,8 @@ defmodule BankApi.Schemas.TipoConta do
     timestamps()
   end
 
+  # @spec changeset(:invalid | %{optional(:__struct__) => none, optional(atom | binary) => any}) ::
+  #         Ecto.Changeset.t()
   def changeset(params) do
     %__MODULE__{}
     |> cast(params, [:nome_tipo_conta])

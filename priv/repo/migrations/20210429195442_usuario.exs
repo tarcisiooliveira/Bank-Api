@@ -6,6 +6,7 @@ defmodule BankApi.Repo.Migrations.Usuario do
       add :email, :string, null: false
       add :name, :string, null: false
       add :password_hash, :string
+      add :visivel, :boolean, default: :true
       timestamps()
     end
     create unique_index(:usuarios, [:email])
