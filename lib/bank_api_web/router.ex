@@ -18,8 +18,9 @@ defmodule BankApiWeb.Router do
     pipe_through :api
     get "/", WelcomeController, :index
     get "/instrucoes", WelcomeController, :index
-    resources "/usuarios", UsuariosController, only: [:new, :show, :delete, :update, :index, :create]
 
+    resources "/usuarios", UsuariosController,
+      only: [:new, :show, :delete, :update, :index, :create]
   end
 
   # scope "/api", BankApiWeb do

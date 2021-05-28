@@ -3,13 +3,13 @@ defmodule BankApi.Schemas.Usuario do
   import Ecto.Changeset
   alias BankApi.Schemas.Conta
 
-  #Schema com o mesmo nome da tabela
+  # Schema com o mesmo nome da tabela
   schema "usuarios" do
     field :email, :string, null: false
     field :name, :string, null: false
     field :password, :string, virtual: true
     field :password_hash, :string
-    field :visivel, :boolean, default: :true
+    field :visivel, :boolean, default: true
     has_many(:conta, Conta)
     timestamps()
   end
@@ -30,7 +30,22 @@ defmodule BankApi.Schemas.Usuario do
     |> unique_constraint(:email)
     |> put_pass_hash
   end
+
+  def update_changeset(%{email: _email, visivel: true} = usuario, params) do
+    usuario
+    |> cast(params, [:email, :visivel])
+    |> validate_required([:email, :visivel])
+  end
+
+  def update_changeset(%{name: _email, visivel: true} = usuario, params) do
+    usuario
+    |> cast(params, [:name, :visivel])
+    |> validate_required([:name, :visivel])
+  end
+
   def update_changeset(usuario, params) do
+    # IO.inspect(params)
+
     usuario
     |> cast(params, [:visivel])
     |> validate_required([:visivel])
