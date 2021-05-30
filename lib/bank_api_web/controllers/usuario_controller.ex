@@ -11,14 +11,12 @@ defmodule BankApiWeb.UsuariosController do
   def update(conn, %{"id" => id, "email" => email}) do
     id
     |> HandleUsuario.update(%{email: email})
-    # |> IO.inspect()
     |> handle_response(conn, "update.json", :ok)
   end
 
   def update(conn, %{"id" => id, "name" => name}) do
     id
     |> HandleUsuario.update(%{name: name})
-    # |> IO.inspect()
     |> handle_response(conn, "update.json", :ok)
   end
 

@@ -31,21 +31,20 @@ defmodule BankApi.Schemas.Usuario do
     |> put_pass_hash
   end
 
-  def update_changeset(%{email: _email, visivel: true} = usuario, params) do
+  def update_changeset(usuario, %{email: _email, visivel: true} = params) do
     usuario
     |> cast(params, [:email, :visivel])
     |> validate_required([:email, :visivel])
   end
 
-  def update_changeset(%{name: _email, visivel: true} = usuario, params) do
+  def update_changeset(usuario, %{name: _name, visivel: true} = params) do
+
     usuario
     |> cast(params, [:name, :visivel])
     |> validate_required([:name, :visivel])
   end
 
   def update_changeset(usuario, params) do
-    # IO.inspect(params)
-
     usuario
     |> cast(params, [:visivel])
     |> validate_required([:visivel])

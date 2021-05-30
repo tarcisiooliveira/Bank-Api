@@ -40,10 +40,10 @@ defmodule BankApi.Handle.HandleUsuario do
 
   def update(id, %{name: name}) do
     user = Repo.get_by(Usuario, id: id, visivel: true)
-    # IO.inspect(user)
 
     case user do
       nil ->
+        IO.puts("Error")
         {:error, "ID invalido"}
 
       usuario ->

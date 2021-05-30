@@ -1,20 +1,20 @@
 defmodule BankApiWeb.Usuario.ControllerUsuarioTest do
   use BankApiWeb.ConnCase, async: true
   alias BankApi.Schemas.Usuario
-  alias BankApi.Handle.HandleUsuario
+  import BankApi.Factory
 
   describe "show/2" do
-    # setup %{conn: conn} do
-    #   params = %{name: "Tarcisio", password: "3456789"}
-    #   {:ok, trainer} = ExMon.create_trainer(params)
-    #   {:ok, token, _claims} = encode_and_sign(trainer)
-
-    #   conn = put_req_header(conn, "authorization", "Bearer #{token}")
-    #   {:ok, %{conn: conn}}
-    # end
+    setup do
+      insert(:usuario)
+      :ok
+    end
 
     test "quando todos parametros estão ok, cria usuario no banco", %{conn: conn} do
-      params = %{"email" => "tarcisio@ymail.com", "name" => "Tarcisio", "password" => "123456"}
+      params = %{
+        "email" => "tarcisiooliveira@protonmail.com",
+        "name" => "Tarcisio",
+        "password" => "123456"
+      }
 
       response =
         conn
@@ -23,25 +23,29 @@ defmodule BankApiWeb.Usuario.ControllerUsuarioTest do
 
       assert %{
                "mensagem" => "Usuário criado com sucesso!",
-               "usuario" => %{"email" => "tarcisio@ymail.com", "id" => _id, "name" => "Tarcisio"}
+               "usuario" => %{
+                 "email" => "tarcisiooliveira@protonmail.com",
+                 "id" => _id,
+                 "name" => "Tarcisio"
+               }
              } = response
     end
 
     test "quando já existe usuario com aquele email, retorna erro informando", %{conn: conn} do
-      params = %{"email" => "tarcisio@ymail.com", "name" => "Tarcisio", "password" => "123456"}
-
-      HandleUsuario.create(params)
+      params = %{
+        "email" => "tarcisiooliveira@pm.me",
+        "name" => "Tarcisio",
+        "password" => "123456"
+      }
 
       response =
         conn
         |> get(Routes.usuarios_path(conn, :create, params))
-        |> json_response(422)
+        |> json_response(:unprocessable_entity)
 
       assert %{
                "mensagem" => "Erro",
                "email" => "Email já cadastrado"
-               #  "informacao" => "unique",
-               #  "constrain" => "usuarios_email_index"
              } = response
     end
   end
@@ -49,8 +53,7 @@ defmodule BankApiWeb.Usuario.ControllerUsuarioTest do
   test "Retorna os dados do usuario excluido do banco e mensagem confirmando", %{
     conn: conn
   } do
-    params = %{"email" => "tarcisio@ymail.com", "name" => "Tarcisio", "password" => "123456"}
-    {:ok, %Usuario{id: id}} = HandleUsuario.create(params)
+    %Usuario{id: id} = insert(:usuario)
 
     response =
       conn
@@ -58,7 +61,7 @@ defmodule BankApiWeb.Usuario.ControllerUsuarioTest do
       |> json_response(:ok)
 
     assert %{
-             "email" => "tarcisio@ymail.com",
+             "email" => "tarcisiooliveira@pm.me",
              "id" => ^id,
              "message" => "Usuario Removido",
              "name" => "Tarcisio"
@@ -68,13 +71,9 @@ defmodule BankApiWeb.Usuario.ControllerUsuarioTest do
   test "tenta apagar usuario passando id que não existe ou já foi deletado previamente", %{
     conn: conn
   } do
-    params = %{"email" => "tarcisio@ymail.com", "name" => "Tarcisio", "password" => "123456"}
-    {:ok, %Usuario{id: id}} = HandleUsuario.create(params)
-    HandleUsuario.delete(id)
-
     response =
       conn
-      |> delete(Routes.usuarios_path(conn, :delete, id))
+      |> delete(Routes.usuarios_path(conn, :delete, 1))
       |> json_response(:not_found)
 
     assert %{
@@ -85,31 +84,36 @@ defmodule BankApiWeb.Usuario.ControllerUsuarioTest do
   test "cadastra usuario corretamente e depois altera email para outro email valido", %{
     conn: conn
   } do
-    params = %{"email" => "tarcisio@ymail.com", "name" => "Tarcisio", "password" => "123456"}
-    {:ok, %Usuario{id: id}} = HandleUsuario.create(params)
+    %Usuario{id: id} = insert(:usuario)
 
     response =
       conn
-      |> patch(Routes.usuarios_path(conn, :update, id, %{email: "novoemail@email.com"}))
+      |> patch(
+        Routes.usuarios_path(conn, :update, id, %{email: "tarcisiooliveira@protonmail.com"})
+      )
       |> json_response(:ok)
 
     assert %{
              "mensagem" => "Usuário atualizado com sucesso!",
-             "usuario" => %{"email" => "novoemail@email.com", "id" => ^id, "name" => "Tarcisio"}
+             "usuario" => %{
+               "email" => "tarcisiooliveira@protonmail.com",
+               "id" => ^id,
+               "name" => "Tarcisio"
+             }
            } = response
   end
 
   test "cadastra usuario corretamente e depois altera email para outro email já cadastrado", %{
     conn: conn
   } do
-    params = %{"email" => "tarcisio@ymail.com", "name" => "Tarcisio", "password" => "123456"}
-    params2 = %{"email" => "tarcisio2@ymail.com", "name" => "Tarcisio2", "password" => "123456"}
-    {:ok, %Usuario{id: id}} = HandleUsuario.create(params)
-    HandleUsuario.create(params2)
+    %Usuario{id: id} = insert(:usuario)
+    insert(:usuario, email: "tarcisiooliveira@protonmail.com")
 
     response =
       conn
-      |> patch(Routes.usuarios_path(conn, :update, id, %{email: "tarcisio2@ymail.com"}))
+      |> patch(
+        Routes.usuarios_path(conn, :update, id, %{email: "tarcisiooliveira@protonmail.com"})
+      )
       |> json_response(:not_found)
 
     assert %{"error" => "Email já cadastrado."} = response
@@ -118,17 +122,20 @@ defmodule BankApiWeb.Usuario.ControllerUsuarioTest do
   test "cadastra usuario corretamente e depois altera nome", %{
     conn: conn
   } do
-    params = %{"email" => "tarcisio@ymail.com", "name" => "Tarcisio", "password" => "123456"}
-    {:ok, %Usuario{id: id}} = HandleUsuario.create(params)
+    %Usuario{id: id} = insert(:usuario, email: "tarcisiooliveira@protonmail.com")
 
     response =
       conn
-      |> patch(Routes.usuarios_path(conn, :update, id, %{name: "oisicraT"}))
+      |> patch(Routes.usuarios_path(conn, :update, id, %{name: "oisicraT", visivel: true}))
       |> json_response(:ok)
 
     assert %{
              "mensagem" => "Usuário atualizado com sucesso!",
-             "usuario" => %{"email" => "tarcisio@ymail.com", "id" => ^id, "name" => "Tarcisio"}
+             "usuario" => %{
+               "email" => "tarcisiooliveira@protonmail.com",
+               "id" => ^id,
+               "name" => "oisicraT"
+             }
            } = response
   end
 end
