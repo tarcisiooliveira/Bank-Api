@@ -4,15 +4,15 @@ defmodule BankApiWeb.Usuario.ControllerUsuarioTest do
   import BankApi.Factory
 
   describe "show/2" do
-    setup do
-      insert(:usuario)
-      :ok
-    end
+    # setup do
+    #   insert(:usuario)
+    #   :ok
+    # end
 
     test "quando todos parametros estão ok, cria usuario no banco", %{conn: conn} do
       params = %{
-        "email" => "tarcisiooliveira@protonmail.com",
-        "name" => "Tarcisio",
+        "email" => "tarcisiooliveira@pm.me",
+        "nome" => "Tarcisio",
         "password" => "123456"
       }
 
@@ -24,17 +24,19 @@ defmodule BankApiWeb.Usuario.ControllerUsuarioTest do
       assert %{
                "mensagem" => "Usuário criado com sucesso!",
                "usuario" => %{
-                 "email" => "tarcisiooliveira@protonmail.com",
+                 "email" => "tarcisiooliveira@pm.me",
                  "id" => _id,
-                 "name" => "Tarcisio"
+                 "nome" => "Tarcisio"
                }
              } = response
     end
 
     test "quando já existe usuario com aquele email, retorna erro informando", %{conn: conn} do
+      insert(:usuario)
+
       params = %{
         "email" => "tarcisiooliveira@pm.me",
-        "name" => "Tarcisio",
+        "nome" => "Tarcisio",
         "password" => "123456"
       }
 
@@ -64,7 +66,7 @@ defmodule BankApiWeb.Usuario.ControllerUsuarioTest do
              "email" => "tarcisiooliveira@pm.me",
              "id" => ^id,
              "message" => "Usuario Removido",
-             "name" => "Tarcisio"
+             "nome" => "Tarcisio"
            } = response
   end
 
@@ -77,7 +79,7 @@ defmodule BankApiWeb.Usuario.ControllerUsuarioTest do
       |> json_response(:not_found)
 
     assert %{
-             "error" => "ID invalido"
+             "error" => "ID inválido"
            } = response
   end
 
@@ -98,7 +100,7 @@ defmodule BankApiWeb.Usuario.ControllerUsuarioTest do
              "usuario" => %{
                "email" => "tarcisiooliveira@protonmail.com",
                "id" => ^id,
-               "name" => "Tarcisio"
+               "nome" => "Tarcisio"
              }
            } = response
   end
@@ -126,7 +128,7 @@ defmodule BankApiWeb.Usuario.ControllerUsuarioTest do
 
     response =
       conn
-      |> patch(Routes.usuarios_path(conn, :update, id, %{name: "oisicraT", visivel: true}))
+      |> patch(Routes.usuarios_path(conn, :update, id, %{nome: "oisicraT", visivel: true}))
       |> json_response(:ok)
 
     assert %{
@@ -134,7 +136,7 @@ defmodule BankApiWeb.Usuario.ControllerUsuarioTest do
              "usuario" => %{
                "email" => "tarcisiooliveira@protonmail.com",
                "id" => ^id,
-               "name" => "oisicraT"
+               "nome" => "oisicraT"
              }
            } = response
   end

@@ -14,9 +14,9 @@ defmodule BankApiWeb.UsuariosController do
     |> handle_response(conn, "update.json", :ok)
   end
 
-  def update(conn, %{"id" => id, "name" => name}) do
+  def update(conn, %{"id" => id, "nome" => nome}) do
     id
-    |> HandleUsuario.update(%{name: name})
+    |> HandleUsuario.update(%{nome: nome})
     |> handle_response(conn, "update.json", :ok)
   end
 
@@ -46,8 +46,6 @@ defmodule BankApiWeb.UsuariosController do
   end
 
   defp handle_create_response({:error, error} = _params, conn, view) do
-    # {:error, %Ecto.Changeset{errors: errors}} = params
-    # {error, _as} = errors[:email]
     conn
     |> put_status(422)
     |> render(view, error: error)

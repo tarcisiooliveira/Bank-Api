@@ -6,7 +6,7 @@ defmodule BankApi.Schemas.Usuario do
   # Schema com o mesmo nome da tabela
   schema "usuarios" do
     field :email, :string, null: false
-    field :name, :string, null: false
+    field :nome, :string, null: false
     field :password, :string, virtual: true
     field :password_hash, :string
     field :visivel, :boolean, default: true
@@ -14,7 +14,7 @@ defmodule BankApi.Schemas.Usuario do
     timestamps()
   end
 
-  @request_params [:email, :name, :password]
+  @request_params [:email, :nome, :password]
 
   def build(params) do
     params
@@ -37,11 +37,11 @@ defmodule BankApi.Schemas.Usuario do
     |> validate_required([:email, :visivel])
   end
 
-  def update_changeset(usuario, %{name: _name, visivel: true} = params) do
+  def update_changeset(usuario, %{nome: _name, visivel: true} = params) do
 
     usuario
-    |> cast(params, [:name, :visivel])
-    |> validate_required([:name, :visivel])
+    |> cast(params, [:nome, :visivel])
+    |> validate_required([:nome, :visivel])
   end
 
   def update_changeset(usuario, params) do
