@@ -9,7 +9,7 @@ defmodule BankApi.Handle.HandleTipoConta do
   end
 
   def delete(id) do
-    case Repo.get_by!(TipoConta, id: id) do
+    case Repo.get_by(TipoConta, id: id) do
       nil -> {:error, "ID Inválido"}
       tipo_conta -> Repo.delete(tipo_conta)
     end
