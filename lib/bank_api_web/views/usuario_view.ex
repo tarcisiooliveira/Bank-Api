@@ -2,10 +2,10 @@ defmodule BankApiWeb.UsuariosView do
   use BankApiWeb, :view
   alias BankApi.Schemas.Usuario
 
-  def render("show.json", %{usuario: %Usuario{id: id, name: name, email: email}}) do
+  def render("show.json", %{usuario: %Usuario{id: id, nome: nome, email: email}}) do
     %{
       mensagem: "Show",
-      usuario: %{id: id, name: name, email: email}
+      usuario: %{id: id, nome: nome, email: email}
     }
   end
 
@@ -15,17 +15,17 @@ defmodule BankApiWeb.UsuariosView do
     }
   end
 
-  def render("update.json", %{usuario: %Usuario{id: id, name: name, email: email}}) do
+  def render("update.json", %{usuario: %Usuario{id: id, nome: nome, email: email}}) do
     %{
       mensagem: "Usuário atualizado com sucesso!",
-      usuario: %{id: id, name: name, email: email}
+      usuario: %{id: id, nome: nome, email: email}
     }
   end
 
-  def render("create.json", %{usuario: %Usuario{id: id, name: name, email: email}}) do
+  def render("create.json", %{usuario: %Usuario{id: id, nome: nome, email: email}}) do
     %{
       mensagem: "Usuário criado com sucesso!",
-      usuario: %{id: id, name: name, email: email}
+      usuario: %{id: id, nome: nome, email: email}
     }
   end
 
@@ -46,12 +46,12 @@ defmodule BankApiWeb.UsuariosView do
 
   def render("delete.json", %{error: mensagem}), do: %{error: "#{mensagem}"}
 
-  def render("delete.json", %{usuario: %Usuario{id: id, name: name, email: email}}) do
+  def render("delete.json", %{usuario: %Usuario{id: id, nome: nome, email: email}}) do
     %{
       message: "Usuario Removido",
       # usuario:
       id: id,
-      name: name,
+      nome: nome,
       email: email
     }
   end

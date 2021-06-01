@@ -3,12 +3,12 @@ defmodule BankApi.Handle.HandleUsuario do
 
   def get(id) do
     case Repo.get_by(Usuario, id: id, visivel: true) do
-      nil -> {:error, "ID invalido"}
+      nil -> {:error, "ID inválido"}
       usuario -> {:ok, usuario}
     end
   end
 
-  def create(%{"name" => _name, "email" => _email, "password" => _password} = params) do
+  def create(%{"nome" => _name, "email" => _email, "password" => _password} = params) do
     params
     |> Usuario.changeset()
     |> Repo.insert()
@@ -16,7 +16,7 @@ defmodule BankApi.Handle.HandleUsuario do
 
   def delete(id) do
     case Repo.get_by(Usuario, id: id, visivel: true) do
-      nil -> {:error, "ID invalido"}
+      nil -> {:error, "ID inválido"}
       usuario -> Usuario.update_changeset(usuario, %{visivel: false}) |> Repo.update()
     end
   end
@@ -29,7 +29,7 @@ defmodule BankApi.Handle.HandleUsuario do
       _ ->
         case Repo.get_by(Usuario, id: id, visivel: true) do
           nil ->
-            {:error, "ID invalido"}
+            {:error, "ID inválido"}
 
           usuario ->
             Usuario.update_changeset(usuario, %{email: email, visivel: true})
@@ -38,16 +38,16 @@ defmodule BankApi.Handle.HandleUsuario do
     end
   end
 
-  def update(id, %{name: name}) do
+  def update(id, %{nome: nome}) do
     user = Repo.get_by(Usuario, id: id, visivel: true)
 
     case user do
       nil ->
         IO.puts("Error")
-        {:error, "ID invalido"}
+        {:error, "ID inválido"}
 
       usuario ->
-        Usuario.update_changeset(usuario, %{name: name, visivel: true})
+        Usuario.update_changeset(usuario, %{nome: nome, visivel: true})
         |> Repo.update()
     end
   end
