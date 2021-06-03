@@ -27,7 +27,6 @@ tipoConta = [
   %{nome_tipo_conta: "Digital"}
 ]
 
-
 Enum.each(tipoConta, fn tipo -> TipoConta.changeset(tipo) |> Repo.insert() end)
 
 operacao = [
@@ -36,7 +35,6 @@ operacao = [
   %{nome_operacao: "Transferência"},
   %{nome_operacao: "Investimento"}
 ]
-
 
 Enum.each(operacao, fn unit_operacao -> Operacao.changeset(unit_operacao) |> Repo.insert() end)
 

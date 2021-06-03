@@ -1,6 +1,9 @@
 defmodule BankApi.Handle.HandleUsuario do
   alias BankApi.{Repo, Schemas.Usuario}
 
+  @moduledoc """
+  Modulo de manipulação de dados Usuario através do Repo
+  """
   def get(id) do
     case Repo.get_by(Usuario, id: id, visivel: true) do
       nil -> {:error, "ID inválido"}

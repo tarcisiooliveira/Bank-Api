@@ -3,6 +3,9 @@ defmodule BankApi.Schemas.Usuario do
   import Ecto.Changeset
   alias BankApi.Schemas.Conta
 
+  @moduledoc """
+  Modulo de schema de Usuario
+  """
   # Schema com o mesmo nome da tabela
   schema "usuarios" do
     field :email, :string, null: false
@@ -38,7 +41,6 @@ defmodule BankApi.Schemas.Usuario do
   end
 
   def update_changeset(usuario, %{nome: _name, visivel: true} = params) do
-
     usuario
     |> cast(params, [:nome, :visivel])
     |> validate_required([:nome, :visivel])

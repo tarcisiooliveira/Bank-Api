@@ -1,4 +1,4 @@
-defmodule BankApiWeb.Usuario.ControllerUsuarioTest do
+defmodule BankApiWeb.ControllerUsuarioTest do
   use BankApiWeb.ConnCase, async: true
   alias BankApi.Schemas.Usuario
   import BankApi.Factory
@@ -42,7 +42,7 @@ defmodule BankApiWeb.Usuario.ControllerUsuarioTest do
 
       response =
         conn
-        |> get(Routes.usuarios_path(conn, :create, params))
+        |> post(Routes.usuarios_path(conn, :create, params))
         |> json_response(:unprocessable_entity)
 
       assert %{
