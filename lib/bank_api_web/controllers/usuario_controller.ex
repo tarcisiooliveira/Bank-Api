@@ -2,6 +2,25 @@ defmodule BankApiWeb.UsuariosController do
   use BankApiWeb, :controller
   alias BankApi.Handle.HandleUsuario
 
+  # Usado pelo :create nos testes de forma automatica
+  def index(conn, params) do
+    params
+    |> HandleUsuario.create()
+    |> handle_create_response(conn, "create.json")
+  end
+
+  def show(conn, %{"id" => id}) do
+    id
+    |> HandleUsuario.get()
+    |> handle_response(conn, "show.json", :ok)
+  end
+
+  def create(conn, params) do
+    params
+    |> HandleUsuario.create()
+    |> handle_create_response(conn, "create.json")
+  end
+
   def delete(conn, %{"id" => id}) do
     id
     |> HandleUsuario.delete()
@@ -20,25 +39,6 @@ defmodule BankApiWeb.UsuariosController do
     |> handle_response(conn, "update.json", :ok)
   end
 
-  def show(conn, %{"id" => id}) do
-    id
-    |> HandleUsuario.get()
-    |> handle_response(conn, "show.json", :ok)
-  end
-
-  def create(conn, params) do
-    params
-    |> HandleUsuario.create()
-    |> handle_create_response(conn, "create.json")
-  end
-
-  # Usado pelo :create nos testes de forma automatica
-  def index(conn, params) do
-    params
-    |> HandleUsuario.create()
-    |> handle_create_response(conn, "create.json")
-  end
-
   defp handle_create_response({:ok, usuario}, conn, view) do
     conn
     |> put_status(:created)
@@ -46,6 +46,8 @@ defmodule BankApiWeb.UsuariosController do
   end
 
   defp handle_create_response({:error, error} = _params, conn, view) do
+    # {:error, %Ecto.Changeset{errors: errors}} = params
+    # {error, _as} = errors[:email]
     conn
     |> put_status(422)
     |> render(view, error: error)

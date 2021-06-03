@@ -3,6 +3,9 @@ defmodule BankApi.Schemas.Conta do
   alias BankApi.Schemas.{Usuario, TipoConta}
   import Ecto.Changeset
 
+  @moduledoc """
+  Modulo de schema de Contas
+  """
   schema "contas" do
     field :saldo_conta, :integer, default: 100_000
     belongs_to(:usuario, Usuario)

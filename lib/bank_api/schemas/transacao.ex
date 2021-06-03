@@ -3,6 +3,9 @@ defmodule BankApi.Schemas.Transacao do
   import Ecto.Changeset
   alias BankApi.Schemas.{Conta, Operacao}
 
+  @moduledoc """
+  Modulo de schema de Transacao
+  """
   schema "transacoes" do
     # field :conta_id, :string, null: true
     belongs_to(:conta_origem, Conta)

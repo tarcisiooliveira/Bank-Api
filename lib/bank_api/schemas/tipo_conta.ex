@@ -3,6 +3,9 @@ defmodule BankApi.Schemas.TipoConta do
   import Ecto.Changeset
   alias BankApi.Schemas.Conta
 
+  @moduledoc """
+  Modulo de schema de Tipo Conta
+  """
   schema "tipo_contas" do
     field :nome_tipo_conta, :string, null: false
     has_many(:conta, Conta)

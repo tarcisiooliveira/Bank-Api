@@ -1,6 +1,9 @@
 defmodule BankApi.Handle.HandleTipoConta do
   alias BankApi.{Repo, Schemas.TipoConta}
 
+  @moduledoc """
+  Modulo de manipulação de dados Tipo Conta através do Repo
+  """
   def get(id) do
     case Repo.get_by(TipoConta, id: id) do
       nil -> {:error, "ID Inválido"}
@@ -23,10 +26,12 @@ defmodule BankApi.Handle.HandleTipoConta do
 
   def update(id, %{nome_tipo_conta: nome_tipo_conta}) do
     case Repo.get_by(TipoConta, id: id) do
-      nil -> %{error: "ID Inválido"}
-      tipo_conta -> TipoConta.changeset(tipo_conta, %{nome_tipo_conta: nome_tipo_conta})
-      |> Repo.update()
-    end
+      nil ->
+        %{error: "ID Inválido"}
 
+      tipo_conta ->
+        TipoConta.changeset(tipo_conta, %{nome_tipo_conta: nome_tipo_conta})
+        |> Repo.update()
+    end
   end
 end
