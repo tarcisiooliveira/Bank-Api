@@ -75,7 +75,7 @@ defmodule BankApiWeb.ControllerUsuarioTest do
   } do
     response =
       conn
-      |> delete(Routes.usuarios_path(conn, :delete, 1))
+      |> delete(Routes.usuarios_path(conn, :delete, 100_001))
       |> json_response(:not_found)
 
     assert %{

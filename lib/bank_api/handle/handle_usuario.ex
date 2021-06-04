@@ -11,7 +11,7 @@ defmodule BankApi.Handle.HandleUsuario do
     end
   end
 
-  def create(%{"nome" => _name, "email" => _email, "password" => _password} = params) do
+  def create(%{"nome" => _nome, "email" => _email, "password" => _password} = params) do
     params
     |> Usuario.changeset()
     |> Repo.insert()
