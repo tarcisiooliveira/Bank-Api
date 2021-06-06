@@ -19,4 +19,10 @@ defmodule BankApi.Schemas.Conta do
     |> cast(params, @request_params)
     |> validate_required(@request_params)
   end
+
+  def update_changeset(conta, params) do
+    conta
+    |> cast(params, [:saldo_conta])
+    |> validate_required([:saldo_conta])
+  end
 end

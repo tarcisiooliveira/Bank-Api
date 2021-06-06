@@ -15,7 +15,7 @@ defmodule BankApi.Handle.HandleOperacao do
   def create(%{"nome_operacao" => _nome_operacao} = params) do
     case Operacao.changeset(params) |> Repo.insert() do
       {:error, changeset} -> {:error, changeset}
-      {:ok, trainer} -> {:ok, trainer}
+      {:ok, operacao} -> {:ok, operacao}
     end
   end
 
