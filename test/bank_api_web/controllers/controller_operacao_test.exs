@@ -20,7 +20,7 @@ defmodule BankApiWeb.ControllerOperacaoTest do
 
   test "erro insert - tenta cadastrar Operação com tipo já existente", %{conn: conn} do
     insert(:operacao)
-    params = %{"nome_operacao" => "Pagamento"}
+    params = %{"nome_operacao" => "Transferência"}
 
     response =
       conn
@@ -42,7 +42,7 @@ defmodule BankApiWeb.ControllerOperacaoTest do
       |> delete(Routes.operacao_path(conn, :delete, id))
       |> json_response(:ok)
 
-    assert %{"mensagem" => "Operacao Pagamento removida com sucesso."} = response
+    assert %{"mensagem" => "Operacao Transferência removida com sucesso."} = response
   end
 
   test "error delete - retorna mensagem de erro quando tenta remover operação inexistente.", %{

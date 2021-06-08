@@ -4,7 +4,7 @@ defmodule BankApi.Factory do
   """
   use ExMachina.Ecto, repo: BankApi.Repo
 
-  alias BankApi.Schemas.{Usuario, TipoConta, Operacao}
+  alias BankApi.Schemas.{Usuario, TipoConta, Operacao, Conta}
 
   def usuario_factory do
     %Usuario{
@@ -17,7 +17,15 @@ defmodule BankApi.Factory do
 
   def operacao_factory do
     %Operacao{
-      nome_operacao: "Pagamento"
+      nome_operacao: "Transferência"
+    }
+  end
+
+  def conta_factory do
+    %Conta{
+      saldo_conta: 100_000,
+      usuario_id: insert(:usuario, email: "teste@insert.com"),
+      tipo_conta_id: insert(:tipo_conta, nome_tipo_conta: "Nome Ficticio")
     }
   end
 
@@ -29,8 +37,8 @@ defmodule BankApi.Factory do
 
   # def transacao_factory do
   #   %Transacao{
-  #     conta_origem_id: insert(:usuario),
-  #     conta_destino_id: insert(:usuario, nome: "Tarcisio2", email: "tarcisio2@tarcisio.com"),
+  #     conta_origem_id: insert(:conta),
+  #     conta_destino_id: insert(:conta),
   #     operacao_id: insert(:operacao, nome_operacao: "Transferência"),
   #     valor: 200_000
   #   }
