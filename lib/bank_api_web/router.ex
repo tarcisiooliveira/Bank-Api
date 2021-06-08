@@ -2,7 +2,7 @@ defmodule BankApiWeb.Router do
   use BankApiWeb, :router
 
   pipeline :api do
-    plug :accepts, ["json"]
+    plug(:accepts, ["json"])
   end
 
   # pipeline :auth do
@@ -10,26 +10,26 @@ defmodule BankApiWeb.Router do
   # end
 
   scope "/", BankApiWeb do
-    pipe_through :api
-    get "/", WelcomeController, :index
+    pipe_through(:api)
+    get("/", WelcomeController, :index)
   end
 
   scope "/api", BankApiWeb do
-    pipe_through :api
-    get "/", WelcomeController, :index
-    get "/instrucoes", WelcomeController, :index
+    pipe_through(:api)
+    get("/", WelcomeController, :index)
+    get("/instrucoes", WelcomeController, :index)
 
-    resources "/usuarios", UsuariosController,
+    resources("/usuarios", UsuariosController,
       only: [:new, :show, :delete, :update, :index, :create]
+    )
 
-    resources "/tipocontas", TipoContaController,
+    resources("/tipocontas", TipoContaController,
       only: [:new, :show, :delete, :update, :index, :create]
+    )
 
-    resources "/operacoes", OperacaoController,
+    resources("/operacoes", OperacaoController,
       only: [:new, :show, :delete, :update, :index, :create]
-
-    resources "/transacoes", TransacaoController,
-      only: [:new, :show, :delete, :update, :index, :create]
+    )
 
     resources("/contas", ContaController, only: [:new, :show, :delete, :update, :index, :create])
   end
@@ -57,8 +57,8 @@ defmodule BankApiWeb.Router do
     import Phoenix.LiveDashboard.Router
 
     scope "/" do
-      pipe_through [:fetch_session, :protect_from_forgery]
-      live_dashboard "/dashboard", metrics: BankApiWeb.Telemetry
+      pipe_through([:fetch_session, :protect_from_forgery])
+      live_dashboard("/dashboard", metrics: BankApiWeb.Telemetry)
     end
   end
 end
