@@ -42,7 +42,7 @@ defmodule BankApiWeb.TipoContaTest do
       |> json_response(:ok)
 
     assert %{
-             "Nome" => "Poupança",
+             "Nome" => "Poupança Digital",
              "mensagem" => "Tipo Conta removido com sucesso!"
            } = response
   end
@@ -68,7 +68,7 @@ defmodule BankApiWeb.TipoContaTest do
 
     assert %{
              "mensagem" => "Tipo Conta encotrado",
-             "Tipo Conta" => %{"nome_tipo_conta" => "Poupança"}
+             "Tipo Conta" => %{"nome_tipo_conta" => "Poupança Digital"}
            } = response
   end
 
