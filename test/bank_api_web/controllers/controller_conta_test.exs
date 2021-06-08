@@ -1,10 +1,41 @@
 defmodule BankApiWeb.ControllerContaTest do
   use BankApiWeb.ConnCase, async: true
-  alias BankApi.Schemas.{Usuario, TipoConta}
+  alias BankApi.Schemas.{Usuario, TipoConta, Conta}
   import BankApi.Factory
-  # alias BankApi.Repo
 
-  describe "Create/2" do
+  describe "Show" do
+    test "assert get - Exibe os dados de uma conta quando informado ID correto", %{conn: conn} do
+      %Usuario{id: usuario_id} = insert(:usuario)
+      %TipoConta{id: tipo_conta_id} = insert(:tipo_conta)
+      %Conta{id: conta_id} = insert(:conta, usuario_id: usuario_id, tipo_conta_id: tipo_conta_id)
+
+      response =
+        conn
+        |> get(Routes.conta_path(conn, :show, conta_id))
+        |> json_response(:ok)
+
+      assert %{
+               "Conta" => %{
+                 "saldo_conta" => 100_000,
+                 "tipo_conta_id" => ^tipo_conta_id,
+                 "usuario_id" => ^usuario_id
+               },
+               "mensagem" => "Tipo Conta encotrado"
+             } = response
+    end
+
+    test "error get - Exibe os dados de uma conta quando informado ID correto", %{conn: conn} do
+      response =
+        conn
+        |> get(Routes.conta_path(conn, :show, 951_951))
+        |> json_response(:not_found)
+
+      assert %{"mensagem" => "ID Inválido ou inexistente"} =
+               response
+    end
+  end
+
+  describe "Create" do
     test "insert Conta - Cadastra Conta quando todos parametros estão OK", %{conn: conn} do
       %Usuario{id: usuario_id} = insert(:usuario)
       %TipoConta{id: tipo_conta_id} = insert(:tipo_conta)
@@ -29,6 +60,7 @@ defmodule BankApiWeb.ControllerContaTest do
                "mensagem" => "Conta Cadastrada"
              } = response
     end
+
     test "insert Conta - Cadastra conta faltando saldo, default 100_000", %{conn: conn} do
       %Usuario{id: usuario_id} = insert(:usuario)
       %TipoConta{id: tipo_conta_id} = insert(:tipo_conta)
@@ -52,115 +84,89 @@ defmodule BankApiWeb.ControllerContaTest do
                "mensagem" => "Conta Cadastrada"
              } = response
     end
+
+    test "erro insert Conta - Exibe mensagem de erro quando passa saldo negativo", %{conn: conn} do
+      %Usuario{id: usuario_id} = insert(:usuario)
+      %TipoConta{id: tipo_conta_id} = insert(:tipo_conta)
+
+      params = %{
+        "saldo_conta" => -10_000,
+        "usuario_id" => usuario_id,
+        "tipo_conta_id" => tipo_conta_id
+      }
+
+      response =
+        conn
+        |> post(Routes.conta_path(conn, :create, params))
+        |> json_response(404)
+
+      assert %{"error" => "Saldo inválido, ele deve ser maior ou igual a zero"} = response
+    end
   end
 
-  #   test "quando já existe Conta com aquele email, retorna erro informando", %{conn: conn} do
-  #     insert(:Conta)
+  describe "Update" do
+    test "assert update - atualiza saldo para valor válido maior que zero", %{conn: conn} do
+      %Usuario{id: usuario_id} = insert(:usuario)
+      %TipoConta{id: tipo_conta_id} = insert(:tipo_conta)
 
-  #     params = %{
-  #       "email" => "tarcisiooliveira@pm.me",
-  #       "nome" => "Tarcisio",
-  #       "password" => "123456"
-  #     }
+      %Conta{id: id} = insert(:conta, usuario_id: usuario_id, tipo_conta_id: tipo_conta_id)
 
-  #     response =
-  #       conn
-  #       |> post(Routes.Contas_path(conn, :create, params))
-  #       |> json_response(:unprocessable_entity)
+      response =
+        conn
+        |> patch(Routes.conta_path(conn, :update, id, %{"saldo_conta" => 5_000}))
+        |> json_response(:created)
 
-  #     assert %{
-  #              "mensagem" => "Erro",
-  #              "email" => "Email já cadastrado"
-  #            } = response
-  #   end
-  # end
+      assert %{
+               "mensagem" => "Conta Atualizada",
+               "Conta" => %{"conta_ID" => _id_usuario, "saldo_conta" => 5000}
+             } = response
+    end
 
-  # test "Retorna os dados do Conta excluido do banco e mensagem confirmando", %{
-  #   conn: conn
-  # } do
-  #   %Conta{id: id} = insert(:Conta)
+    test "error update - tenta atualizar saldo para valor menor que zero", %{conn: conn} do
+      %Usuario{id: usuario_id} = insert(:usuario)
+      %TipoConta{id: tipo_conta_id} = insert(:tipo_conta)
 
-  #   response =
-  #     conn
-  #     |> delete(Routes.Contas_path(conn, :delete, id))
-  #     |> json_response(:ok)
+      %Conta{id: id} = insert(:conta, usuario_id: usuario_id, tipo_conta_id: tipo_conta_id)
 
-  #   assert %{
-  #            "email" => "tarcisiooliveira@pm.me",
-  #            "id" => ^id,
-  #            "message" => "Conta Removido",
-  #            "nome" => "Tarcisio"
-  #          } = response
-  # end
+      response =
+        conn
+        |> patch(Routes.conta_path(conn, :update, id, %{"saldo_conta" => -5_000}))
+        |> json_response(404)
 
-  # test "tenta apagar Conta passando id que não existe ou já foi deletado previamente", %{
-  #   conn: conn
-  # } do
-  #   response =
-  #     conn
-  #     |> delete(Routes.Contas_path(conn, :delete, 1))
-  #     |> json_response(:not_found)
+      assert %{"error" => "Saldo inválido, ele deve ser maior ou igual a zero"} = response
+    end
+  end
 
-  #   assert %{
-  #            "error" => "ID inválido"
-  #          } = response
-  # end
+  describe "Delete" do
+    test "assert delete - Deleta conta quando ID é passado", %{
+      conn: conn
+    } do
+      %Usuario{id: usuario_id} = insert(:usuario)
+      %TipoConta{id: tipo_conta_id} = insert(:tipo_conta)
 
-  # test "cadastra Conta corretamente e depois altera email para outro email valido", %{
-  #   conn: conn
-  # } do
-  #   %Conta{id: id} = insert(:Conta)
+      %Conta{id: id} = insert(:conta, usuario_id: usuario_id, tipo_conta_id: tipo_conta_id)
 
-  #   response =
-  #     conn
-  #     |> patch(
-  #       Routes.Contas_path(conn, :update, id, %{email: "tarcisiooliveira@protonmail.com"})
-  #     )
-  #     |> json_response(:ok)
+      response =
+        conn
+        |> delete(Routes.conta_path(conn, :delete, id))
+        |> json_response(:ok)
 
-  #   assert %{
-  #            "mensagem" => "Usuário atualizado com sucesso!",
-  #            "Conta" => %{
-  #              "email" => "tarcisiooliveira@protonmail.com",
-  #              "id" => ^id,
-  #              "nome" => "Tarcisio"
-  #            }
-  #          } = response
-  # end
+      assert %{
+               "Conta" => %{"ID_Usuario" => ^usuario_id, "Tipo_Conta" => ^tipo_conta_id},
+               "mensagem" => "Conta removida"
+             } = response
+    end
 
-  # test "cadastra Conta corretamente e depois altera email para outro email já cadastrado", %{
-  #   conn: conn
-  # } do
-  #   %Conta{id: id} = insert(:Conta)
-  #   insert(:Conta, email: "tarcisiooliveira@protonmail.com")
+    test "error delete - Tenta deletar conta com id inexistente", %{
+      conn: conn
+    } do
+      response =
+        conn
+        |> delete(Routes.conta_path(conn, :delete, 951_951_951))
+        |> json_response(:not_found)
 
-  #   response =
-  #     conn
-  #     |> patch(
-  #       Routes.Contas_path(conn, :update, id, %{email: "tarcisiooliveira@protonmail.com"})
-  #     )
-  #     |> json_response(:not_found)
-
-  #   assert %{"error" => "Email já cadastrado."} = response
-  # end
-
-  # test "cadastra Conta corretamente e depois altera nome", %{
-  #   conn: conn
-  # } do
-  #   %Conta{id: id} = insert(:Conta, email: "tarcisiooliveira@protonmail.com")
-
-  #   response =
-  #     conn
-  #     |> patch(Routes.Contas_path(conn, :update, id, %{nome: "oisicraT", visivel: true}))
-  #     |> json_response(:ok)
-
-  #   assert %{
-  #            "mensagem" => "Usuário atualizado com sucesso!",
-  #            "Conta" => %{
-  #              "email" => "tarcisiooliveira@protonmail.com",
-  #              "id" => ^id,
-  #              "nome" => "oisicraT"
-  #            }
-  #          } = response
-  # end
+      assert %{"Mensagem" => "ID Inválido ou inexistente", "Resultado" => "Conta inexistente."} =
+               response
+    end
+  end
 end

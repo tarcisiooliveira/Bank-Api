@@ -2,11 +2,11 @@ defmodule BankApiWeb.ContaController do
   use BankApiWeb, :controller
   alias BankApi.Handle.HandleConta
 
-  def index(conn, params) do
-    params
-    |> HandleConta.create()
-    |> handle_response(conn, "create.json", :created)
-  end
+  # def index(conn, params) do
+  #   params
+  #   |> HandleConta.create()
+  #   |> handle_response(conn, "create.json", :created)
+  # end
 
   def show(conn, %{"id" => id}) do
     id
@@ -14,13 +14,14 @@ defmodule BankApiWeb.ContaController do
     |> handle_response(conn, "show.json", :ok)
   end
 
-  def create(conn, %{
-    "saldo_conta" => _100_000,
-    "usuario_id" => _usuario_id,
-    "tipo_conta_id" => _tipo_conta_id
-  } =params) do
-    IO.inspect("com saldo entrou")
-
+  def create(
+        conn,
+        %{
+          "saldo_conta" => _100_000,
+          "usuario_id" => _usuario_id,
+          "tipo_conta_id" => _tipo_conta_id
+        } = params
+      ) do
     params
     |> HandleConta.create()
     |> handle_response(conn, "create.json", :created)
@@ -33,24 +34,23 @@ defmodule BankApiWeb.ContaController do
           "tipo_conta_id" => _tipo_conta_id
         } = params
       ) do
-    IO.inspect("sem saldo entrou")
-
     params
     |> HandleConta.create()
     |> handle_response(conn, "create.json", :created)
   end
 
-  # def update(conn, %{"id" => id, "nome_conta" => nome_conta}) do
-  #   id
-  #   |> HandleConta.update(%{nome_conta: nome_conta})
-  #   |> handle_response(conn, "update.json", :created)
-  # end
+  def update(conn, %{"id" => id, "saldo_conta" => saldo_conta}=_params) do
 
-  # def delete(conn, %{"id" => id}) do
-  #   id
-  #   |> HandleConta.delete()
-  #   |> handle_delete(conn)
-  # end
+    id
+    |> HandleConta.update(%{saldo_conta: saldo_conta})
+    |> handle_response(conn, "update.json", :created)
+  end
+
+  def delete(conn, %{"id" => id}) do
+    id
+    |> HandleConta.delete()
+    |> handle_delete(conn)
+  end
 
   defp handle_response({:ok, conta}, conn, view, status) do
     conn

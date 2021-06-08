@@ -3,12 +3,22 @@ defmodule BankApiWeb.ContaView do
   alias BankApi.Schemas.Conta
   alias Ecto.Changeset
 
-  # def render("show.json", %{conta: %Conta{nome_conta: _nome_conta}}) do
-  #   %{
-  #     mensagem: "Tipo Conta encotrado"
-  #     # "Tipo Conta": %{nome_conta: nome_conta}
-  #   }
-  # end
+  def render("show.json", %{
+        conta: %Conta{
+          saldo_conta: saldo_conta,
+          usuario_id: usuario_id,
+          tipo_conta_id: tipo_conta_id
+        }
+      }) do
+    %{
+      mensagem: "Tipo Conta encotrado",
+      Conta: %{
+        saldo_conta: saldo_conta,
+        usuario_id: usuario_id,
+        tipo_conta_id: tipo_conta_id
+      }
+    }
+  end
 
   def render("create.json", %{
         conta: %Conta{
@@ -27,35 +37,40 @@ defmodule BankApiWeb.ContaView do
     }
   end
 
-  # def render("update.json", %{conta: %Conta{nome_conta: nome_conta}}) do
-  #   %{
-  #     mensagem: "Conta Atualizada",
-  #     Conta: %{nome_conta: nome_conta}
-  #   }
-  # end
+  def render("update.json", %{conta: %Conta{id: id, saldo_conta: saldo_conta}}) do
+    %{
+      mensagem: "Conta Atualizada",
+      Conta: %{conta_ID: id, saldo_conta: saldo_conta}
+    }
+  end
 
-  # def render("delete.json", %{conta: %Conta{nome_conta: nome_conta}}) do
-  #   %{
-  #     mensagem: "Conta #{nome_conta} removida com sucesso."
-  #   }
-  # end
+  def render("delete.json", %{conta: %Conta{usuario_id: usuario_id, tipo_conta_id: tipo_conta_id}}) do
+    %{
+      mensagem: "Conta removida",
+      Conta: %{ID_Usuario: usuario_id, Tipo_Conta: tipo_conta_id}
+    }
+  end
 
-  # def render("delete.json", %{error: error}) do
-  #   %{
-  #     Resultado: "Conta inexistente.",
-  #     Mensagem: "#{error}"
-  #   }
-  # end
+  def render("delete.json", %{error: error}) do
+    %{
+      Resultado: "Conta inexistente.",
+      Mensagem: "#{error}"
+    }
+  end
 
-  # def render(
-  #       "error.json",
-  #       %{error: %Changeset{errors: [nome_conta: {"has already been taken", _error}]}} =
-  #         _params
-  #     ) do
-  #   %{error: "Usuario já cadastrado com esse email"}
-  # end
+  def render(
+        "error.json",
+        %{error: %Changeset{errors: [saldo_conta: {"is invalid", _error}]}} = _params
+      ) do
+    %{error: "Saldo inválido, ele deve ser maior ou igual a zero"}
+  end
 
-  def render("error.json", %{error: error} = _params) do
-    %{error: error}
+  def render(
+        "error.json",
+        %{error: error}
+      ) do
+    %{
+      mensagem: error
+    }
   end
 end

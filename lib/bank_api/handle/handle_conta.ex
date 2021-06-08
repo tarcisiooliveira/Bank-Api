@@ -7,7 +7,7 @@ defmodule BankApi.Handle.HandleConta do
   """
   def get(id) do
     case Repo.get_by(Conta, id: id) do
-      nil -> {:error, "ID Inválido"}
+      nil -> {:error, "ID Inválido ou inexistente"}
       conta -> {:ok, conta}
     end
   end

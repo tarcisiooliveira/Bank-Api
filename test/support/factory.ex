@@ -1,5 +1,5 @@
 defmodule BankApi.Factory do
- @moduledoc """
+  @moduledoc """
   Factory module
   """
   use ExMachina.Ecto, repo: BankApi.Repo
@@ -17,17 +17,18 @@ defmodule BankApi.Factory do
 
   def operacao_factory do
     %Operacao{
-      nome_operacao: "Pagamento"
+      nome_operacao: "Transferência"
     }
   end
 
   def conta_factory do
     %Conta{
       saldo_conta: 100_000,
-      usuario_id: 0,
-      tipo_conta_id: 1
+      usuario_id: insert(:usuario, email: "teste@insert.com"),
+      tipo_conta_id: insert(:tipo_conta, nome_tipo_conta: "Nome Ficticio")
     }
   end
+
   def tipo_conta_factory do
     %TipoConta{
       nome_tipo_conta: "Poupança Digital"
