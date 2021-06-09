@@ -39,8 +39,7 @@ defmodule BankApiWeb.ContaController do
     |> handle_response(conn, "create.json", :created)
   end
 
-  def update(conn, %{"id" => id, "saldo_conta" => saldo_conta}=_params) do
-
+  def update(conn, %{"id" => id, "saldo_conta" => saldo_conta} = _params) do
     id
     |> HandleConta.update(%{saldo_conta: saldo_conta})
     |> handle_response(conn, "update.json", :created)

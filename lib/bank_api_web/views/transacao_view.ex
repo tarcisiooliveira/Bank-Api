@@ -34,16 +34,28 @@ defmodule BankApiWeb.TransacaoView do
     }
   end
 
-  def render("create.json", %{
-        transacao: %Transacao{
-          conta_origem_id: conta_origem_id,
-          operacao_id: operacao_id,
-          valor: valor
-        }
-      }) do
+  def render(
+        "create.json",
+        %{
+          transacao: %Transacao{
+            conta_origem_id: conta_origem_id,
+            conta_destino_id: nil,
+            operacao_id: operacao_id,
+            valor: valor
+          },
+          nome_operacao: nome_operacao
+        } = _params
+      ) do
+    # IO.inspect(params)
+
     %{
-      mensagem: "Transação Criada com Sucesso",
-      Transacao: %{conta_origem_id: conta_origem_id, operacao_id: operacao_id, valor: valor}
+      mensagem: "Transação Realizada com Sucesso",
+      Transacao: %{
+        conta_origem_id: conta_origem_id,
+        operacao_id: operacao_id,
+        valor: valor,
+        nome_operacao: nome_operacao
+      }
     }
   end
 
@@ -55,8 +67,10 @@ defmodule BankApiWeb.TransacaoView do
           valor: valor
         }
       }) do
+    # IO.inspect("4")
+    # IO.inspect(params)
     %{
-      mensagem: "Transação Criada com Sucesso",
+      mensagem: "Transação Realizada com Sucesso",
       Transacao: %{
         conta_origem_id: conta_origem_id,
         conta_destino_id: conta_destino_id,

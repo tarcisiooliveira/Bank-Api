@@ -1,6 +1,7 @@
 defmodule BankApiWeb.TransacaoController do
   use BankApiWeb, :controller
-  alias BankApi.Handle.HandleTransacao
+  alias BankApi.Handle.{HandleTransacao, HandleOperacao}
+  alias BankApi.Schemas.Operacao
 
   def show(conn, %{"id" => id}) do
     id
@@ -8,11 +9,11 @@ defmodule BankApiWeb.TransacaoController do
     |> handle_response(conn, "show.json", :ok)
   end
 
-  # def delete(conn, %{"id" => id}) do
-  #   id
-  #   |> HandleTransacao.delete()
-  #   |> handle_delete_response(conn, "delete.json", :ok)
-  # end
+  def delete(conn, %{"id" => id}) do
+    id
+    |> HandleTransacao.delete()
+    |> handle_delete_response(conn, "delete.json", :ok)
+  end
 
   # def update(conn, %{"id" => id, "valor" => valor}) do
   #   id
@@ -29,11 +30,8 @@ defmodule BankApiWeb.TransacaoController do
           "valor" => _valor
         } = params
       ) do
-
-        IO.puts("controller transacao 4 param")
     params
     |> HandleTransacao.create()
-    |> IO.inspect("bosta")
     |> handle_response(conn, "create.json", :created)
   end
 
@@ -41,10 +39,14 @@ defmodule BankApiWeb.TransacaoController do
         conn,
         %{
           "conta_origem_id" => _conta_origem_id,
-          "operacao_id" => _operacao_id,
+          "operacao_id" => operacao_id,
           "valor" => _valor
         } = params
       ) do
+    {:ok, %Operacao{nome_operacao: nome_operacao}} = HandleOperacao.get_name(operacao_id)
+
+    conn = assign(conn, :nome_operacao, nome_operacao)
+
     params
     |> HandleTransacao.create()
     |> handle_response(conn, "create.json", :created)
@@ -62,9 +64,9 @@ defmodule BankApiWeb.TransacaoController do
     |> render(view, transacao: transacao)
   end
 
-  defp handle_response({:error, error}, conn, _view, _status) do
-    conn
-    |> put_status(:not_found)
-    |> render("error.json", error: error)
-  end
+  # defp handle_response({:error, error}, conn, _view, _status) do
+  #   conn
+  #   |> put_status(:not_found)
+  #   |> render("error.json", error: error)
+  # end
 end

@@ -1,74 +1,98 @@
 defmodule BankApiWeb.ControllerTransacaoTest do
   use BankApiWeb.ConnCase, async: true
-  alias BankApi.Schemas.{Transacao, Conta, TipoConta, Usuario}
+  use ExUnit.Case
+  alias BankApi.Schemas.{Conta, TipoConta, Usuario, Conta, Operacao}
   import BankApi.Factory
+
+  setup do
+    [conn: "Phoenix.ConnTest.build_conn()"]
+
+    %TipoConta{id: id_tipo_conta} = insert(:tipo_conta, nome_tipo_conta: "Poupança")
+
+    %Usuario{id: id_usuario1, email: _email} = insert(:usuario)
+    %Usuario{id: id_usuario2} = insert(:usuario)
+
+    %Conta{id: conta_origem_id} =
+      insert(:conta, usuario_id: id_usuario1, tipo_conta_id: id_tipo_conta)
+
+    %Conta{id: conta_destino_id} =
+      insert(:conta, usuario_id: id_usuario2, tipo_conta_id: id_tipo_conta)
+
+    %Operacao{id: operacao_id} = insert(:operacao)
+
+    {:ok,
+     valores: %{
+       conta_origem_id: conta_origem_id,
+       conta_destino_id: conta_destino_id,
+       operacao_id: operacao_id
+     }}
+  end
 
   describe "show/2" do
   end
 
-  describe "create/2" do
-    test "assert ok insert - Todos parametros estão ok, cria transacao no banco", %{conn: conn} do
-      # %Usuario{id: id_usuario} = insert(:usuario)
-      # %TipoConta{id: id_tipo_conta} = insert(:tipo_conta)
-      # %Usuario{id: id_usuario2} = insert(:usuario, nome: "Pablo", email: "pablo@pablo.com")
-      # %TipoConta{id: id_tipo_conta2} = insert(:tipo_conta)
-      # %{"saldo_conta" => 100_000, "usuario_id" => id_usuario, "tipo_conta_id" => id_tipo_conta}
-      # %{"bola" => "sapo"} = %{"bola" => "sapo"}
+  describe "create" do
+    test "assert ok insert/4 - Todos parametros estão ok, cria transacao entre duas contas",
+         state do
+      params = %{
+        "conta_origem_id" => state[:valores].conta_origem_id,
+        "conta_destino_id" => state[:valores].conta_destino_id,
+        "operacao_id" => state[:valores].operacao_id,
+        "valor" => 600
+      }
 
-      # response =
-      #   conn
-      #   |> post(Routes.transacao_path(conn, :create, params))
-      #   |> json_response(:created)
+      response =
+        state[:conn]
+        |> post(Routes.transacao_path(state[:conn], :create, params))
+        |> json_response(:created)
 
-      # IO.inspect(response)
-      # assert %{
-      #          "mensagem" => "Transferência realizda com sucesso!",
-      #          "transacao" => %{
-      #            "email" => "tarcisiooliveira@pm.me",
-      #            "id" => _id,
-      #            "nome" => "Tarcisio"
-      #          }
-      #        } = response
+      assert %{
+               "Transacao" => %{
+                 "conta_origem_id" => state[:valores].conta_origem_id,
+                 "conta_destino_id" => state[:valores].conta_destino_id,
+                 "operacao_id" => state[:valores].operacao_id,
+                 "valor" => 600
+               },
+               "mensagem" => "Transação Realizada com Sucesso"
+             } == response
     end
 
-    # test "quando já existe transacao com aquele email, retorna erro informando", %{conn: conn} do
-    #   insert(:transacao)
+    test "assert ok insert - Todos parametros estão ok, usuario faz um saque", state do
+      %Operacao{id: id_operacao} = insert(:operacao, nome_operacao: "Saque")
 
-    #   params = %{
-    #     "email" => "tarcisiooliveira@pm.me",
-    #     "nome" => "Tarcisio",
-    #     "password" => "123456"
-    #   }
+      params = %{
+        "conta_origem_id" => state[:valores].conta_origem_id,
+        "operacao_id" => id_operacao,
+        "valor" => 1000
+      }
 
-    #   response =
-    #     conn
-    #     |> post(Routes.transacaos_path(conn, :create, params))
-    #     |> json_response(:unprocessable_entity)
+      response =
+        state[:conn]
+        |> post(Routes.transacao_path(state[:conn], :create, params))
+        |> json_response(:created)
 
-    #   assert %{
-    #            "mensagem" => "Erro",
-    #            "email" => "Email já cadastrado"
-    #          } = response
-    # end
+      assert %{
+               "Transacao" => %{
+                 "conta_origem_id" => state[:valores].conta_origem_id,
+                 "operacao_id" => id_operacao,
+                 "nome_operacao" => "Saque",
+                 "valor" => 1000
+               },
+               "mensagem" => "Transação Realizada com Sucesso"
+             } == response
+    end
   end
 
   describe "delete/2" do
-    # test "Retorna os dados do transacao excluido do banco e mensagem confirmando", %{
-    #   conn: conn
-    # } do
-    #   %Transacao{id: id} = insert(:transacao)
-
-    #   response =
-    #     conn
-    #     |> delete(Routes.transacaos_path(conn, :delete, id))
-    #     |> json_response(:ok)
+    # test "Retorna os dados do transacao excluido do banco e mensagem confirmando", state do
+    #   # %Transacao{id: id} = insert(:transacao)
 
     #   assert %{
     #            "email" => "tarcisiooliveira@pm.me",
-    #            "id" => ^id,
+    #            "id" => "^id",
     #            "message" => "Transacao Removido",
     #            "nome" => "Tarcisio"
-    #          } = response
+    #          } = "response"
     # end
 
     # test "tenta apagar transacao passando id que não existe ou já foi deletado previamente", %{
@@ -144,7 +168,7 @@ defmodule BankApiWeb.ControllerTransacaoTest do
     # end
     # test "quando todos parametros estão ok, usuário faz um saque", %{conn: conn} do
     #   %Usuario{id: id_origem} = insert(:usuario)
-    #   # %Operacao{id: id_operacao} = insert(:operacao)
+    #   # %Operacao{id: operacao_id} = insert(:operacao)
 
     #   params = %{
     #     "conta_origem_id" => id_origem,

@@ -4,7 +4,6 @@ defmodule BankApiWeb.ControllerUsuarioTest do
   import BankApi.Factory
 
   describe "test/2" do
-
     test "quando todos parametros estão ok, cria usuario no banco", %{conn: conn} do
       params = %{
         "email" => "tarcisiooliveira@pm.me",
@@ -28,10 +27,10 @@ defmodule BankApiWeb.ControllerUsuarioTest do
     end
 
     test "quando já existe usuario com aquele email, retorna erro informando", %{conn: conn} do
-      insert(:usuario)
+      %Usuario{email: email} = insert(:usuario)
 
       params = %{
-        "email" => "tarcisiooliveira@pm.me",
+        "email" => email,
         "nome" => "Tarcisio",
         "password" => "123456"
       }
@@ -51,7 +50,7 @@ defmodule BankApiWeb.ControllerUsuarioTest do
   test "Retorna os dados do usuario excluido do banco e mensagem confirmando", %{
     conn: conn
   } do
-    %Usuario{id: id} = insert(:usuario)
+    %Usuario{id: id, email: email} = insert(:usuario)
 
     response =
       conn
@@ -59,7 +58,7 @@ defmodule BankApiWeb.ControllerUsuarioTest do
       |> json_response(:ok)
 
     assert %{
-             "email" => "tarcisiooliveira@pm.me",
+             "email" => ^email,
              "id" => ^id,
              "message" => "Usuario Removido",
              "nome" => "Tarcisio"

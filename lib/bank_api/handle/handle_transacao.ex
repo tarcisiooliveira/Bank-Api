@@ -14,16 +14,15 @@ defmodule BankApi.Handle.HandleTransacao do
   def create(params) do
     params
     |> Transacao.changeset()
-    |> IO.inspect()
     |> Repo.insert()
   end
 
-  # def delete(id) do
-  #   case Repo.get_by(Transacao, id: id) do
-  #     nil -> {:error, "ID inválido"}
-  #     transacao -> Transacao.update_changeset(transacao) |> Repo.update()
-  #   end
-  # end
+  def delete(id) do
+    case Repo.get_by(Transacao, id: id) do
+      nil -> {:error, "ID inválido"}
+      transacao -> Repo.delete(transacao)
+    end
+  end
 
   # def update(id, %{valor: valor}) do
   #   case Repo.get_by(Transacao, id: id) do

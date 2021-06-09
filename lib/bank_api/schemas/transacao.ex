@@ -19,18 +19,12 @@ defmodule BankApi.Schemas.Transacao do
           "conta_destino_id" => _id_destino
         } = params
       ) do
-    IO.puts("changeset com destino")
-    IO.inspect(params)
-
     %__MODULE__{}
     |> cast(params, [:valor, :conta_origem_id, :conta_destino_id, :operacao_id])
     |> validate_required([:valor, :conta_origem_id, :conta_destino_id, :operacao_id])
   end
 
   def changeset(params) do
-    IO.puts("sem destino")
-    IO.inspect(params)
-
     %__MODULE__{}
     |> cast(params, [:conta_origem_id, :operacao_id, :valor])
     |> validate_required([:conta_origem_id, :operacao_id, :valor])

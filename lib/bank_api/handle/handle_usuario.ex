@@ -46,7 +46,6 @@ defmodule BankApi.Handle.HandleUsuario do
 
     case user do
       nil ->
-        IO.puts("Error")
         {:error, "ID inválido"}
 
       usuario ->
