@@ -10,16 +10,26 @@
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
 
-# alias BankApi.Schemas.{Usuario, Conta, TipoConta, Operacao, Transacao}
-# alias BankApi.Repo
+alias BankApi.Schemas.{Usuario, Conta, TipoConta, Operacao, Transacao, Admin}
+alias BankApi.Repo
 
-# usuario = [
-#   %{email: "tarcisio@ymail.com", nome: "Tarcisio", password: "123456"},
-#   %{email: "cida@ymail.com", nome: "Cida", password: "234567"},
-#   %{email: "benicio@ymail.com", nome: "Benicio", password: "345678"}
-# ]
+params = %{
+  "email" => "tarcisio@admin.com",
+  "password" => "123456",
+  "password_confirmation" => "123456"
+}
 
-# Enum.each(usuario, fn pessoa -> Usuario.changeset(pessoa) |> Repo.insert() end)
+params
+|> Admin.changeset()
+|> Repo.insert()
+
+usuario = [
+  %{email: "tarcisio@ymail.com", nome: "Tarcisio", password: "123456"},
+  %{email: "cida@ymail.com", nome: "Cida", password: "234567"},
+  %{email: "benicio@ymail.com", nome: "Benicio", password: "345678"}
+]
+
+Enum.each(usuario, fn pessoa -> Usuario.changeset(pessoa) |> Repo.insert() end)
 
 # tipoConta = [
 #   %{nome_tipo_conta: "Corrente"},

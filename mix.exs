@@ -46,6 +46,7 @@ defmodule BankApi.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:credo, "~> 1.5"},
       {:argon2_elixir, "~> 2.4"},
+      {:guardian, "~>2.0"},
       {:ex_machina, "~> 2.7.0", only: :test}
     ]
   end

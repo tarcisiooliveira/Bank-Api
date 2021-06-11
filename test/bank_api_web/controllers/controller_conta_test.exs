@@ -2,7 +2,9 @@ defmodule BankApiWeb.ControllerContaTest do
   use BankApiWeb.ConnCase, async: true
   alias BankApi.Schemas.{Usuario, TipoConta, Conta}
   import BankApi.Factory
-
+@moduledoc """
+Modulo de teste do Controlador de Conta
+"""
   describe "Show" do
     test "assert get - Exibe os dados de uma conta quando informado ID correto", %{conn: conn} do
       %Usuario{id: usuario_id} = insert(:usuario)

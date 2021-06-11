@@ -47,6 +47,7 @@ defmodule BankApiWeb.TransacaoView do
           nome_operacao: nome_operacao
         } = _params
       ) do
+
     %{
       mensagem: "Transação Realizada com Sucesso",
       Transacao: %{

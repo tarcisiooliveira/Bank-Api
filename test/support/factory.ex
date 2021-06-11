@@ -4,7 +4,7 @@ defmodule BankApi.Factory do
   """
   use ExMachina.Ecto, repo: BankApi.Repo
 
-  alias BankApi.Schemas.{Usuario, TipoConta, Operacao, Conta, Transacao}
+  alias BankApi.Schemas.{Usuario, TipoConta, Operacao, Conta, Transacao, Admin}
 
   def usuario_factory do
     %Usuario{
@@ -43,4 +43,14 @@ defmodule BankApi.Factory do
       valor: 200_000
     }
   end
+
+  def admin_factory do
+    %Admin{
+      email: "tarcisio@admin.com",
+      password: "123456",
+      password_confirmation: "123456",
+      password_hash: Argon2.hash_pwd_salt("123456")
+    }
+  end
+
 end

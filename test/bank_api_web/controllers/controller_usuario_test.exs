@@ -3,6 +3,10 @@ defmodule BankApiWeb.ControllerUsuarioTest do
   alias BankApi.Schemas.Usuario
   import BankApi.Factory
 
+  @moduledoc """
+  Modulo de teste do Controlador de Usuário
+  """
+
   describe "Create" do
     test "quando todos parametros estão ok, cria usuario no banco", %{conn: conn} do
       params = %{
