@@ -32,6 +32,10 @@ defmodule BankApiWeb.Router do
     )
 
     resources("/contas", ContaController, only: [:new, :show, :delete, :update, :index, :create])
+
+    resources("/transacoes", TransacaoController,
+      only: [:new, :show, :delete, :update, :index, :create]
+    )
   end
 
   # scope "/api", BankApiWeb do

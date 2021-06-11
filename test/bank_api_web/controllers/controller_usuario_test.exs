@@ -3,8 +3,7 @@ defmodule BankApiWeb.ControllerUsuarioTest do
   alias BankApi.Schemas.Usuario
   import BankApi.Factory
 
-  describe "test/2" do
-
+  describe "Create" do
     test "quando todos parametros estão ok, cria usuario no banco", %{conn: conn} do
       params = %{
         "email" => "tarcisiooliveira@pm.me",
@@ -28,10 +27,10 @@ defmodule BankApiWeb.ControllerUsuarioTest do
     end
 
     test "quando já existe usuario com aquele email, retorna erro informando", %{conn: conn} do
-      insert(:usuario)
+      %Usuario{email: email} = insert(:usuario)
 
       params = %{
-        "email" => "tarcisiooliveira@pm.me",
+        "email" => email,
         "nome" => "Tarcisio",
         "password" => "123456"
       }
@@ -48,92 +47,96 @@ defmodule BankApiWeb.ControllerUsuarioTest do
     end
   end
 
-  test "Retorna os dados do usuario excluido do banco e mensagem confirmando", %{
-    conn: conn
-  } do
-    %Usuario{id: id} = insert(:usuario)
+  describe "delete" do
+    test "Retorna os dados do usuario excluido do banco e mensagem confirmando", %{
+      conn: conn
+    } do
+      %Usuario{id: id, email: email} = insert(:usuario)
 
-    response =
-      conn
-      |> delete(Routes.usuarios_path(conn, :delete, id))
-      |> json_response(:ok)
+      response =
+        conn
+        |> delete(Routes.usuarios_path(conn, :delete, id))
+        |> json_response(:ok)
 
-    assert %{
-             "email" => "tarcisiooliveira@pm.me",
-             "id" => ^id,
-             "message" => "Usuario Removido",
-             "nome" => "Tarcisio"
-           } = response
-  end
-
-  test "tenta apagar usuario passando id que não existe ou já foi deletado previamente", %{
-    conn: conn
-  } do
-    response =
-      conn
-      |> delete(Routes.usuarios_path(conn, :delete, 1))
-      |> json_response(:not_found)
-
-    assert %{
-             "error" => "ID inválido"
-           } = response
-  end
-
-  test "cadastra usuario corretamente e depois altera email para outro email valido", %{
-    conn: conn
-  } do
-    %Usuario{id: id} = insert(:usuario)
-
-    response =
-      conn
-      |> patch(
-        Routes.usuarios_path(conn, :update, id, %{email: "tarcisiooliveira@protonmail.com"})
-      )
-      |> json_response(:ok)
-
-    assert %{
-             "mensagem" => "Usuário atualizado com sucesso!",
-             "usuario" => %{
-               "email" => "tarcisiooliveira@protonmail.com",
+      assert %{
+               "email" => ^email,
                "id" => ^id,
+               "message" => "Usuario Removido",
                "nome" => "Tarcisio"
-             }
-           } = response
+             } = response
+    end
+
+    test "tenta apagar usuario passando id que não existe ou já foi deletado previamente", %{
+      conn: conn
+    } do
+      response =
+        conn
+        |> delete(Routes.usuarios_path(conn, :delete, 100_001))
+        |> json_response(:not_found)
+
+      assert %{
+               "error" => "ID inválido"
+             } = response
+    end
   end
 
-  test "cadastra usuario corretamente e depois altera email para outro email já cadastrado", %{
-    conn: conn
-  } do
-    %Usuario{id: id} = insert(:usuario)
-    insert(:usuario, email: "tarcisiooliveira@protonmail.com")
+  describe "update" do
+    test "cadastra usuario corretamente e depois altera email para outro email valido", %{
+      conn: conn
+    } do
+      %Usuario{id: id} = insert(:usuario)
 
-    response =
-      conn
-      |> patch(
-        Routes.usuarios_path(conn, :update, id, %{email: "tarcisiooliveira@protonmail.com"})
-      )
-      |> json_response(:not_found)
+      response =
+        conn
+        |> patch(
+          Routes.usuarios_path(conn, :update, id, %{email: "tarcisiooliveira@protonmail.com"})
+        )
+        |> json_response(:ok)
 
-    assert %{"error" => "Email já cadastrado."} = response
-  end
+      assert %{
+               "mensagem" => "Usuário atualizado com sucesso!",
+               "usuario" => %{
+                 "email" => "tarcisiooliveira@protonmail.com",
+                 "id" => ^id,
+                 "nome" => "Tarcisio"
+               }
+             } = response
+    end
 
-  test "cadastra usuario corretamente e depois altera nome", %{
-    conn: conn
-  } do
-    %Usuario{id: id} = insert(:usuario, email: "tarcisiooliveira@protonmail.com")
+    test "cadastra usuario corretamente e depois altera email para outro email já cadastrado", %{
+      conn: conn
+    } do
+      %Usuario{id: id} = insert(:usuario)
+      insert(:usuario, email: "tarcisiooliveira@protonmail.com")
 
-    response =
-      conn
-      |> patch(Routes.usuarios_path(conn, :update, id, %{nome: "oisicraT", visivel: true}))
-      |> json_response(:ok)
+      response =
+        conn
+        |> patch(
+          Routes.usuarios_path(conn, :update, id, %{email: "tarcisiooliveira@protonmail.com"})
+        )
+        |> json_response(:not_found)
 
-    assert %{
-             "mensagem" => "Usuário atualizado com sucesso!",
-             "usuario" => %{
-               "email" => "tarcisiooliveira@protonmail.com",
-               "id" => ^id,
-               "nome" => "oisicraT"
-             }
-           } = response
+      assert %{"error" => "Email já cadastrado."} = response
+    end
+
+    test "cadastra usuario corretamente e depois altera nome", %{
+      conn: conn
+    } do
+      %Usuario{id: id} = insert(:usuario, email: "tarcisiooliveira@protonmail.com")
+
+      response =
+        conn
+        |> patch(Routes.usuarios_path(conn, :update, id, %{nome: "oisicraT", visivel: true}))
+        |> json_response(:ok)
+
+      assert %{
+               "mensagem" => "Usuário atualizado com sucesso!",
+               "usuario" => %{
+                 "email" => "tarcisiooliveira@protonmail.com",
+                 "id" => ^id,
+                 "nome" => "oisicraT"
+               }
+             } = response
+    end
   end
 end

@@ -12,6 +12,13 @@ defmodule BankApi.Handle.HandleOperacao do
     end
   end
 
+  def get_name(id) do
+    case Repo.get_by(Operacao, id: id) do
+      nil -> {:error, "ID inválido"}
+      operacao -> {:ok, operacao}
+    end
+  end
+
   def create(%{"nome_operacao" => _nome_operacao} = params) do
     case Operacao.changeset(params) |> Repo.insert() do
       {:error, changeset} -> {:error, changeset}

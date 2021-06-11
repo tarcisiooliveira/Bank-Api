@@ -30,8 +30,7 @@ defmodule BankApiWeb.ControllerContaTest do
         |> get(Routes.conta_path(conn, :show, 951_951))
         |> json_response(:not_found)
 
-      assert %{"mensagem" => "ID Inválido ou inexistente"} =
-               response
+      assert %{"mensagem" => "ID Inválido ou inexistente"} = response
     end
   end
 

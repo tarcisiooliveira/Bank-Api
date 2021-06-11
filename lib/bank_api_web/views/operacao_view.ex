@@ -42,7 +42,7 @@ defmodule BankApiWeb.OperacaoView do
         %{error: %Changeset{errors: [nome_operacao: {"has already been taken", _error}]}} =
           _params
       ) do
-    %{error: "Usuario já cadastrado com esse email"}
+    %{error: "Operação já cadastrada previamente."}
   end
 
   def render("error.json", %{error: error} = _params) do
