@@ -1,7 +1,7 @@
 defmodule BankApiWeb.TransacaoController do
   use BankApiWeb, :controller
   alias BankApi.Handle.{HandleTransacao, HandleOperacao}
-  alias BankApi.Schemas.Operacao
+  alias BankApi.Schemas.{Operacao, Transacao}
 
   def show(conn, %{"id" => id}) do
     id
@@ -58,15 +58,33 @@ defmodule BankApiWeb.TransacaoController do
     |> render(view, transacao: transacao)
   end
 
-  defp handle_delete_response({:ok, transacao}, conn, view, status) do
+  defp handle_delete_response(
+         {:ok,
+          %Transacao{
+            conta_origem_id: conta_origem_id,
+            conta_destino_id: conta_destino_id,
+            operacao_id: operacao_id,
+            valor: valor
+          }},
+         conn,
+         view,
+         status
+       ) do
     conn
     |> put_status(status)
-    |> render(view, transacao: transacao)
+    |> render(view,
+      transacao: %{
+        conta_origem_id: conta_origem_id,
+        conta_destino_id: conta_destino_id,
+        operacao_id: operacao_id,
+        valor: valor
+      }
+    )
   end
 
-  # defp handle_response({:error, error}, conn, _view, _status) do
-  #   conn
-  #   |> put_status(:not_found)
-  #   |> render("error.json", error: error)
-  # end
+  defp handle_delete_response({:error, error}, conn, _view, _status) do
+    conn
+    |> put_status(:not_found)
+    |> render("error.json", error: error)
+  end
 end

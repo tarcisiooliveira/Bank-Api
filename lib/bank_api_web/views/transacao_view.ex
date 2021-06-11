@@ -5,6 +5,20 @@ defmodule BankApiWeb.TransacaoView do
   def render("show.json", %{
         transacao: %Transacao{
           conta_origem_id: conta_origem_id,
+          conta_destino_id: nil,
+          operacao_id: operacao_id,
+          valor: valor
+        }
+      }) do
+    %{
+      mensagem: "Transação encotrada",
+      Transacao: %{conta_origem_id: conta_origem_id, operacao_id: operacao_id, valor: valor}
+    }
+  end
+
+  def render("show.json", %{
+        transacao: %Transacao{
+          conta_origem_id: conta_origem_id,
           conta_destino_id: conta_destino_id,
           operacao_id: operacao_id,
           valor: valor
@@ -21,19 +35,6 @@ defmodule BankApiWeb.TransacaoView do
     }
   end
 
-  def render("show.json", %{
-        transacao: %Transacao{
-          conta_origem_id: conta_origem_id,
-          operacao_id: operacao_id,
-          valor: valor
-        }
-      }) do
-    %{
-      mensagem: "Transação encotrada",
-      Transacao: %{conta_origem_id: conta_origem_id, operacao_id: operacao_id, valor: valor}
-    }
-  end
-
   def render(
         "create.json",
         %{
@@ -46,8 +47,6 @@ defmodule BankApiWeb.TransacaoView do
           nome_operacao: nome_operacao
         } = _params
       ) do
-    # IO.inspect(params)
-
     %{
       mensagem: "Transação Realizada com Sucesso",
       Transacao: %{
@@ -67,8 +66,6 @@ defmodule BankApiWeb.TransacaoView do
           valor: valor
         }
       }) do
-    # IO.inspect("4")
-    # IO.inspect(params)
     %{
       mensagem: "Transação Realizada com Sucesso",
       Transacao: %{
@@ -87,37 +84,46 @@ defmodule BankApiWeb.TransacaoView do
     }
   end
 
-  def render("delete.json", %{
-        transacao: %Transacao{
-          id: id,
-          conta_origem_id: conta_origem_id,
-          conta_destino_id: conta_destino_id,
-          operacao_id: operacao_id,
-          valor: valor
+  def render(
+        "delete.json",
+        %{
+          transacao: %{
+            conta_origem_id: conta_origem_id,
+            conta_destino_id: nil,
+            operacao_id: operacao_id,
+            valor: valor
+          }
         }
-      }) do
+      ) do
     %{
-      mensagem: "Transacao número #{id} removida com sucesso.",
-      Transação: %{
+      mensagem: "Transação Removida com Sucesso",
+      Transacao: %{
         conta_origem_id: conta_origem_id,
-        conta_destino_id: conta_destino_id,
         operacao_id: operacao_id,
         valor: valor
       }
     }
   end
 
-  def render("delete.json", %{
-        transacao: %Transacao{
-          id: id,
-          conta_origem_id: conta_origem_id,
-          operacao_id: operacao_id,
-          valor: valor
+  def render(
+        "delete.json",
+        %{
+          transacao: %{
+            conta_origem_id: conta_origem_id,
+            conta_destino_id: conta_destino_id,
+            operacao_id: operacao_id,
+            valor: valor
+          }
         }
-      }) do
+      ) do
     %{
-      mensagem: "Transacao número #{id} removida com sucesso.",
-      Transação: %{conta_origem_id: conta_origem_id, operacao_id: operacao_id, valor: valor}
+      mensagem: "Transação Removida com Sucesso2",
+      Transacao: %{
+        conta_origem_id: conta_origem_id,
+        conta_destino_id: conta_destino_id,
+        operacao_id: operacao_id,
+        valor: valor
+      }
     }
   end
 
@@ -128,15 +134,7 @@ defmodule BankApiWeb.TransacaoView do
     }
   end
 
-  # def render(
-  #       "error.json",
-  #       %{error: %Changeset{errors: [conta_origem_id: {"has already been taken", _error}]}} =
-  #         _params
-  #     ) do
-  #   %{error: "Usuario já cadastrado com esse email"}
-  # end
-
-  def render("error.json", %{error: error} = _params) do
+  def render("error.json", %{error: error}) do
     %{error: error}
   end
 end

@@ -1,7 +1,8 @@
 defmodule BankApiWeb.ControllerTransacaoTest do
   use BankApiWeb.ConnCase, async: true
   use ExUnit.Case
-  alias BankApi.Schemas.{Conta, TipoConta, Usuario, Conta, Operacao}
+  alias BankApi.Schemas.{Conta, TipoConta, Usuario, Conta, Operacao, Transacao}
+  alias BankApi.Repo
   import BankApi.Factory
 
   setup do
@@ -9,7 +10,7 @@ defmodule BankApiWeb.ControllerTransacaoTest do
 
     %TipoConta{id: id_tipo_conta} = insert(:tipo_conta, nome_tipo_conta: "Poupança")
 
-    %Usuario{id: id_usuario1, email: _email} = insert(:usuario)
+    %Usuario{id: id_usuario1} = insert(:usuario)
     %Usuario{id: id_usuario2} = insert(:usuario)
 
     %Conta{id: conta_origem_id} =
@@ -29,6 +30,65 @@ defmodule BankApiWeb.ControllerTransacaoTest do
   end
 
   describe "show/2" do
+    test "assert get - Exibe os dados de um saque quando é informado parametros validos", state do
+      %Operacao{id: id_operacao} = insert(:operacao, nome_operacao: "Saque")
+
+      params = %{
+        "conta_origem_id" => state[:valores].conta_origem_id,
+        "operacao_id" => id_operacao,
+        "valor" => 700
+      }
+
+      {:ok, %Transacao{id: id}} =
+        params
+        |> Transacao.changeset()
+        |> BankApi.Repo.insert()
+
+      response =
+        state[:conn]
+        |> get(Routes.transacao_path(state[:conn], :show, id))
+        |> json_response(:ok)
+
+      assert %{
+               "mensagem" => "Transação encotrada",
+               "Transacao" => %{
+                 "conta_origem_id" => state[:valores].conta_origem_id,
+                 "operacao_id" => id_operacao,
+                 "valor" => 700
+               }
+             } == response
+    end
+
+    test "assert get - Exibe os dados de uma transferencia quando é informado parametros validos", state do
+    %Operacao{id: id_operacao} = insert(:operacao, nome_operacao: "Saque")
+
+    params = %{
+      "conta_origem_id" => state[:valores].conta_origem_id,
+      "conta_destino_id" => state[:valores].conta_destino_id,
+      "operacao_id" => id_operacao,
+      "valor" => 900
+    }
+
+    {:ok, %Transacao{id: id}} =
+      params
+      |> Transacao.changeset()
+      |> BankApi.Repo.insert()
+
+    response =
+      state[:conn]
+      |> get(Routes.transacao_path(state[:conn], :show, id))
+      |> json_response(:ok)
+
+    assert %{
+             "mensagem" => "Transação encotrada",
+             "Transacao" => %{
+               "conta_origem_id" => state[:valores].conta_origem_id,
+               "conta_destino_id" => state[:valores].conta_destino_id,
+               "operacao_id" => id_operacao,
+               "valor" => 900
+             }
+           } == response
+    end
   end
 
   describe "create" do
@@ -83,112 +143,53 @@ defmodule BankApiWeb.ControllerTransacaoTest do
     end
   end
 
-  describe "delete/2" do
-    # test "Retorna os dados do transacao excluido do banco e mensagem confirmando", state do
-    #   # %Transacao{id: id} = insert(:transacao)
+  describe "delete/1" do
+    test "delete ok - remove  transação de saque cadastrada na base de dados", state do
+      %Operacao{id: id_operacao} = insert(:operacao, nome_operacao: "Saque")
 
-    #   assert %{
-    #            "email" => "tarcisiooliveira@pm.me",
-    #            "id" => "^id",
-    #            "message" => "Transacao Removido",
-    #            "nome" => "Tarcisio"
-    #          } = "response"
-    # end
+      params = %{
+        "conta_origem_id" => state[:valores].conta_origem_id,
+        "operacao_id" => id_operacao,
+        "valor" => 1000
+      }
 
-    # test "tenta apagar transacao passando id que não existe ou já foi deletado previamente", %{
-    #   conn: conn
-    # } do
-    #   response =
-    #     conn
-    #     |> delete(Routes.transacaos_path(conn, :delete, 1))
-    #     |> json_response(:not_found)
+      total_antes = Repo.aggregate(Transacao, :count)
 
-    #   assert %{
-    #            "error" => "ID inválido"
-    #          } = response
-    # end
-  end
+      {:ok, %Transacao{id: id}} =
+        params
+        |> Transacao.changeset()
+        |> BankApi.Repo.insert()
 
-  describe "update/2" do
-    # test "cadastra transacao corretamente e depois altera email para outro email valido", %{
-    #   conn: conn
-    # } do
-    #   %Transacao{id: id} = insert(:transacao)
+      total_depois = Repo.aggregate(Transacao, :count)
+      assert total_antes < total_depois
 
-    #   response =
-    #     conn
-    #     |> patch(
-    #       Routes.transacaos_path(conn, :update, id, %{email: "tarcisiooliveira@protonmail.com"})
-    #     )
-    #     |> json_response(:ok)
+      response =
+        state[:conn]
+        |> delete(Routes.transacao_path(state[:conn], :delete, id))
+        |> json_response(:ok)
 
-    #   assert %{
-    #            "mensagem" => "Usuário atualizado com sucesso!",
-    #            "transacao" => %{
-    #              "email" => "tarcisiooliveira@protonmail.com",
-    #              "id" => ^id,
-    #              "nome" => "Tarcisio"
-    #            }
-    #          } = response
-    # end
+      assert %{
+               "Transacao" => %{
+                 "conta_origem_id" => state[:valores].conta_origem_id,
+                 "operacao_id" => id_operacao,
+                 "valor" => 1000
+               },
+               "mensagem" => "Transação Removida com Sucesso"
+             } == response
 
-    # test "cadastra transacao corretamente e depois altera email para outro email já cadastrado", %{
-    #   conn: conn
-    # } do
-    #   %Transacao{id: id} = insert(:transacao)
-    #   insert(:transacao, email: "tarcisiooliveira@protonmail.com")
+      total_mais_a_frente = Repo.aggregate(Transacao, :count)
+      assert total_antes == total_mais_a_frente
+    end
 
-    #   response =
-    #     conn
-    #     |> patch(
-    #       Routes.transacaos_path(conn, :update, id, %{email: "tarcisiooliveira@protonmail.com"})
-    #     )
-    #     |> json_response(:not_found)
+    test "delete error - tenta remover transação inexistente", state do
+      response =
+        state[:conn]
+        |> delete(Routes.transacao_path(state[:conn], :delete, 987_654_321))
+        |> json_response(:not_found)
 
-    #   assert %{"error" => "Email já cadastrado."} = response
-    # end
-    # test "cadastra transacao corretamente e depois altera nome", %{
-    #   conn: conn
-    # } do
-    #   %Transacao{id: id} = insert(:transacao, email: "tarcisiooliveira@protonmail.com")
-
-    #   response =
-    #     conn
-    #     |> patch(Routes.transacaos_path(conn, :update, id, %{nome: "oisicraT", visivel: true}))
-    #     |> json_response(:ok)
-
-    #   assert %{
-    #            "mensagem" => "Usuário atualizado com sucesso!",
-    #            "transacao" => %{
-    #              "email" => "tarcisiooliveira@protonmail.com",
-    #              "id" => ^id,
-    #              "nome" => "oisicraT"
-    #            }
-    #          } = response
-    # end
-    # test "quando todos parametros estão ok, usuário faz um saque", %{conn: conn} do
-    #   %Usuario{id: id_origem} = insert(:usuario)
-    #   # %Operacao{id: operacao_id} = insert(:operacao)
-
-    #   params = %{
-    #     "conta_origem_id" => id_origem,
-    #     "operacao_id" => 1,
-    #     "valor" => 200_000
-    #   }
-
-    #   response =
-    #     conn
-    #     |> post(Routes.transacoes_path(conn, :create, params))
-    #     |> json_response(:created)
-
-    #   assert %{
-    #            "mensagem" => "Usuário criado com sucesso!",
-    #            "transacao" => %{
-    #              "email" => "tarcisiooliveira@pm.me",
-    #              "id" => _id,
-    #              "nome" => "Tarcisio"
-    #            }
-    #          } = response
-    # end
+      assert %{
+               "error" => "ID inválido"
+             } = response
+    end
   end
 end
