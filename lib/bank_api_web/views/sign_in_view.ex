@@ -3,7 +3,6 @@ defmodule BankApiWeb.SignInView do
 
 
   def render("sign_in.json", %{token: token}) do
-    # IO.inspect(params)
     %{mensagem: %{token: token}}
   end
 end

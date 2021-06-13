@@ -8,7 +8,7 @@ defmodule BankApiWeb.AdminView do
     }
   end
 
-  def render("sing_in.json", params) do
+  def render("sing_in.json", _params) do
     %{mensagem: "mensagem"}
   end
 

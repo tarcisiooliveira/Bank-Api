@@ -1,41 +1,52 @@
 defmodule BankApi.ControllerAdminTest do
   use BankApiWeb.ConnCase, async: true
   alias BankApi.Schemas.{Admin}
-  import BankApi.Factory
   alias BankApiWeb.Auth.Guardian
 
   @moduledoc """
   Modulo de teste do Controlador de Admin
   """
 
-  describe "create" do
-    test "Test criacao admin com token", %{conn: conn} do
-      # params1 = %{"email" => "admin1@admin.com",
-      # "password" => "123456",
-      # "password_confirmation" => "123456"}
-      params2 = %{"email" => "admin2@admin.com",
+  setup do
+    [conn: "Phoenix.ConnTest.build_conn()"]
+
+    params = %{
+      "email" => "test@admin.com",
       "password" => "123456",
-      "password_confirmation" => "123456"}
+      "password_confirmation" => "123456"
+    }
 
-      # {:ok, admin}=Admin.changeset(params1)
-      # |> BankApi.Repo.insert()
-      # |> IO.inspect()
-      # IO.inspect("============================")
-      # Guardian.encode_and_sign(admin)
-      # |> IO.inspect()
+    {:ok, admin} =
+      Admin.changeset(params)
+      |> BankApi.Repo.insert()
 
+    {:ok, token, _claims} = Guardian.encode_and_sign(admin)
+
+    {:ok,
+     valores: %{
+       token: token
+     }}
+  end
+
+  describe "create" do
+    test "Test criacao admin com token", state do
+      params2 = %{
+        "email" => "test2@admin.com",
+        "password" => "123456",
+        "password_confirmation" => "123456"
+      }
 
       response =
-        conn
-        |> post(Routes.admin_path(conn, :create, params2))
+        state[:conn]
+        |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+        |> post(Routes.admin_path(state[:conn], :create, params2))
         |> json_response(:created)
 
-        assert %{
-          "admin" => %{"email" => "admin2@admin.com", "password_hash" => _password_hash},
-          "mensagem" => "Administrador Cadastrado",
-          "token" => _token
-        } = response
+      assert %{
+               "admin" => %{"email" => "test2@admin.com", "password_hash" => _password_hash},
+               "mensagem" => "Administrador Cadastrado",
+               "token" => _token
+             } = response
     end
-
   end
 end
