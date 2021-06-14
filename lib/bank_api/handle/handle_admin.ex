@@ -12,29 +12,48 @@ defmodule BankApi.Handle.HandleAdmin do
     end
   end
 
-  def create(params) do
-    case Admin.changeset(params) |> Repo.insert() do
-      {:error, changeset} -> {:error, changeset}
-      {:ok, admin} -> {:ok, admin}
+  def create(
+        %{
+          "email" => _email,
+          "password" => _senha,
+          "password_confirmation" => _password_confirmation
+        } = params
+      ) do
+    params
+    |> Admin.changeset()
+    |> Repo.insert()
+  end
+
+  def create(
+        %{
+          "email" => _email,
+          "password" => _senha
+        } = _params
+      ) do
+    {:error, "Campo Confirmação de Senha não informado"}
+  end
+
+  def update(id, %{email: email}) do
+    case Repo.get_by(Admin, email: email) do
+      %Admin{} ->
+        {:error, "Email já cadastrado."}
+
+      _ ->
+        case Repo.get_by(Admin, id: id) do
+          nil ->
+            {:error, "ID inválido"}
+
+          admin ->
+            Admin.update_changeset(admin, %{email: email})
+            |> Repo.update()
+        end
     end
   end
 
-  def update(_id, _params) do
-    # case Repo.get_by(Conta, id: id) do
-    #   nil ->
-    #     {:error, "ID Inválido ou inexistente"}
-
-    #   conta ->
-    #     Conta.update_changeset(conta, %{saldo_conta: saldo_conta})
-    #     |> Repo.update()
-    # end
-    :ok
-  end
-
-  def delete(_id) do
-    # case Repo.get_by(Conta, id: id) do
-    #   nil -> {:error, "ID Inválido ou inexistente"}
-    #   conta -> Repo.delete(conta)
-    # end
+  def delete(id) do
+    case Repo.get_by(Admin, id: id) do
+      nil -> {:error, "ID Inválido ou inexistente"}
+      admin -> Repo.delete(admin)
+    end
   end
 end

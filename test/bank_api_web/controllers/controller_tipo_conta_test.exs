@@ -1,21 +1,13 @@
 defmodule BankApiWeb.TipoContaTest do
   use BankApiWeb.ConnCase, async: true
-  alias BankApi.Schemas.{TipoConta, Admin}
+  alias BankApi.Schemas.TipoConta
   import BankApi.Factory
   alias BankApiWeb.Auth.Guardian
 
   setup do
     [conn: "Phoenix.ConnTest.build_conn()"]
 
-    params = %{
-      "email" => "test@admin.com",
-      "password" => "123456",
-      "password_confirmation" => "123456"
-    }
-
-    {:ok, admin} =
-      Admin.changeset(params)
-      |> BankApi.Repo.insert()
+    admin = insert(:admin)
 
     {:ok, token, _claims} = Guardian.encode_and_sign(admin)
 

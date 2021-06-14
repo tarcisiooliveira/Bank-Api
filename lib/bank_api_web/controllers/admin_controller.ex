@@ -1,7 +1,6 @@
 defmodule BankApiWeb.AdminController do
   use BankApiWeb, :controller
   alias BankApi.Handle.HandleAdmin
-  alias BankApiWeb.Auth.Guardian
 
   # Usado pelo :create nos testes de forma automatica
   def index(conn, params) do
@@ -10,7 +9,6 @@ defmodule BankApiWeb.AdminController do
     |> handle_create_response(conn, "create.json")
   end
 
-
   def show(conn, %{"id" => id}) do
     id
     |> HandleAdmin.get()
@@ -18,12 +16,9 @@ defmodule BankApiWeb.AdminController do
   end
 
   def create(conn, params) do
-    with {:ok, admin} <- HandleAdmin.create(params),
-         {:ok, token, _claims} <- Guardian.encode_and_sign(admin) do
-      conn
-      |> put_status(:created)
-      |> render("create.json", %{admin: admin, token: token})
-    end
+    params
+    |> HandleAdmin.create()
+    |> handle_create_response(conn, "create.json")
   end
 
   def delete(conn, %{"id" => id}) do
@@ -38,12 +33,6 @@ defmodule BankApiWeb.AdminController do
     |> handle_response(conn, "update.json", :ok)
   end
 
-  def update(conn, %{"id" => id, "nome" => nome}) do
-    id
-    |> HandleAdmin.update(%{nome: nome})
-    |> handle_response(conn, "update.json", :ok)
-  end
-
   defp handle_create_response({:ok, admin}, conn, view) do
     conn
     |> put_status(:created)
@@ -51,8 +40,6 @@ defmodule BankApiWeb.AdminController do
   end
 
   defp handle_create_response({:error, error} = _params, conn, view) do
-    # {:error, %Ecto.Changeset{errors: errors}} = params
-    # {error, _as} = errors[:email]
     conn
     |> put_status(422)
     |> render(view, error: error)

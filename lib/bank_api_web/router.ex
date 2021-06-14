@@ -36,7 +36,7 @@ defmodule BankApiWeb.Router do
     resources("/transacoes", TransacaoController,
       only: [:new, :show, :delete, :update, :index, :create])
 
-    resources("/admin", AdminController,
+    resources("/admins", AdminController,
       only: [:new, :show, :delete, :update, :index, :create])
   end
 

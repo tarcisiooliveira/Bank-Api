@@ -12,41 +12,52 @@ defmodule BankApiWeb.AdminView do
     %{mensagem: "mensagem"}
   end
 
-  def render("create.json", %{
-        admin: %Admin{email: email, password_hash: password_hash},
-        token: token
-      }) do
+  def render("create.json", %{admin: %{email: email}}) do
     %{
       mensagem: "Administrador Cadastrado",
-      admin: %{email: email, password_hash: password_hash},
-      token: token
+      admin: %{"email" => email}
     }
   end
 
-  def render("update.json",
-        admin: %Admin{
-          email: "admin@admin.com"
-        }
-      ) do
+  def render("create.json", %{error: error}) do
     %{
-      mensagem: "Admin Atualizada"
+      mensagem: "Administrador Não Cadastrado",
+      error: error
     }
   end
 
-  def render("delete.json",
-        admin: %Admin{
-          email: "admin@admin.com"
+  def render(
+        "update.json",
+        %{
+          admin: %Admin{
+            email: email
+          }
         }
       ) do
     %{
-      mensagem: "Admin removida"
+      mensagem: "Admininstrador Atualizado",
+      email: email
+    }
+  end
+
+  def render(
+        "delete.json",
+        %{
+          admin: %Admin{
+            email: email
+          }
+        }
+      ) do
+    %{
+      mensagem: "Administrador removido",
+      email: email
     }
   end
 
   def render("delete.json", %{error: error}) do
     %{
-      Resultado: "Admin inexistente.",
-      Mensagem: "#{error}"
+      Erro: "Administrador não removido.",
+      Resultado: error
     }
   end
 

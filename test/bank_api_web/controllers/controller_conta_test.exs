@@ -1,6 +1,6 @@
 defmodule BankApiWeb.ControllerContaTest do
   use BankApiWeb.ConnCase, async: true
-  alias BankApi.Schemas.{Usuario, TipoConta, Conta, Admin}
+  alias BankApi.Schemas.{Usuario, TipoConta, Conta}
   import BankApi.Factory
   alias BankApiWeb.Auth.Guardian
 
@@ -11,15 +11,7 @@ defmodule BankApiWeb.ControllerContaTest do
   setup do
     [conn: "Phoenix.ConnTest.build_conn()"]
 
-    params = %{
-      "email" => "test@admin.com",
-      "password" => "123456",
-      "password_confirmation" => "123456"
-    }
-
-    {:ok, admin} =
-      Admin.changeset(params)
-      |> BankApi.Repo.insert()
+    admin = insert(:admin)
 
     {:ok, token, _claims} = Guardian.encode_and_sign(admin)
 
@@ -29,8 +21,8 @@ defmodule BankApiWeb.ControllerContaTest do
      }}
   end
 
-  describe "Show" do
-    test "assert get - Exibe os dados de uma conta quando informado ID correto", state do
+  describe "SHOW" do
+    test "assert get - Exibe os dados de uma conta quando informado ID correto + token", state do
       %Usuario{id: usuario_id} = insert(:usuario)
       %TipoConta{id: tipo_conta_id} = insert(:tipo_conta)
       %Conta{id: conta_id} = insert(:conta, usuario_id: usuario_id, tipo_conta_id: tipo_conta_id)
@@ -51,7 +43,19 @@ defmodule BankApiWeb.ControllerContaTest do
              } = response
     end
 
-    test "error get - Exibe os dados de uma conta quando informado ID correto", state do
+    test "error show - exibe mensagem de erro quando não tem token de acesso", state do
+      %Usuario{id: usuario_id} = insert(:usuario)
+      %TipoConta{id: tipo_conta_id} = insert(:tipo_conta)
+      %Conta{id: conta_id} = insert(:conta, usuario_id: usuario_id, tipo_conta_id: tipo_conta_id)
+
+      response =
+        state[:conn]
+        |> get(Routes.conta_path(state[:conn], :show, conta_id))
+
+      assert %{resp_body: "{\"messagem\":\"Autorização Negada\"}", status: 401} = response
+    end
+
+    test "error get - Exibe os dados de uma conta quando informado ID errado", state do
       response =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
@@ -62,7 +66,7 @@ defmodule BankApiWeb.ControllerContaTest do
     end
   end
 
-  describe "Create" do
+  describe "CREATE" do
     test "insert Conta - Cadastra Conta quando todos parametros estão OK", state do
       %Usuario{id: usuario_id} = insert(:usuario)
       %TipoConta{id: tipo_conta_id} = insert(:tipo_conta)
@@ -89,7 +93,7 @@ defmodule BankApiWeb.ControllerContaTest do
              } = response
     end
 
-    test "insert Conta - Cadastra conta faltando saldo, default 100_000", state do
+    test "assert ok insert Conta - Cadastra conta faltando saldo, default 100_000", state do
       %Usuario{id: usuario_id} = insert(:usuario)
       %TipoConta{id: tipo_conta_id} = insert(:tipo_conta)
 
@@ -132,9 +136,26 @@ defmodule BankApiWeb.ControllerContaTest do
 
       assert %{"error" => "Saldo inválido, ele deve ser maior ou igual a zero"} = response
     end
+
+    test "erro insert Conta - tenta inserir usuario sem token de acesso", state do
+      %Usuario{id: usuario_id} = insert(:usuario)
+      %TipoConta{id: tipo_conta_id} = insert(:tipo_conta)
+
+      params = %{
+        "saldo_conta" => -10_000,
+        "usuario_id" => usuario_id,
+        "tipo_conta_id" => tipo_conta_id
+      }
+
+      response =
+        state[:conn]
+        |> post(Routes.conta_path(state[:conn], :create, params))
+
+      assert %{resp_body: "{\"messagem\":\"Autorização Negada\"}", status: 401} = response
+    end
   end
 
-  describe "Update" do
+  describe "UPDATE" do
     test "assert update - atualiza saldo para valor válido maior que zero", state do
       %Usuario{id: usuario_id} = insert(:usuario)
       %TipoConta{id: tipo_conta_id} = insert(:tipo_conta)
@@ -153,6 +174,24 @@ defmodule BankApiWeb.ControllerContaTest do
              } = response
     end
 
+    test "assert update - atualiza saldo para valor válido igual a zero", state do
+      %Usuario{id: usuario_id} = insert(:usuario)
+      %TipoConta{id: tipo_conta_id} = insert(:tipo_conta)
+
+      %Conta{id: id} = insert(:conta, usuario_id: usuario_id, tipo_conta_id: tipo_conta_id)
+
+      response =
+        state[:conn]
+        |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+        |> patch(Routes.conta_path(state[:conn], :update, id, %{"saldo_conta" => 0}))
+        |> json_response(:created)
+
+      assert %{
+               "mensagem" => "Conta Atualizada",
+               "Conta" => %{"conta_ID" => _id_usuario, "saldo_conta" => 0}
+             } = response
+    end
+
     test "error update - tenta atualizar saldo para valor menor que zero", state do
       %Usuario{id: usuario_id} = insert(:usuario)
       %TipoConta{id: tipo_conta_id} = insert(:tipo_conta)
@@ -162,15 +201,28 @@ defmodule BankApiWeb.ControllerContaTest do
       response =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> patch(Routes.conta_path(state[:conn], :update, id, %{"saldo_conta" => -5_000}))
+        |> patch(Routes.conta_path(state[:conn], :update, id, %{"saldo_conta" => -1}))
         |> json_response(404)
 
       assert %{"error" => "Saldo inválido, ele deve ser maior ou igual a zero"} = response
     end
+
+    test "error update - Tenta atualizar saldo sem token de acesso", state do
+      %Usuario{id: usuario_id} = insert(:usuario)
+      %TipoConta{id: tipo_conta_id} = insert(:tipo_conta)
+
+      %Conta{id: id} = insert(:conta, usuario_id: usuario_id, tipo_conta_id: tipo_conta_id)
+
+      response =
+        state[:conn]
+        |> patch(Routes.conta_path(state[:conn], :update, id, %{"saldo_conta" => -1}))
+
+      assert %{resp_body: "{\"messagem\":\"Autorização Negada\"}", status: 401} = response
+    end
   end
 
-  describe "Delete" do
-    test "assert delete - Deleta conta quando ID é passado", state do
+  describe "DELETE" do
+    test "assert delete - Deleta conta quando ID é passado corretamente", state do
       %Usuario{id: usuario_id} = insert(:usuario)
       %TipoConta{id: tipo_conta_id} = insert(:tipo_conta)
 
@@ -197,6 +249,14 @@ defmodule BankApiWeb.ControllerContaTest do
 
       assert %{"Mensagem" => "ID Inválido ou inexistente", "Resultado" => "Conta inexistente."} =
                response
+    end
+
+    test "error delete - Tenta deletar conta sem token de acesso", state do
+      response =
+        state[:conn]
+        |> delete(Routes.conta_path(state[:conn], :delete, 951_951_951))
+
+      assert %{resp_body: "{\"messagem\":\"Autorização Negada\"}", status: 401} = response
     end
   end
 end

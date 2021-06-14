@@ -9,10 +9,14 @@ defmodule BankApiWeb.FallbackController do
   end
 
   def error(conn, %{error: error}) do
-
     conn
     |> put_status(:bad_request)
     |> put_view(BankApiWeb.ErrorView)
     |> render("400.json", error: error)
   end
+
+  def call(conn, params) do
+    {conn, params}
+  end
+
 end

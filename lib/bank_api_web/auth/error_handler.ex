@@ -11,6 +11,10 @@ defmodule BankApiWeb.Auth.ErrorHandler do
     body = Jason.encode!(%{messagem: "Autorização Negada"})
     send_resp(conn, 401, body)
   end
+  def auth_error(conn, {:unauthorized, _reason}, _opts) do
+    body = Jason.encode!(%{messagem: "Autorização Negada"})
+    send_resp(conn, 401, body)
+  end
 
   def auth_error(conn, {type, _reason}, _opts) do
     body = Jason.encode!(%{messagem: to_string(type)})
