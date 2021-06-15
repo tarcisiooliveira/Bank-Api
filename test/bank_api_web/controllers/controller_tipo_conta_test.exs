@@ -2,13 +2,28 @@ defmodule BankApiWeb.TipoContaTest do
   use BankApiWeb.ConnCase, async: true
   alias BankApi.Schemas.TipoConta
   import BankApi.Factory
+  alias BankApiWeb.Auth.Guardian
 
-  test "quando todos parametros estão ok, cria TipoConta no banco", %{conn: conn} do
+  setup do
+    [conn: "Phoenix.ConnTest.build_conn()"]
+
+    admin = insert(:admin)
+
+    {:ok, token, _claims} = Guardian.encode_and_sign(admin)
+
+    {:ok,
+     valores: %{
+       token: token
+     }}
+  end
+
+  test "quando todos parametros estão ok, cria TipoConta no banco", state do
     params = %{"nome_tipo_conta" => "Corrente23"}
 
     response =
-      conn
-      |> post(Routes.tipo_conta_path(conn, :create, params))
+      state[:conn]
+      |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+      |> post(Routes.tipo_conta_path(state[:conn], :create, params))
       |> json_response(:created)
 
     assert %{
@@ -17,14 +32,15 @@ defmodule BankApiWeb.TipoContaTest do
            } = response
   end
 
-  test "cadastra Tipo de Conta corretamente e depois atualiza a informação", %{
-    conn: conn
-  } do
+  test "cadastra Tipo de Conta corretamente e depois atualiza a informação", state do
     %TipoConta{id: id} = insert(:tipo_conta)
 
     response =
-      conn
-      |> patch(Routes.tipo_conta_path(conn, :update, id, %{nome_tipo_conta: "Poupança Digital"}))
+      state[:conn]
+      |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+      |> patch(
+        Routes.tipo_conta_path(state[:conn], :update, id, %{nome_tipo_conta: "Poupança Digital"})
+      )
       |> json_response(:ok)
 
     assert %{
@@ -33,12 +49,13 @@ defmodule BankApiWeb.TipoContaTest do
            } = response
   end
 
-  test "usuario passa id válido e então o Tipo Conta é apagado", %{conn: conn} do
+  test "usuario passa id válido e então o Tipo Conta é apagado", state do
     %TipoConta{id: id} = insert(:tipo_conta)
 
     response =
-      conn
-      |> delete(Routes.tipo_conta_path(conn, :delete, id))
+      state[:conn]
+      |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+      |> delete(Routes.tipo_conta_path(state[:conn], :delete, id))
       |> json_response(:ok)
 
     assert %{
@@ -47,10 +64,11 @@ defmodule BankApiWeb.TipoContaTest do
            } = response
   end
 
-  test "retorna erro quando não consegue apagar usuario do banco com ID invalido", %{conn: conn} do
+  test "retorna erro quando não consegue apagar usuario do banco com ID invalido", state do
     response =
-      conn
-      |> delete(Routes.tipo_conta_path(conn, :delete, 000_000_000))
+      state[:conn]
+      |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+      |> delete(Routes.tipo_conta_path(state[:conn], :delete, 000_000_000))
       |> json_response(:not_found)
 
     assert %{
@@ -58,12 +76,13 @@ defmodule BankApiWeb.TipoContaTest do
            } = response
   end
 
-  test "retorna informações de um Tipo Conta presente no banco", %{conn: conn} do
+  test "retorna informações de um Tipo Conta presente no banco", state do
     %TipoConta{id: id} = insert(:tipo_conta)
 
     response =
-      conn
-      |> get(Routes.tipo_conta_path(conn, :show, id))
+      state[:conn]
+      |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+      |> get(Routes.tipo_conta_path(state[:conn], :show, id))
       |> json_response(:ok)
 
     assert %{
@@ -72,12 +91,11 @@ defmodule BankApiWeb.TipoContaTest do
            } = response
   end
 
-  test "retorna informações de erro quando não encontra Tipo Conta presente no banco", %{
-    conn: conn
-  } do
+  test "retorna informações de erro quando não encontra Tipo Conta presente no banco", state do
     response =
-      conn
-      |> get(Routes.tipo_conta_path(conn, :show, 000_000_000))
+      state[:conn]
+      |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+      |> get(Routes.tipo_conta_path(state[:conn], :show, 000_000_000))
       |> json_response(:not_found)
 
     assert %{

@@ -5,50 +5,40 @@ defmodule BankApiWeb.Router do
     plug(:accepts, ["json"])
   end
 
-  # pipeline :auth do
-  #   plug BankApiWeb.Auth.Pipeline
-  # end
+  pipeline :auth do
+    plug BankApiWeb.Auth.Pipeline
+  end
 
   scope "/", BankApiWeb do
     pipe_through(:api)
-    get("/", WelcomeController, :index)
   end
 
   scope "/api", BankApiWeb do
     pipe_through(:api)
-    get("/", WelcomeController, :index)
-    get("/instrucoes", WelcomeController, :index)
-
-    resources("/usuarios", UsuariosController,
-      only: [:new, :show, :delete, :update, :index, :create]
-    )
-
-    resources("/tipocontas", TipoContaController,
-      only: [:new, :show, :delete, :update, :index, :create]
-    )
-
-    resources("/operacoes", OperacaoController,
-      only: [:new, :show, :delete, :update, :index, :create]
-    )
-
-    resources("/contas", ContaController, only: [:new, :show, :delete, :update, :index, :create])
-
-    resources("/transacoes", TransacaoController,
-      only: [:new, :show, :delete, :update, :index, :create]
-    )
+    post "/sign_in", SignInController, :sign_in
   end
 
-  # scope "/api", BankApiWeb do
-  #   pipe_through [:api, :auth]
-  #   resources "/trainers", TrainersController, only: [:show, :delete, :update]
+  scope "/api", BankApiWeb do
+    pipe_through([:api, :auth])
 
-  #   resources "/trainer_pokemons", TrainerPokemonsController,
-  #     only: [:create, :show, :delete, :update]
-  # end
+    resources("/usuarios", UsuariosController,
+      only: [:new, :show, :delete, :update, :index, :create])
 
-  # scope "/api", BankApiWeb do
-  #   pipe_through :api
-  # end
+    resources("/tipocontas", TipoContaController,
+      only: [:new, :show, :delete, :update, :index, :create])
+
+    resources("/operacoes", OperacaoController,
+      only: [:new, :show, :delete, :update, :index, :create])
+
+    resources("/contas", ContaController,
+      only: [:new, :show, :delete, :update, :index, :create])
+
+    resources("/transacoes", TransacaoController,
+      only: [:new, :show, :delete, :update, :index, :create])
+
+    resources("/admins", AdminController,
+      only: [:new, :show, :delete, :update, :index, :create])
+  end
 
   # Enables LiveDashboard only for development
   #
