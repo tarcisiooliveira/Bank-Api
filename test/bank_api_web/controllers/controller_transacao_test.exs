@@ -9,7 +9,15 @@ defmodule BankApiWeb.ControllerTransacaoTest do
   setup do
     [conn: "Phoenix.ConnTest.build_conn()"]
 
-    admin = insert(:admin)
+    params = %{
+      "email" => "admin2@admin.com",
+      "password" => "123456",
+      "password_confirmation" => "123456"
+    }
+
+    {:ok, admin} =
+      Admin.changeset(params)
+      |> BankApi.Repo.insert()
 
     {:ok, token, _claims} = Guardian.encode_and_sign(admin)
 
