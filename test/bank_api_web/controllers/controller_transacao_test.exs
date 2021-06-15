@@ -1,7 +1,7 @@
 defmodule BankApiWeb.ControllerTransacaoTest do
   use BankApiWeb.ConnCase, async: true
   use ExUnit.Case
-  alias BankApi.Schemas.{Conta, TipoConta, Usuario, Conta, Operacao, Transacao, Admin}
+  alias BankApi.Schemas.{Conta, TipoConta, Usuario, Conta, Operacao, Transacao}
   alias BankApi.Repo
   import BankApi.Factory
   alias BankApiWeb.Auth.Guardian

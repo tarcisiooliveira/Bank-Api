@@ -22,7 +22,8 @@ defmodule BankApiWeb.TipoContaTest do
 
     response =
       state[:conn]
-      |> put_req_header("authorization", "Bearer " <> state[:valores].token)      |> post(Routes.tipo_conta_path(state[:conn], :create, params))
+      |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+      |> post(Routes.tipo_conta_path(state[:conn], :create, params))
       |> json_response(:created)
 
     assert %{
@@ -36,7 +37,10 @@ defmodule BankApiWeb.TipoContaTest do
 
     response =
       state[:conn]
-      |> put_req_header("authorization", "Bearer " <> state[:valores].token)      |> patch(Routes.tipo_conta_path(state[:conn], :update, id, %{nome_tipo_conta: "Poupança Digital"}))
+      |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+      |> patch(
+        Routes.tipo_conta_path(state[:conn], :update, id, %{nome_tipo_conta: "Poupança Digital"})
+      )
       |> json_response(:ok)
 
     assert %{
@@ -50,7 +54,8 @@ defmodule BankApiWeb.TipoContaTest do
 
     response =
       state[:conn]
-      |> put_req_header("authorization", "Bearer " <> state[:valores].token)      |> delete(Routes.tipo_conta_path(state[:conn], :delete, id))
+      |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+      |> delete(Routes.tipo_conta_path(state[:conn], :delete, id))
       |> json_response(:ok)
 
     assert %{
@@ -62,7 +67,8 @@ defmodule BankApiWeb.TipoContaTest do
   test "retorna erro quando não consegue apagar usuario do banco com ID invalido", state do
     response =
       state[:conn]
-      |> put_req_header("authorization", "Bearer " <> state[:valores].token)      |> delete(Routes.tipo_conta_path(state[:conn], :delete, 000_000_000))
+      |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+      |> delete(Routes.tipo_conta_path(state[:conn], :delete, 000_000_000))
       |> json_response(:not_found)
 
     assert %{
@@ -75,7 +81,8 @@ defmodule BankApiWeb.TipoContaTest do
 
     response =
       state[:conn]
-      |> put_req_header("authorization", "Bearer " <> state[:valores].token)      |> get(Routes.tipo_conta_path(state[:conn], :show, id))
+      |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+      |> get(Routes.tipo_conta_path(state[:conn], :show, id))
       |> json_response(:ok)
 
     assert %{
@@ -87,7 +94,8 @@ defmodule BankApiWeb.TipoContaTest do
   test "retorna informações de erro quando não encontra Tipo Conta presente no banco", state do
     response =
       state[:conn]
-      |> put_req_header("authorization", "Bearer " <> state[:valores].token)      |> get(Routes.tipo_conta_path(state[:conn], :show, 000_000_000))
+      |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+      |> get(Routes.tipo_conta_path(state[:conn], :show, 000_000_000))
       |> json_response(:not_found)
 
     assert %{

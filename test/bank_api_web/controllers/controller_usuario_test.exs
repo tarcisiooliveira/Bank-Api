@@ -1,23 +1,42 @@
 defmodule BankApiWeb.ControllerUsuarioTest do
   use BankApiWeb.ConnCase, async: true
-  alias BankApi.Schemas.Usuario
+  alias BankApi.Schemas.{Usuario, Admin}
   import BankApi.Factory
   alias BankApiWeb.Auth.Guardian
 
   @moduledoc """
   Modulo de teste do Controlador de Usuário
   """
-  describe "SHOW" do
-    test "assert show - Exibe os dados de uma usuario quando informado ID correto", %{conn: conn} do
-      %Usuario{id: usuario_id} = insert(:usuario)
-      admin = insert(:admin)
+  setup do
+    [conn: "Phoenix.ConnTest.build_conn()"]
 
-      {:ok, token, _claims} = Guardian.encode_and_sign(admin)
+    params = %{
+      "email" => "test@admin.com",
+      "password" => "123456",
+      "password_confirmation" => "123456"
+    }
+
+    {:ok, admin} =
+      Admin.changeset(params)
+      |> BankApi.Repo.insert()
+
+    {:ok, token, _claims} = Guardian.encode_and_sign(admin)
+
+    {:ok,
+     valores: %{
+       token: token,
+       admin: admin
+     }}
+  end
+
+  describe "SHOW" do
+    test "assert show - Exibe os dados de uma usuario quando informado ID correto", state do
+      %Usuario{id: usuario_id} = insert(:usuario)
 
       response =
-        conn
-        |> put_req_header("authorization", "Bearer " <> token)
-        |> get(Routes.usuarios_path(conn, :show, usuario_id))
+        state[:conn]
+        |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+        |> get(Routes.usuarios_path(state[:conn], :show, usuario_id))
         |> json_response(:ok)
 
       assert %{
@@ -26,25 +45,21 @@ defmodule BankApiWeb.ControllerUsuarioTest do
              } = response
     end
 
-    test "error show - retorna erro quando não passa  toke de autorização", %{conn: conn} do
+    test "error show - retorna erro quando não passa  toke de autorização", state do
       %Usuario{id: usuario_id} = insert(:usuario)
 
       response =
-        conn
-        |> get(Routes.usuarios_path(conn, :show, usuario_id))
+        state[:conn]
+        |> get(Routes.usuarios_path(state[:conn], :show, usuario_id))
 
       assert %{resp_body: "{\"messagem\":\"Autorização Negada\"}", status: 401} = response
     end
 
-    test "error show - Exibe os dados de uma conta quando informado ID errado", %{conn: conn} do
-      admin = insert(:admin)
-
-      {:ok, token, _claims} = Guardian.encode_and_sign(admin)
-
+    test "error show - Exibe os dados de uma conta quando informado ID errado", state do
       response =
-        conn
-        |> put_req_header("authorization", "Bearer " <> token)
-        |> get(Routes.conta_path(conn, :show, 951_951))
+        state[:conn]
+        |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+        |> get(Routes.conta_path(state[:conn], :show, 951_951))
         |> json_response(:not_found)
 
       assert %{"mensagem" => "ID Inválido ou inexistente"} = response
@@ -52,11 +67,7 @@ defmodule BankApiWeb.ControllerUsuarioTest do
   end
 
   describe "CREATE" do
-    test "assert create - cria usuario quando os dados são passados corretamente", %{conn: conn} do
-      admin = insert(:admin)
-
-      {:ok, token, _claims} = Guardian.encode_and_sign(admin)
-
+    test "assert create - cria usuario quando os dados são passados corretamente", state do
       params = %{
         "nome" => "Tarcisio",
         "email" => "tarcisiooliveira@pm.me",
@@ -64,9 +75,9 @@ defmodule BankApiWeb.ControllerUsuarioTest do
       }
 
       response =
-        conn
-        |> put_req_header("authorization", "Bearer " <> token)
-        |> post(Routes.usuarios_path(conn, :create, params))
+        state[:conn]
+        |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+        |> post(Routes.usuarios_path(state[:conn], :create, params))
         |> json_response(:created)
 
       assert %{
@@ -79,7 +90,7 @@ defmodule BankApiWeb.ControllerUsuarioTest do
              } = response
     end
 
-    test "error assert - tenta criar usuario sem token de acessor ", %{conn: conn} do
+    test "error assert - tenta criar usuario sem token de acessor ", state do
       params = %{
         "nome" => "Tarcisio",
         "email" => "tarcisiooliveira@pm.me",
@@ -87,19 +98,15 @@ defmodule BankApiWeb.ControllerUsuarioTest do
       }
 
       response =
-        conn
-        |> post(Routes.usuarios_path(conn, :create, params))
+        state[:conn]
+        |> post(Routes.usuarios_path(state[:conn], :create, params))
 
       assert %{resp_body: "{\"messagem\":\"Autorização Negada\"}", status: 401} = response
     end
 
-    test "error insert - quando já existe usuario com aquele email, retorna erro informando", %{
-      conn: conn
-    } do
+    test "error insert - quando já existe usuario com aquele email, retorna erro informando",
+         state do
       %Usuario{email: email} = insert(:usuario)
-      admin = insert(:admin)
-
-      {:ok, token, _claims} = Guardian.encode_and_sign(admin)
 
       params = %{
         "email" => email,
@@ -108,9 +115,9 @@ defmodule BankApiWeb.ControllerUsuarioTest do
       }
 
       response =
-        conn
-        |> put_req_header("authorization", "Bearer " <> token)
-        |> post(Routes.usuarios_path(conn, :create, params))
+        state[:conn]
+        |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+        |> post(Routes.usuarios_path(state[:conn], :create, params))
         |> json_response(:unprocessable_entity)
 
       assert %{
@@ -121,19 +128,14 @@ defmodule BankApiWeb.ControllerUsuarioTest do
   end
 
   describe "UPDATE" do
-    test "cadastra usuario corretamente e depois altera email para outro email valido", %{
-      conn: conn
-    } do
-      admin = insert(:admin)
-
-      {:ok, token, _claims} = Guardian.encode_and_sign(admin)
+    test "cadastra usuario corretamente e depois altera email para outro email valido", state do
       %Usuario{id: id} = insert(:usuario)
       params = %{email: "tarcisiooliveira@protonmail.com"}
 
       response =
-        conn
-        |> put_req_header("authorization", "Bearer " <> token)
-        |> patch(Routes.usuarios_path(conn, :update, id, params))
+        state[:conn]
+        |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+        |> patch(Routes.usuarios_path(state[:conn], :update, id, params))
         |> json_response(:ok)
 
       assert %{
@@ -146,46 +148,45 @@ defmodule BankApiWeb.ControllerUsuarioTest do
              } = response
     end
 
-    test "error update - tenta remover usuario sem token de acesso", %{conn: conn} do
-      params = %{email: "tarcisiooliveira@protonmail.com"}
+    test "error update - tenta remover usuario sem token de acesso", state do
       %Usuario{id: id} = insert(:usuario)
 
+      params = %{
+        "email" => "email@email.com",
+        "nome" => "Tarcisio",
+        "password" => "123456"
+      }
+
       response =
-        conn
-        |> patch(Routes.usuarios_path(conn, :update, id, params))
+        state[:conn]
+        |> patch(Routes.usuarios_path(state[:conn], :update, id, params))
 
       assert %{resp_body: "{\"messagem\":\"Autorização Negada\"}", status: 401} = response
     end
 
     test "error update - cadastra usuario corretamente e depois tenta altera email para outro email já cadastrado",
-         %{conn: conn} do
-      admin = insert(:admin)
-
-      {:ok, token, _claims} = Guardian.encode_and_sign(admin)
+         state do
       %Usuario{id: id} = insert(:usuario)
       insert(:usuario, email: "tarcisiooliveira@protonmail.com")
       params = %{email: "tarcisiooliveira@protonmail.com"}
 
       response =
-        conn
-        |> put_req_header("authorization", "Bearer " <> token)
-        |> patch(Routes.usuarios_path(conn, :update, id, params))
+        state[:conn]
+        |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+        |> patch(Routes.usuarios_path(state[:conn], :update, id, params))
         |> json_response(:not_found)
 
       assert %{"error" => "Email já cadastrado."} = response
     end
 
-    test "assert update - Cadastra usuario corretamente e depois altera nome", %{conn: conn} do
-      admin = insert(:admin)
-
-      {:ok, token, _claims} = Guardian.encode_and_sign(admin)
+    test "assert update - Cadastra usuario corretamente e depois altera nome", state do
       %Usuario{id: id} = insert(:usuario, email: "tarcisiooliveira@protonmail.com")
       params = %{nome: "oisicraT", visivel: true}
 
       response =
-        conn
-        |> put_req_header("authorization", "Bearer " <> token)
-        |> patch(Routes.usuarios_path(conn, :update, id, params))
+        state[:conn]
+        |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+        |> patch(Routes.usuarios_path(state[:conn], :update, id, params))
         |> json_response(:ok)
 
       assert %{
@@ -201,16 +202,13 @@ defmodule BankApiWeb.ControllerUsuarioTest do
 
   describe "DELETE" do
     test "assert delete - Retorna os dados do usuario excluido do banco e mensagem confirmando",
-         %{conn: conn} do
-      admin = insert(:admin)
-
-      {:ok, token, _claims} = Guardian.encode_and_sign(admin)
+         state do
       %Usuario{id: id} = insert(:usuario)
 
       response =
-        conn
-        |> put_req_header("authorization", "Bearer " <> token)
-        |> delete(Routes.usuarios_path(conn, :delete, id))
+        state[:conn]
+        |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+        |> delete(Routes.usuarios_path(state[:conn], :delete, id))
         |> json_response(:ok)
 
       assert %{
@@ -221,26 +219,22 @@ defmodule BankApiWeb.ControllerUsuarioTest do
              } = response
     end
 
-    test "error delete - tenta remover usuario sem token de acesso", %{conn: conn} do
+    test "error delete - tenta remover usuario sem token de acesso", state do
       %Usuario{id: id = insert(:usuario)}
 
       response =
-        conn
-        |> delete(Routes.usuarios_path(conn, :delete, id))
+        state[:conn]
+        |> delete(Routes.usuarios_path(state[:conn], :delete, id))
 
       assert %{resp_body: "{\"messagem\":\"Autorização Negada\"}", status: 401} = response
     end
 
     test "error delete - tenta apagar usuario passando id que não existe ou já foi deletado previamente",
-         %{conn: conn} do
-      admin = insert(:admin)
-
-      {:ok, token, _claims} = Guardian.encode_and_sign(admin)
-
+         state do
       response =
-        conn
-        |> put_req_header("authorization", "Bearer " <> token)
-        |> delete(Routes.usuarios_path(conn, :delete, 100_001))
+        state[:conn]
+        |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+        |> delete(Routes.usuarios_path(state[:conn], :delete, 100_001))
         |> json_response(:not_found)
 
       assert %{

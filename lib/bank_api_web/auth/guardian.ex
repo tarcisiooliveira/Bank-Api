@@ -31,7 +31,7 @@ defmodule BankApiWeb.Auth.Guardian do
   end
 
   def validate_password(%Admin{password_hash: hash} = admin, password) do
-    case Argon2.verify_pass(password, hash) do
+    case Bcrypt.verify_pass(password, hash) do
       true -> create_token(admin)
       false -> {:error, :unauthorized}
     end

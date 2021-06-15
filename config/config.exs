@@ -36,3 +36,5 @@ config :bank_api, BankApiWeb.Auth.Guardian,
 config :bank_api, BankApiWeb.Auth.Pipeline,
   module: BankApiWeb.Auth.Guardian,
   error_handler: BankApiWeb.Auth.ErrorHandler
+
+config :bcrypt_elixir, log_rounds: 4

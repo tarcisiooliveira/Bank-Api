@@ -11,7 +11,16 @@ defmodule BankApi.Factory do
       nome: "Tarcisio",
       email: sequence(:email, &"tarcisio-#{&1}@pm.me", start_at: 1000),
       password: "123456",
-      password_hash: Argon2.hash_pwd_salt("123456")
+      password_hash: Bcrypt.hash_pwd_salt("123456")
+    }
+  end
+
+  def admin_factory do
+    %Admin{
+      email: "tarcisio@admin.com",
+      password: "123456",
+      password_confirmation: "123456",
+      password_hash: Bcrypt.hash_pwd_salt("123456")
     }
   end
 
@@ -43,14 +52,4 @@ defmodule BankApi.Factory do
       valor: 200_000
     }
   end
-
-  def admin_factory do
-    %Admin{
-      email: "tarcisio@admin.com",
-      password: "123456",
-      password_confirmation: "123456",
-      password_hash: Argon2.hash_pwd_salt("123456")
-    }
-  end
-
 end

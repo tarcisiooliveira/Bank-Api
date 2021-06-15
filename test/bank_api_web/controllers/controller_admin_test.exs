@@ -7,23 +7,20 @@ defmodule BankApi.ControllerAdminTest do
   Modulo de teste do Controlador de Admin
   """
 
-  # setup do
-  #   [conn: "Phoenix.ConnTest.build_conn()"]
-  #   admin = insert(:admin)
-  #   {:ok, token, _claims} = Guardian.encode_and_sign(admin)
+  setup do
+    [conn: "Phoenix.ConnTest.build_conn()"]
+    admin = insert(:admin)
+    {:ok, token, _claims} = Guardian.encode_and_sign(admin)
 
-  #   {:ok,
-  #    valores: %{
-  #      token: token,
-  #      admin: admin
-  #    }}
-  # end
+    {:ok,
+     valores: %{
+       token: token,
+       admin: admin
+     }}
+  end
 
   describe "CREATE" do
-    test "assert create admin - Cria admin passando token", %{conn: conn} do
-      admin = insert(:admin)
-      {:ok, token, _claims} = Guardian.encode_and_sign(admin)
-
+    test "assert create admin - Cria admin passando token", state do
       params2 = %{
         "email" => "test2@admin.com",
         "password" => "123456",
@@ -31,9 +28,9 @@ defmodule BankApi.ControllerAdminTest do
       }
 
       response =
-        conn
-        |> put_req_header("authorization", "Bearer " <> token)
-        |> post(Routes.admin_path(conn, :create, params2))
+        state[:conn]
+        |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+        |> post(Routes.admin_path(state[:conn], :create, params2))
         |> json_response(:created)
 
       assert %{
@@ -42,18 +39,16 @@ defmodule BankApi.ControllerAdminTest do
              } = response
     end
 
-    test "error create admin - tenta criar admin faltando password_confirmation", %{conn: conn} do
-      admin = insert(:admin)
-      {:ok, token, _claims} = Guardian.encode_and_sign(admin)
+    test "error create admin - tenta criar admin faltando password_confirmation", state do
       params2 = %{
         "email" => "test2@admin.com",
         "password" => "123456"
       }
 
       response =
-        conn
-        |> put_req_header("authorization", "Bearer " <> token)
-        |> post(Routes.admin_path(conn, :create, params2))
+        state[:conn]
+        |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+        |> post(Routes.admin_path(state[:conn], :create, params2))
         |> json_response(422)
 
       assert %{
@@ -62,8 +57,7 @@ defmodule BankApi.ControllerAdminTest do
              } = response
     end
 
-    test "error create admin - tenta criar admin sem token ", %{conn: conn} do
-
+    test "error create admin - tenta criar admin sem token ", state do
       params2 = %{
         "email" => "test2@admin.com",
         "password" => "123456",
@@ -71,35 +65,29 @@ defmodule BankApi.ControllerAdminTest do
       }
 
       response =
-        conn
-        |> post(Routes.admin_path(conn, :create, params2))
+        state[:conn]
+        |> post(Routes.admin_path(state[:conn], :create, params2))
 
       assert %{resp_body: "{\"messagem\":\"Autorização Negada\"}", status: 401} = response
     end
   end
 
   describe "DELETE" do
-    test "assert delete ok- remove administrador", %{conn: conn} do
-      admin = insert(:admin)
-      {:ok, token, _claims} = Guardian.encode_and_sign(admin)
-
+    test "assert delete ok- remove administrador", state do
       response =
-        conn
-        |> put_req_header("authorization", "Bearer " <> token)
-        |> delete(Routes.admin_path(conn, :delete, admin.id))
+        state[:conn]
+        |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+        |> delete(Routes.admin_path(state[:conn], :delete, state[:valores].admin.id))
         |> json_response(:ok)
 
       assert %{"email" => "tarcisio@admin.com", "mensagem" => "Administrador removido"} = response
     end
 
-    test "error delete - tenta remover administrador inexistente", %{conn: conn} do
-      admin = insert(:admin)
-      {:ok, token, _claims} = Guardian.encode_and_sign(admin)
-
+    test "error delete - tenta remover administrador inexistente", state do
       response =
-        conn
-        |> put_req_header("authorization", "Bearer " <> token)
-        |> delete(Routes.admin_path(conn, :delete, 789_456_123))
+        state[:conn]
+        |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+        |> delete(Routes.admin_path(state[:conn], :delete, 789_456_123))
         |> json_response(404)
 
       assert %{
@@ -108,63 +96,57 @@ defmodule BankApi.ControllerAdminTest do
              } = response
     end
 
-    test "error delete - tenta remover administrador com token invalido", %{conn: conn} do
-      admin = insert(:admin)
-      {:ok, token, _claims} = Guardian.encode_and_sign(admin)
-
+    test "error delete - tenta remover administrador com token invalido", state do
       response =
-        conn
-        |> put_req_header("authorization", "Bearer " <> token <> ".")
-        |> delete(Routes.admin_path(conn, :delete, 789_456_123))
+        state[:conn]
+        |> put_req_header("authorization", "Bearer " <> state[:valores].token <> ".")
+        |> delete(Routes.admin_path(state[:conn], :delete, 789_456_123))
 
       assert %{resp_body: "{\"messagem\":\"invalid_token\"}", status: 401} = response
     end
 
-    test "error delete - tenta remover administrador sem token de acesso", %{conn: conn} do
+    test "error delete - tenta remover administrador sem token de acesso", state do
       response =
-        conn
-        |> delete(Routes.admin_path(conn, :delete, 789_456_123))
+        state[:conn]
+        |> delete(Routes.admin_path(state[:conn], :delete, 789_456_123))
 
       assert %{resp_body: "{\"messagem\":\"Autorização Negada\"}", status: 401} = response
     end
   end
 
   describe "UPDATE" do
-    test "assert update admin - admin atualiza email", %{conn: conn} do
-      admin = insert(:admin)
-      {:ok, token, _claims} = Guardian.encode_and_sign(admin)
+    test "assert update admin - admin atualiza email", state do
       params = %{email: "update-email@email.com"}
 
       response =
-        conn
-        |> put_req_header("authorization", "Bearer " <> token)
-        |> patch(Routes.admin_path(conn, :update, admin.id, params))
+        state[:conn]
+        |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+        |> patch(Routes.admin_path(state[:conn], :update, state[:valores].admin.id, params))
         |> json_response(:ok)
 
       assert %{"mensagem" => "Admininstrador Atualizado", "email" => "update-email@email.com"} =
                response
     end
 
-    test "error update - tenta atualizar admin sem token de acesso", %{conn: conn} do
-      admin = insert(:admin)
-      params = %{email: "update-email@email.com"}
-
+    test "error update - tenta atualizar admin sem token de acesso", state do
       response =
-        conn
-        |> patch(Routes.admin_path(conn, :update, admin.id, params))
+        state[:conn]
+        |> patch(
+          Routes.admin_path(state[:conn], :update, state[:valores].admin.id, %{
+            email: "update-email@email.com"
+          })
+        )
 
       assert %{resp_body: "{\"messagem\":\"Autorização Negada\"}", status: 401} = response
     end
 
-    test "error update - tenta alterar endereço de email para um já cadastrado", %{conn: conn} do
-      admin = insert(:admin)
-      {:ok, token, _claims} = Guardian.encode_and_sign(admin)
+    test "error update - tenta alterar endereço de email para um já cadastrado", state do
       params = %{email: "tarcisio@admin.com"}
 
       response =
-        conn
-        |> put_req_header("authorization", "Bearer " <> token)
-        |> patch(Routes.admin_path(conn, :update, admin.id, params))
+        state[:conn]
+        |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+        |> patch(Routes.admin_path(state[:conn], :update, state[:valores].admin.id, params))
         |> json_response(:not_found)
 
       assert %{"error" => "Email já cadastrado."} = response
