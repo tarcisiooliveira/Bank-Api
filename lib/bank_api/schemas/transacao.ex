@@ -16,7 +16,10 @@ defmodule BankApi.Schemas.Transacao do
 
   def changeset(
         %{
-          "conta_destino_id" => _id_destino
+          "conta_origem_id" => _conta_origem_id,
+          "conta_destino_id" => _onta_destino_id,
+          "operacao_id" => _operacao_id,
+          "valor" => _valor
         } = params
       ) do
     %__MODULE__{}
@@ -24,7 +27,14 @@ defmodule BankApi.Schemas.Transacao do
     |> validate_required([:valor, :conta_origem_id, :conta_destino_id, :operacao_id])
   end
 
-  def changeset(params) do
+  def changeset(
+        %{
+          "conta_origem_id" => _conta_origem_id,
+          "operacao_id" => _operacao_id,
+          "valor" => _valor
+        } = params
+      ) do
+
     %__MODULE__{}
     |> cast(params, [:conta_origem_id, :operacao_id, :valor])
     |> validate_required([:conta_origem_id, :operacao_id, :valor])

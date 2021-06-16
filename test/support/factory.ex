@@ -46,10 +46,11 @@ defmodule BankApi.Factory do
 
   def transacao_factory do
     %Transacao{
-      conta_origem_id: insert(:conta),
-      conta_destino_id: insert(:conta),
-      operacao_id: insert(:operacao, nome_operacao: "Transferência"),
-      valor: 200_000
+      conta_origem_id: 0,
+      conta_destino_id: 0,
+      operacao_id: 0,
+      valor: 200_000,
+      inserted_at: DateTime.utc_now()
     }
   end
 end

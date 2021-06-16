@@ -1,8 +1,7 @@
 defmodule BankApi.Schemas.Admin do
   use Ecto.Schema
   import Ecto.Changeset
-  use Ecto.Schema
-  import Ecto.Changeset
+
 
   @moduledoc """
   Modulo de schema do Admin

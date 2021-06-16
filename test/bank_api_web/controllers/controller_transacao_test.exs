@@ -1,5 +1,5 @@
 defmodule BankApiWeb.ControllerTransacaoTest do
-  use BankApiWeb.ConnCase, async: true
+  use BankApiWeb.ConnCase, async: false
   use ExUnit.Case
   alias BankApi.Schemas.{Conta, TipoConta, Usuario, Conta, Operacao, Transacao}
   alias BankApi.Repo
@@ -125,11 +125,11 @@ defmodule BankApiWeb.ControllerTransacaoTest do
   end
 
   test "assert ok insert - Todos parametros estão ok, usuario faz um saque", state do
-    %Operacao{id: id_operacao} = insert(:operacao, nome_operacao: "Saque")
+    %Operacao{id: operacao_id} = insert(:operacao, nome_operacao: "Saque")
 
     params = %{
       "conta_origem_id" => state[:valores].conta_origem_id,
-      "operacao_id" => id_operacao,
+      "operacao_id" => operacao_id,
       "valor" => 1000
     }
 
@@ -142,8 +142,7 @@ defmodule BankApiWeb.ControllerTransacaoTest do
     assert %{
              "Transacao" => %{
                "conta_origem_id" => state[:valores].conta_origem_id,
-               "operacao_id" => id_operacao,
-               "nome_operacao" => "Saque",
+               "operacao_id" => operacao_id,
                "valor" => 1000
              },
              "mensagem" => "Transação Realizada com Sucesso"
@@ -152,11 +151,11 @@ defmodule BankApiWeb.ControllerTransacaoTest do
 
   describe "delete/1" do
     test "delete ok - remove  transação de saque cadastrada na base de dados", state do
-      %Operacao{id: id_operacao} = insert(:operacao, nome_operacao: "Saque")
+      %Operacao{id: operacao_id} = insert(:operacao, nome_operacao: "Saque")
 
       params = %{
         "conta_origem_id" => state[:valores].conta_origem_id,
-        "operacao_id" => id_operacao,
+        "operacao_id" => operacao_id,
         "valor" => 1000
       }
 
@@ -179,7 +178,7 @@ defmodule BankApiWeb.ControllerTransacaoTest do
       assert %{
                "Transacao" => %{
                  "conta_origem_id" => state[:valores].conta_origem_id,
-                 "operacao_id" => id_operacao,
+                 "operacao_id" => operacao_id,
                  "valor" => 1000
                },
                "mensagem" => "Transação Removida com Sucesso"

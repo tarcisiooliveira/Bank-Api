@@ -24,9 +24,11 @@ defmodule BankApiWeb.Auth.Guardian do
   end
 
   def autenticar(%{"email" => email, "password" => password}) do
+    Repo.get_by(Admin, email: email)
+    |> IO.inspect()
     case Repo.get_by(Admin, email: email) do
       nil -> {:error, "Administrador não exite."}
-      admin -> validate_password(admin, password)
+      admin ->  validate_password(admin, password)
     end
   end
 

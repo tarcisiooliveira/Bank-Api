@@ -1,4 +1,4 @@
-defmodule BankApiWeb.UsuariosView do
+defmodule BankApiWeb.UsuarioView do
   use BankApiWeb, :view
   alias BankApi.Schemas.Usuario
 
