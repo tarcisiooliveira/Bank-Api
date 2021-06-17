@@ -3,13 +3,15 @@ defmodule BankApiWeb.RelatorioView do
 
   def render("saque.json", %{
         retorno: %{
-          mensagem: "Total de saque durante determinado período por determinado usuario.",
+          mensagem: mensagem,
+          operacao: operacao,
           email: email,
           resultado: resultado
         }
       }) do
     %{
-      mensagem: "Total de saque durante determinado período por determinado usuario.",
+      mensagem: mensagem,
+      operacao: operacao,
       email: email,
       resultado: resultado
     }
@@ -17,37 +19,21 @@ defmodule BankApiWeb.RelatorioView do
 
   def render("saque.json", %{
         retorno: %{
-          mensagem: "Total de saque durante todo o período",
+          mensagem: mensagem,
+          operacao: operacao,
           resultado: resultado
         }
       }) do
     %{
-      mensagem: "Total de saque durante todo o período",
+      mensagem: mensagem,
+      operacao: operacao,
       resultado: resultado
     }
   end
 
-  def render("saque.json", %{
-        retorno: %{
-          mensagem: "Total de saque realizado por determinado email",
-          resultado: resultado
-        }
-      }) do
+  def render("saque.json", %{error: %{mensagem: error}}) do
     %{
-      mensagem: "Total de saque realizado por determinado email",
-      resultado: resultado
-    }
-  end
-
-  def render("saque.json", %{
-        retorno: %{
-          mensagem: "Total de saque durante determinado período por todos usuários.",
-          resultado: resultado
-        }
-      }) do
-    %{
-      mensagem: "Total de saque durante determinado período por todos usuários.",
-      resultado: resultado
+      mensagem: error
     }
   end
 end

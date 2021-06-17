@@ -3,8 +3,14 @@ defmodule BankApiWeb.RelatorioController do
   alias BankApi.Handle.Relatorio.HandleRelatorioAdministrador
 
   def saque(conn, params) do
-    params
-    |> HandleRelatorioAdministrador.saque()
+    Map.merge(params, %{"operacao" => "Saque"})
+    |> HandleRelatorioAdministrador.relatorio()
+    |> handle_response(conn, "saque.json", :created)
+  end
+
+  def transferencia(conn, params) do
+    Map.merge(params, %{"operacao" => "Transferencia"})
+    |> HandleRelatorioAdministrador.relatorio()
     |> handle_response(conn, "saque.json", :created)
   end
 
@@ -22,10 +28,6 @@ defmodule BankApiWeb.RelatorioController do
   defp handle_response({:error, retorno} = _params, conn, _view, _status) do
     conn
     |> put_status(:bad_request)
-    |> render("error.view", error: retorno)
+    |> render("saque.json", error: retorno)
   end
-
-  # defp handle_response({:error, error} = result, conn, view, status) do
-  #   result
-  # end
 end

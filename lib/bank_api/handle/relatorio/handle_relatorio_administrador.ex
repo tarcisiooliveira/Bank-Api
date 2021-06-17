@@ -1,86 +1,142 @@
 defmodule BankApi.Handle.Relatorio.HandleRelatorioAdministrador do
-  alias BankApi.Schemas.{Transacao, Usuario, Conta}
+  alias BankApi.Schemas.{Transacao, Usuario, Conta, Operacao}
   alias BankApi.Repo
   import Ecto.Query
 
-  def saque(%{
+  def relatorio(%{
         "periodo_inicial" => periodo_inicial,
         "periodo_final" => periodo_final,
-        "email" => email
+        "email" => email,
+        "operacao" => operacao
       }) do
-    query =
-      from t in Transacao,
-        join: c in Conta,
-        join: u in Usuario,
-        on: t.conta_origem_id == c.id,
-        on: c.usuario_id == u.id,
-        where:
-          u.email == ^email and t.inserted_at >= ^periodo_inicial and
-            t.inserted_at <= ^periodo_final,
-        select: t.valor
+    case EmailChecker.valid?(email) && validar_data(periodo_inicial) &&
+           validar_data(periodo_final) do
+      true ->
+        query =
+          from t in Transacao,
+            join: c in Conta,
+            join: u in Usuario,
+            join: o in Operacao,
+            on: o.id == t.operacao_id,
+            on: t.conta_origem_id == c.id,
+            on: c.usuario_id == u.id,
+            where:
+              u.email == ^email and t.inserted_at >= ^periodo_inicial and
+                t.inserted_at <= ^periodo_final and o.nome_operacao == ^operacao,
+            select: t.valor
 
-    resultado = Repo.aggregate(query, :sum, :valor)
+        resultado = Repo.aggregate(query, :sum, :valor)
 
-    retorno = %{
-      email: email,
-      mensagem: "Total de saque durante determinado período por determinado usuario.",
-      resultado: resultado
-    }
+        retorno = %{
+          email: email,
+          mensagem: "Total de saque durante determinado período por determinado usuario.",
+          operacao: operacao,
+          resultado: resultado
+        }
 
-    {:ok, retorno}
+        {:ok, retorno}
+
+      false ->
+        {:error,
+         %{
+           mensagem: "Email ou Data inválido."
+         }}
+    end
   end
 
-  def saque(%{
+  def relatorio(%{
         "periodo_inicial" => periodo_inicial,
-        "periodo_final" => periodo_final
+        "periodo_final" => periodo_final,
+        "operacao" => operacao
       }) do
-    query =
-      from t in Transacao,
-        join: c in Conta,
-        on: t.conta_origem_id == c.id,
-        where:
-          t.inserted_at >= ^periodo_inicial and
-            t.inserted_at <= ^periodo_final,
-        select: t.valor
+    case validar_data(periodo_inicial) &&
+           validar_data(periodo_final) do
+      true ->
+        query =
+          from t in Transacao,
+            join: o in Operacao,
+            on: o.id == t.operacao_id,
+            where:
+              t.inserted_at >= ^periodo_inicial and
+                t.inserted_at <= ^periodo_final and
+                o.nome_operacao == ^operacao,
+            select: t.valor
 
-    resultado = Repo.aggregate(query, :sum, :valor)
+        resultado = Repo.aggregate(query, :sum, :valor)
 
-    retorno = %{
-      mensagem: "Total de saque durante determinado período por todos usuários.",
-      resultado: resultado
-    }
+        retorno = %{
+          mensagem: "Total de saque durante determinado período por todos usuários.",
+          operacao: operacao,
+          resultado: resultado
+        }
 
-    {:ok, retorno}
+        {:ok, retorno}
+
+      false ->
+        {:error,
+         %{
+           mensagem: "Email ou Data inválido."
+         }}
+    end
   end
 
-  def saque(%{"email" => email}) do
+  def relatorio(%{"email" => email, "operacao" => operacao}) do
+    case EmailChecker.valid?(email) do
+      true ->
+        query =
+          from t in Transacao,
+            join: c in Conta,
+            join: u in Usuario,
+            join: o in Operacao,
+            on: o.id == t.operacao_id,
+            on: t.conta_origem_id == c.id,
+            on: c.usuario_id == u.id,
+            where: u.email == ^email and o.nome_operacao == ^operacao,
+            select: [t.valor, u.email]
+
+        resultado = Repo.aggregate(query, :sum, :valor)
+
+        retorno = %{
+          mensagem: "Total realizado por determinado email",
+          operacao: operacao,
+          resultado: resultado
+        }
+
+        {:ok, retorno}
+
+      false ->
+        {:error,
+         %{
+           mensagem: "Email ou Data inválido."
+         }}
+    end
+  end
+
+  def relatorio(%{"periodo" => "todo", "operacao" => operacao}) do
     query =
       from t in Transacao,
-        join: c in Conta,
-        join: u in Usuario,
-        on: t.conta_origem_id == c.id,
-        on: c.usuario_id == u.id,
-        where: u.email == ^email,
+        join: o in Operacao,
+        on: t.operacao_id == o.id,
+        where: o.nome_operacao == ^operacao,
         select: [t.valor]
 
-    resultado = Repo.aggregate(query, :sum, :valor)
+    resultado =
+      Repo.aggregate(query, :sum, :valor)
+      |> IO.inspect()
 
     retorno = %{
-      mensagem: "Total de saque realizado por determinado email",
+      mensagem: "Total durante todo o período",
+      operacao: operacao,
       resultado: resultado
     }
 
     {:ok, retorno}
   end
 
-  def saque(%{"periodo" => "todo"}) do
-    resultado = Repo.aggregate(Transacao, :sum, :valor)
-
-    retorno = %{
-      mensagem: "Total de saque durante todo o período",
-      resultado: resultado
-    }
-
-    {:ok, retorno}
+  defp validar_data(data) do
+    case NaiveDateTime.from_iso8601(data) do
+      {:ok, _} -> true
+      {:error, _} -> false
+    end
   end
 end

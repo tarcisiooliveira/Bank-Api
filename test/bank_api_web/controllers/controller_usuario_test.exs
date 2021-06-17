@@ -70,7 +70,7 @@ defmodule BankApiWeb.ControllerUsuarioTest do
     test "assert create - cria usuario quando os dados são passados corretamente", state do
       params = %{
         "nome" => "Tarcisio",
-        "email" => "tarcisiooliveira@pm.me",
+        "email" => "tarcisiooliveira@protonmail.com",
         "password" => "123456"
       }
 
@@ -83,7 +83,7 @@ defmodule BankApiWeb.ControllerUsuarioTest do
       assert %{
                "mensagem" => "Usuário criado com sucesso!",
                "usuario" => %{
-                 "email" => "tarcisiooliveira@pm.me",
+                 "email" => "tarcisiooliveira@protonmail.com",
                  "id" => _id,
                  "nome" => "Tarcisio"
                }
@@ -93,7 +93,7 @@ defmodule BankApiWeb.ControllerUsuarioTest do
     test "error assert - tenta criar usuario sem token de acessor ", state do
       params = %{
         "nome" => "Tarcisio",
-        "email" => "tarcisiooliveira@pm.me",
+        "email" => "tarcisiooliveira@protonmail.com",
         "password" => "123456"
       }
 

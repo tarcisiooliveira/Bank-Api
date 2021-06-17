@@ -9,7 +9,7 @@ defmodule BankApi.Factory do
   def usuario_factory do
     %Usuario{
       nome: "Tarcisio",
-      email: sequence(:email, &"tarcisio-#{&1}@pm.me", start_at: 1000),
+      email: sequence(:email, &"tarcisio#{&1}@gmail.com", start_at: 1000),
       password: "123456",
       password_hash: Bcrypt.hash_pwd_salt("123456")
     }
@@ -48,6 +48,14 @@ defmodule BankApi.Factory do
     %Transacao{
       conta_origem_id: 0,
       conta_destino_id: 0,
+      operacao_id: 0,
+      valor: 200_000,
+      inserted_at: DateTime.utc_now()
+    }
+  end
+  def transacao_saque_factory do
+    %Transacao{
+      conta_origem_id: 0,
       operacao_id: 0,
       valor: 200_000,
       inserted_at: DateTime.utc_now()

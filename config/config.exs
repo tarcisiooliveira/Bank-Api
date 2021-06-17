@@ -38,3 +38,10 @@ config :bank_api, BankApiWeb.Auth.Pipeline,
   error_handler: BankApiWeb.Auth.ErrorHandler
 
 config :bcrypt_elixir, log_rounds: 4
+
+config :email_checker,
+  default_dns: :system,
+  also_dns: [],
+  validations: [EmailChecker.Check.Format, EmailChecker.Check.MX],
+  smtp_retries: 2,
+  timeout_milliseconds: :infinity

@@ -34,7 +34,6 @@ defmodule BankApi.Schemas.Transacao do
           "valor" => _valor
         } = params
       ) do
-
     %__MODULE__{}
     |> cast(params, [:conta_origem_id, :operacao_id, :valor])
     |> validate_required([:conta_origem_id, :operacao_id, :valor])
