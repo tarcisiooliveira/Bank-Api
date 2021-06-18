@@ -22,7 +22,7 @@ defmodule BankApiWeb.Router do
   scope "/api/relatorios", BankApiWeb do
     pipe_through([:api, :auth])
     post "/saques", RelatorioController, :saque
-    post "/pagamentos", RelatorioController, :pagamento
+    post "/transferencias", RelatorioController, :transferencia
   end
 
   scope "/api", BankApiWeb do

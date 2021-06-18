@@ -9,7 +9,7 @@ defmodule BankApiWeb.RelatorioController do
   end
 
   def transferencia(conn, params) do
-    Map.merge(params, %{"operacao" => "Transferencia"})
+    Map.merge(params, %{"operacao" => "Transferência"})
     |> HandleRelatorioAdministrador.relatorio()
     |> handle_response(conn, "saque.json", :created)
   end

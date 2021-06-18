@@ -6,6 +6,58 @@ defmodule BankApi.Handle.Relatorio.HandleRelatorioAdministrador do
   def relatorio(%{
         "periodo_inicial" => periodo_inicial,
         "periodo_final" => periodo_final,
+        "email1" => email1,
+        "email2" => email2,
+        "operacao" => operacao
+      }) do
+
+    case EmailChecker.valid?(email1) &&
+           EmailChecker.valid?(email2) &&
+           validar_data(periodo_inicial) &&
+           validar_data(periodo_final) do
+      true ->
+        query =
+          from t in Transacao,
+            join: c in Conta,
+            join: u in Usuario,
+            join: o in Operacao,
+            on: o.id == t.operacao_id,
+            on: t.conta_origem_id == c.id,
+
+            on: c.usuario_id == u.id,
+            where:
+              u.email == ^email1 and
+                t.inserted_at >= ^periodo_inicial and
+                t.inserted_at <= ^periodo_final and
+                o.nome_operacao == ^operacao,
+            select: t.valor
+
+        Repo.all(query)
+        |> IO.inspect()
+
+        resultado = Repo.aggregate(query, :sum, :valor)
+
+        retorno = %{
+          origem: email1,
+          destino: email2,
+          mensagem: "Total durante determinado período entre dois usuários.",
+          operacao: operacao,
+          resultado: resultado
+        }
+
+        {:ok, retorno}
+
+      false ->
+        {:error,
+         %{
+           mensagem: "Email ou Data inválido."
+         }}
+    end
+  end
+
+  def relatorio(%{
+        "periodo_inicial" => periodo_inicial,
+        "periodo_final" => periodo_final,
         "email" => email,
         "operacao" => operacao
       }) do
@@ -29,7 +81,7 @@ defmodule BankApi.Handle.Relatorio.HandleRelatorioAdministrador do
 
         retorno = %{
           email: email,
-          mensagem: "Total de saque durante determinado período por determinado usuario.",
+          mensagem: "Total durante determinado período por determinado usuario.",
           operacao: operacao,
           resultado: resultado
         }
@@ -65,7 +117,7 @@ defmodule BankApi.Handle.Relatorio.HandleRelatorioAdministrador do
         resultado = Repo.aggregate(query, :sum, :valor)
 
         retorno = %{
-          mensagem: "Total de saque durante determinado período por todos usuários.",
+          mensagem: "Total durante determinado período por todos usuários.",
           operacao: operacao,
           resultado: resultado
         }
@@ -120,9 +172,7 @@ defmodule BankApi.Handle.Relatorio.HandleRelatorioAdministrador do
         where: o.nome_operacao == ^operacao,
         select: [t.valor]
 
-    resultado =
-      Repo.aggregate(query, :sum, :valor)
-      |> IO.inspect()
+    resultado = Repo.aggregate(query, :sum, :valor)
 
     retorno = %{
       mensagem: "Total durante todo o período",
