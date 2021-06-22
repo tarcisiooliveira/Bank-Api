@@ -15,8 +15,4 @@ defmodule BankApiWeb.FallbackController do
     |> render("400.json", error: error)
   end
 
-  def call(conn, params) do
-    {conn, params}
-  end
-
 end

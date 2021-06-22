@@ -11,6 +11,35 @@ defmodule BankApi.Handle.HandleTransacao do
     end
   end
 
+  def create(
+        %{
+          "conta_origem_id" => conta_origem_id,
+          "conta_destino_id1" => conta_destino_id1,
+          "conta_destino_id2" => conta_destino_id2,
+          "operacao_id" => operacao_id,
+          "valor" => _valor,
+          "lista" => lista
+        } = params
+      ) do
+    # transacao1 = %{
+    #   "conta_origem_id" => conta_origem_id,
+    #   "conta_destino_id" => conta_destino_id1,
+    #   "operacao_id" => operacao_id,
+    #   "valor" => Enum.at(lista, 0)
+    # }
+    # transacao2 = %{
+    #   "conta_origem_id" => conta_origem_id,
+    #   "conta_destino_id" => conta_destino_id2,
+    #   "operacao_id" => operacao_id,
+    #   "valor" => Enum.at(lista, 1)
+    # }
+
+    # conta
+    params
+    |> Transacao.changeset()
+    |> Repo.insert()
+  end
+
   def create(params) do
     params
     |> Transacao.changeset()

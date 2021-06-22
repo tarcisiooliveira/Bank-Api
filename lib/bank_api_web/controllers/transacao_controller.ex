@@ -1,7 +1,7 @@
 defmodule BankApiWeb.TransacaoController do
   use BankApiWeb, :controller
-  alias BankApi.Handle.{HandleTransacao, HandleOperacao}
-  alias BankApi.Schemas.{Operacao, Transacao}
+  alias BankApi.Handle.HandleTransacao
+  alias BankApi.Schemas.Transacao
 
   def show(conn, %{"id" => id}) do
     id

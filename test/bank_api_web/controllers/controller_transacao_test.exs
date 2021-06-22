@@ -17,37 +17,69 @@ defmodule BankApiWeb.ControllerTransacaoTest do
 
     %Usuario{id: id_usuario1} = insert(:usuario)
     %Usuario{id: id_usuario2} = insert(:usuario)
+    %Usuario{id: id_usuario3} = insert(:usuario)
 
     %Conta{id: conta_origem_id} =
       insert(:conta, usuario_id: id_usuario1, tipo_conta_id: id_tipo_conta)
 
-    %Conta{id: conta_destino_id} =
+    %Conta{id: conta_destino_id1} =
       insert(:conta, usuario_id: id_usuario2, tipo_conta_id: id_tipo_conta)
+    %Conta{id: conta_destino_id2} =
+      insert(:conta, usuario_id: id_usuario3, tipo_conta_id: id_tipo_conta)
 
     %Operacao{id: operacao_id} = insert(:operacao)
 
     {:ok,
      valores: %{
        conta_origem_id: conta_origem_id,
-       conta_destino_id: conta_destino_id,
+       conta_destino_id: conta_destino_id1,
+       conta_destino_id2: conta_destino_id2,
        operacao_id: operacao_id,
        token: token
      }}
   end
 
+
+
+  test "assert get - Exibe os dados de pagamentos.", state do
+    %Operacao{id: id_operacao} = insert(:operacao, nome_operacao: "Pagamento")
+
+    %Transacao{id: id} =
+      insert(:transacao,
+        conta_origem_id: state[:valores].conta_origem_id,
+        conta_destino_id: state[:valores].conta_destino_id,
+        operacao_id: id_operacao,
+        valor: 650
+      )
+
+    response =
+      state[:conn]
+      |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+      |> get(Routes.transacao_path(state[:conn], :show, id))
+      |> json_response(:ok)
+
+    assert %{
+             "mensagem" => "Transação encotrada",
+             "Transacao" => %{
+               "conta_origem_id" => state[:valores].conta_origem_id,
+               "conta_destino_id" => state[:valores].conta_destino_id,
+               "operacao_id" => id_operacao,
+               "valor" => 650
+             }
+           } == response
+  end
+
+
+
   test "assert get - Exibe os dados de um saque quando é informado parametros validos", state do
     %Operacao{id: id_operacao} = insert(:operacao, nome_operacao: "Saque")
 
-    params = %{
-      "conta_origem_id" => state[:valores].conta_origem_id,
-      "operacao_id" => id_operacao,
-      "valor" => 700
-    }
-
-    {:ok, %Transacao{id: id}} =
-      params
-      |> Transacao.changeset()
-      |> BankApi.Repo.insert()
+    %Transacao{id: id} =
+      insert(:transacao_saque,
+        conta_origem_id: state[:valores].conta_origem_id,
+        operacao_id: id_operacao,
+        valor: 700
+      )
 
     response =
       state[:conn]

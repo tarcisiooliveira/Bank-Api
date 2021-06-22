@@ -1,41 +1,25 @@
 defmodule BankApiWeb.RelatorioView do
   use BankApiWeb, :view
 
-  def render("saque.json", %{
+  def render("relatorio.json", %{
         retorno: %{
-          origem: email1,
-          destino: email2,
+          conta_origem_id: conta_id_1,
+          conta_destino_id: conta_id_2,
           mensagem: "Total durante determinado período entre dois usuários.",
           operacao: operacao,
           resultado: resultado
         }
       }) do
     %{
-      origem: email1,
-      destino: email2,
+      conta_origem_id: conta_id_1,
+      conta_destino_id: conta_id_2,
       mensagem: "Total durante determinado período entre dois usuários.",
       operacao: operacao,
       resultado: resultado
     }
   end
 
-  def render("saque.json", %{
-        retorno: %{
-          mensagem: mensagem,
-          operacao: operacao,
-          email: email,
-          resultado: resultado
-        }
-      }) do
-    %{
-      mensagem: mensagem,
-      operacao: operacao,
-      email: email,
-      resultado: resultado
-    }
-  end
-
-  def render("saque.json", %{
+  def render("relatorio.json", %{
         retorno: %{
           mensagem: mensagem,
           operacao: operacao,
@@ -49,7 +33,7 @@ defmodule BankApiWeb.RelatorioView do
     }
   end
 
-  def render("saque.json", %{error: %{mensagem: error}}) do
+  def render("relatorio.json", %{error: %{mensagem: error}}) do
     %{
       mensagem: error
     }

@@ -53,11 +53,20 @@ defmodule BankApi.Factory do
       inserted_at: DateTime.utc_now()
     }
   end
+
   def transacao_saque_factory do
     %Transacao{
       conta_origem_id: 0,
       operacao_id: 0,
       valor: 200_000,
+      inserted_at: DateTime.utc_now()
+    }
+  end
+  def transacao_pagamento_factory do
+    %Transacao{
+      conta_origem_id: 0,
+      operacao_id: 0,
+      valor: 0,
       inserted_at: DateTime.utc_now()
     }
   end

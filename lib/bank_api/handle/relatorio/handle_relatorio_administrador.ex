@@ -1,56 +1,75 @@
 defmodule BankApi.Handle.Relatorio.HandleRelatorioAdministrador do
-  alias BankApi.Schemas.{Transacao, Usuario, Conta, Operacao}
+  alias BankApi.Schemas.{Transacao, Conta, Operacao}
   alias BankApi.Repo
   import Ecto.Query
 
-  def relatorio(%{
-        "periodo_inicial" => periodo_inicial,
-        "periodo_final" => periodo_final,
-        "email1" => email1,
-        "email2" => email2,
-        "operacao" => operacao
-      }) do
+  def conta_valida?(id_conta) do
+    case Repo.get_by(Conta, id: id_conta) do
+      %Conta{} -> true
+      _ -> false
+    end
+  end
 
-    case EmailChecker.valid?(email1) &&
-           EmailChecker.valid?(email2) &&
+  def relatorio(
+        %{
+          "periodo_inicial" => periodo_inicial,
+          "periodo_final" => periodo_final,
+          "conta_origem_id" => conta_origem_id,
+          "conta_destino_id" => conta_destino_id,
+          "operacao" => operacao
+        } = _params
+      ) do
+    case conta_valida?(conta_origem_id) &&
+           conta_valida?(conta_destino_id) &&
            validar_data(periodo_inicial) &&
            validar_data(periodo_final) do
       true ->
         query =
           from t in Transacao,
-            join: c in Conta,
-            join: u in Usuario,
             join: o in Operacao,
             on: o.id == t.operacao_id,
-            on: t.conta_origem_id == c.id,
-
-            on: c.usuario_id == u.id,
             where:
-              u.email == ^email1 and
-                t.inserted_at >= ^periodo_inicial and
-                t.inserted_at <= ^periodo_final and
-                o.nome_operacao == ^operacao,
+              o.nome_operacao == ^operacao and
+                t.conta_destino_id == ^conta_destino_id and
+                t.conta_origem_id == ^conta_origem_id and
+                t.inserted_at > ^periodo_inicial and
+                t.inserted_at < ^periodo_final,
             select: t.valor
 
-        Repo.all(query)
-        |> IO.inspect()
+        quantidade =
+          Repo.all(query)
+          |> Enum.count()
 
-        resultado = Repo.aggregate(query, :sum, :valor)
+        case quantidade do
+          0 ->
+            retorno = %{
+              conta_origem_id: conta_origem_id,
+              conta_destino_id: conta_destino_id,
+              mensagem: "Total durante determinado período entre duas contas.",
+              operacao: operacao,
+              resultado: 0
+            }
 
-        retorno = %{
-          origem: email1,
-          destino: email2,
-          mensagem: "Total durante determinado período entre dois usuários.",
-          operacao: operacao,
-          resultado: resultado
-        }
+            {:ok, retorno}
 
-        {:ok, retorno}
+          _ ->
+            resultado = Repo.aggregate(query, :sum, :valor)
+
+            retorno = %{
+              conta_origem_id: conta_origem_id,
+              conta_destino_id: conta_destino_id,
+              mensagem: "Total durante determinado período entre duas contas.",
+              operacao: operacao,
+              resultado: resultado
+            }
+
+            {:ok, retorno}
+        end
 
       false ->
         {:error,
          %{
-           mensagem: "Email ou Data inválido."
+           mensagem: "Dados inválidos. Verifique Id da Conta, Data ou Operção."
          }}
     end
   end
@@ -58,40 +77,56 @@ defmodule BankApi.Handle.Relatorio.HandleRelatorioAdministrador do
   def relatorio(%{
         "periodo_inicial" => periodo_inicial,
         "periodo_final" => periodo_final,
-        "email" => email,
+        "conta_origem_id" => conta_origem_id,
         "operacao" => operacao
       }) do
-    case EmailChecker.valid?(email) && validar_data(periodo_inicial) &&
+    case conta_valida?(conta_origem_id) &&
+           validar_data(periodo_inicial) &&
            validar_data(periodo_final) do
       true ->
         query =
           from t in Transacao,
             join: c in Conta,
-            join: u in Usuario,
             join: o in Operacao,
             on: o.id == t.operacao_id,
             on: t.conta_origem_id == c.id,
-            on: c.usuario_id == u.id,
             where:
-              u.email == ^email and t.inserted_at >= ^periodo_inicial and
+              t.conta_origem_id == ^conta_origem_id and t.inserted_at >= ^periodo_inicial and
                 t.inserted_at <= ^periodo_final and o.nome_operacao == ^operacao,
             select: t.valor
 
-        resultado = Repo.aggregate(query, :sum, :valor)
+        quantidade =
+          Repo.all(query)
+          |> Enum.count()
 
-        retorno = %{
-          email: email,
-          mensagem: "Total durante determinado período por determinado usuario.",
-          operacao: operacao,
-          resultado: resultado
-        }
+        case quantidade do
+          0 ->
+            retorno = %{
+              conta_origem_id: conta_origem_id,
+              mensagem: "Total durante determinado período por determinada conta.",
+              operacao: operacao,
+              resultado: 0
+            }
 
-        {:ok, retorno}
+            {:ok, retorno}
+
+          _ ->
+            resultado = Repo.aggregate(query, :sum, :valor)
+
+            retorno = %{
+              conta_origem_id: conta_origem_id,
+              mensagem: "Total durante determinado período por determinada conta.",
+              operacao: operacao,
+              resultado: resultado
+            }
+
+            {:ok, retorno}
+        end
 
       false ->
         {:error,
          %{
-           mensagem: "Email ou Data inválido."
+           mensagem: "Dados inválidos. Verifique Id da Conta, Data ou Operção."
          }}
     end
   end
@@ -114,42 +149,58 @@ defmodule BankApi.Handle.Relatorio.HandleRelatorioAdministrador do
                 o.nome_operacao == ^operacao,
             select: t.valor
 
-        resultado = Repo.aggregate(query, :sum, :valor)
+        quantidade =
+          Repo.all(query)
+          |> Enum.count()
 
-        retorno = %{
-          mensagem: "Total durante determinado período por todos usuários.",
-          operacao: operacao,
-          resultado: resultado
-        }
+        case quantidade do
+          0 ->
+            retorno = %{
+              mensagem: "Total durante determinado período por todas contas.",
+              operacao: operacao,
+              resultado: 0
+            }
 
-        {:ok, retorno}
+            {:ok, retorno}
+
+          _ ->
+            resultado = Repo.aggregate(query, :sum, :valor)
+
+            retorno = %{
+              mensagem: "Total durante determinado período por todas contas.",
+              operacao: operacao,
+              resultado: resultado
+            }
+
+            {:ok, retorno}
+        end
 
       false ->
         {:error,
          %{
-           mensagem: "Email ou Data inválido."
+           mensagem: "Dados inválidos. Verifique a Data ou Operção."
          }}
     end
   end
 
-  def relatorio(%{"email" => email, "operacao" => operacao}) do
-    case EmailChecker.valid?(email) do
+  def relatorio(%{"conta_origem_id" => conta_origem_id, "operacao" => operacao}) do
+    case conta_valida?(conta_origem_id) do
       true ->
         query =
           from t in Transacao,
             join: c in Conta,
-            join: u in Usuario,
             join: o in Operacao,
             on: o.id == t.operacao_id,
             on: t.conta_origem_id == c.id,
-            on: c.usuario_id == u.id,
-            where: u.email == ^email and o.nome_operacao == ^operacao,
-            select: [t.valor, u.email]
+            where:
+              o.nome_operacao == ^operacao and
+                t.conta_origem_id == ^conta_origem_id,
+            select: t.valor
 
         resultado = Repo.aggregate(query, :sum, :valor)
 
         retorno = %{
-          mensagem: "Total realizado por determinado email",
+          mensagem: "Total realizado por determinada conta.",
           operacao: operacao,
           resultado: resultado
         }
@@ -159,7 +210,7 @@ defmodule BankApi.Handle.Relatorio.HandleRelatorioAdministrador do
       false ->
         {:error,
          %{
-           mensagem: "Email ou Data inválido."
+           mensagem: "Dados inválidos. Verifique a Id da Conta ou Operção."
          }}
     end
   end
@@ -172,15 +223,31 @@ defmodule BankApi.Handle.Relatorio.HandleRelatorioAdministrador do
         where: o.nome_operacao == ^operacao,
         select: [t.valor]
 
-    resultado = Repo.aggregate(query, :sum, :valor)
+    quantidade =
+      Repo.all(query)
+      |> Enum.count()
 
-    retorno = %{
-      mensagem: "Total durante todo o período",
-      operacao: operacao,
-      resultado: resultado
-    }
+    case quantidade do
+      0 ->
+        retorno = %{
+          mensagem: "Total durante todo o período",
+          operacao: operacao,
+          resultado: 0
+        }
 
-    {:ok, retorno}
+        {:ok, retorno}
+
+      _ ->
+        resultado = Repo.aggregate(query, :sum, :valor)
+
+        retorno = %{
+          mensagem: "Total durante todo o período",
+          operacao: operacao,
+          resultado: resultado
+        }
+
+        {:ok, retorno}
+    end
   end
 
   defp validar_data(data) do
