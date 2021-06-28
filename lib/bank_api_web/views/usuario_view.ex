@@ -29,18 +29,10 @@ defmodule BankApiWeb.UsuarioView do
     }
   end
 
-  def render("create.json", %{
-        error: %Ecto.Changeset{
-          errors: [
-            email: {_motivo, [constraint: :unique, constraint_name: "usuarios_email_index"]}
-          ]
-        }
-      }) do
+  def render("create.json", params) do
     %{
       mensagem: "Erro",
       email: "Email já cadastrado"
-      # informacao: unique,
-      # constrain: texto
     }
   end
 

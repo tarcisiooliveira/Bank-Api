@@ -2,28 +2,38 @@ defmodule BankApiWeb.TransacaoView do
   use BankApiWeb, :view
   alias BankApi.Schemas.Transacao
 
-  def render("show.json", %{
-        transacao: %Transacao{
-          conta_origem_id: conta_origem_id,
-          conta_destino_id: nil,
-          operacao_id: operacao_id,
-          valor: valor
-        }
-      }) do
+  def render(
+        "show.json",
+        %{
+          transacao:
+            {:ok,
+             %Transacao{
+               conta_origem_id: conta_origem_id,
+               conta_destino_id: nil,
+               operacao_id: operacao_id,
+               valor: valor
+             }}
+        } = params
+      ) do
     %{
       mensagem: "Transação encotrada",
       Transacao: %{conta_origem_id: conta_origem_id, operacao_id: operacao_id, valor: valor}
     }
   end
 
-  def render("show.json", %{
-        transacao: %Transacao{
-          conta_origem_id: conta_origem_id,
-          conta_destino_id: conta_destino_id,
-          operacao_id: operacao_id,
-          valor: valor
-        }
-      }) do
+  def render(
+        "show.json",
+        %{
+          transacao:
+            {:ok,
+             %Transacao{
+               conta_origem_id: conta_origem_id,
+               conta_destino_id: conta_destino_id,
+               operacao_id: operacao_id,
+               valor: valor
+             }}
+        } = params
+      ) do
     %{
       mensagem: "Transação encotrada",
       Transacao: %{
@@ -38,12 +48,16 @@ defmodule BankApiWeb.TransacaoView do
   def render(
         "create.json",
         %{
-          transacao: %Transacao{
-            conta_origem_id: conta_origem_id,
-            conta_destino_id: nil,
-            operacao_id: operacao_id,
-            valor: valor
-          }
+          transacao:
+            {:ok,
+             %{
+               cria_transacao: %Transacao{
+                 conta_origem_id: conta_origem_id,
+                 conta_destino_id: nil,
+                 operacao_id: operacao_id,
+                 valor: valor
+               }
+             }}
         } = _params
       ) do
     %{
@@ -59,12 +73,16 @@ defmodule BankApiWeb.TransacaoView do
   def render(
         "create.json",
         %{
-          transacao: %Transacao{
-            conta_origem_id: conta_origem_id,
-            conta_destino_id: conta_destino_id,
-            operacao_id: operacao_id,
-            valor: valor
-          }
+          transacao:
+            {:ok,
+             %{
+               cria_transacao: %Transacao{
+                 conta_origem_id: conta_origem_id,
+                 conta_destino_id: conta_destino_id,
+                 operacao_id: operacao_id,
+                 valor: valor
+               }
+             }}
         } = _params
       ) do
     %{

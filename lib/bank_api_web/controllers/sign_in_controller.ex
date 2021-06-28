@@ -6,6 +6,7 @@ defmodule BankApiWeb.SignInController do
 
   def sign_in(conn, params) do
     retorno = Guardian.autenticar(params)
+
     case retorno do
       {:ok, token} ->
         conn

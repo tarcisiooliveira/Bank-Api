@@ -14,5 +14,4 @@ defmodule BankApiWeb.FallbackController do
     |> put_view(BankApiWeb.ErrorView)
     |> render("400.json", error: error)
   end
-
 end

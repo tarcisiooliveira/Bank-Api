@@ -24,7 +24,6 @@ defmodule BankApiWeb.Router do
     post "/pagamentos", RelatorioController, :pagamento
     post "/saques", RelatorioController, :saque
     post "/transferencias", RelatorioController, :transferencia
-
   end
 
   scope "/api", BankApiWeb do
@@ -46,9 +45,7 @@ defmodule BankApiWeb.Router do
 
     resources("/contas", ContaController, only: [:new, :show, :delete, :update, :index, :create])
 
-    resources("/transacoes", TransacaoController,
-      only: [:new, :show, :delete, :update, :create]
-    )
+    resources("/transacoes", TransacaoController, only: [:new, :show, :delete, :update, :create])
   end
 
   # Enables LiveDashboard only for development

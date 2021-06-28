@@ -62,7 +62,7 @@ defmodule BankApiWeb.ControllerUsuarioTest do
         |> get(Routes.conta_path(state[:conn], :show, 951_951))
         |> json_response(:not_found)
 
-      assert %{"mensagem" => "ID Inválido ou inexistente"} = response
+      assert %{"error" => "ID Inválido ou inexistente."} = response
     end
   end
 

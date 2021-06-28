@@ -12,10 +12,16 @@ defmodule BankApiWeb.AdminView do
     %{mensagem: "mensagem"}
   end
 
-  def render("create.json", %{admin: %{email: email}}) do
+  def render(
+        "create.json",
+        %{
+          conn: %Plug.Conn{params: %{"email" => email}},
+          admin: %{changeset_valido: :paramentros_validos}
+        }
+      ) do
     %{
       mensagem: "Administrador Cadastrado",
-      admin: %{"email" => email}
+      email: email
     }
   end
 
@@ -63,7 +69,14 @@ defmodule BankApiWeb.AdminView do
 
   def render(
         "error.json",
-        %{error: error}
+        %{error: :confirmacao_senha_necessario}
+      ) do
+    %{error: "Verifique os parametros."}
+  end
+
+  def render(
+        "error.json",
+        %{error: error} = _params
       ) do
     %{error: error}
   end

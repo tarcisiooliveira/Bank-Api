@@ -19,7 +19,7 @@ defmodule BankApiWeb.TransacaoController do
         conn,
         %{
           "conta_origem_id" => _conta_origem_id,
-          "conta_destino_id" => _onta_destino_id,
+          "conta_destino_id" => _conta_destino_id,
           "operacao_id" => _operacao_id,
           "valor" => _valor
         } = params
@@ -42,7 +42,7 @@ defmodule BankApiWeb.TransacaoController do
     |> handle_response(conn, "create.json", :created)
   end
 
-  defp handle_response({:ok, transacao}, conn, view, status) do
+  defp handle_response(transacao, conn, view, status) do
     conn
     |> put_status(status)
     |> render(view, transacao: transacao)

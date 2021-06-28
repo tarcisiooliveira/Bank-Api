@@ -16,13 +16,12 @@ defmodule BankApi.Schemas.Transacao do
 
   @required_params [:valor, :conta_origem_id, :conta_destino_id, :operacao_id]
 
-
   def changeset(
         %{
-          "conta_origem_id" => _conta_origem_id,
-          "conta_destino_id" => _conta_destino_id,
-          "operacao_id" => _operacao_id,
-          "valor" => _valor
+          conta_origem_id: _conta_origem_id,
+          conta_destino_id: _conta_destino_id,
+          operacao_id: _operacao_id,
+          valor: _valor
         } = params
       ) do
     %__MODULE__{}
@@ -31,13 +30,7 @@ defmodule BankApi.Schemas.Transacao do
   end
 
   @required_params_saque [:conta_origem_id, :operacao_id, :valor]
-  def changeset(
-        %{
-          "conta_origem_id" => _conta_origem_id,
-          "operacao_id" => _operacao_id,
-          "valor" => _valor
-        } = params
-      ) do
+  def changeset(params) do
     %__MODULE__{}
     |> cast(params, @required_params_saque)
     |> validate_required(@required_params_saque)

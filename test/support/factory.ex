@@ -62,6 +62,7 @@ defmodule BankApi.Factory do
       inserted_at: DateTime.utc_now()
     }
   end
+
   def transacao_pagamento_factory do
     %Transacao{
       conta_origem_id: 0,
