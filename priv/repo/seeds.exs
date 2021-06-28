@@ -10,26 +10,23 @@
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
 
-alias BankApi.Schemas.{Usuario, Conta, TipoConta, Operacao, Transacao, Admin}
-alias BankApi.Repo
+# params = %{
+#   "email" => "tarcisio@admin.com",
+#   "password" => "123456",
+#   "password_confirmation" => "123456"
+# }
 
-params = %{
-  "email" => "tarcisio@admin.com",
-  "password" => "123456",
-  "password_confirmation" => "123456"
-}
+# params
+# |> Admin.changeset()
+# |> Repo.insert()
 
-params
-|> Admin.changeset()
-|> Repo.insert()
+# usuario = [
+#   %{email: "tarcisio@ymail.com", nome: "Tarcisio", password: "123456"},
+#   %{email: "cida@ymail.com", nome: "Cida", password: "234567"},
+#   %{email: "benicio@ymail.com", nome: "Benicio", password: "345678"}
+# ]
 
-usuario = [
-  %{email: "tarcisio@ymail.com", nome: "Tarcisio", password: "123456"},
-  %{email: "cida@ymail.com", nome: "Cida", password: "234567"},
-  %{email: "benicio@ymail.com", nome: "Benicio", password: "345678"}
-]
-
-Enum.each(usuario, fn pessoa -> Usuario.changeset(pessoa) |> Repo.insert() end)
+# Enum.each(usuario, fn pessoa -> Usuario.changeset(pessoa) |> Repo.insert() end)
 
 # tipoConta = [
 #   %{nome_tipo_conta: "Corrente"},
@@ -58,10 +55,10 @@ Enum.each(usuario, fn pessoa -> Usuario.changeset(pessoa) |> Repo.insert() end)
 # Enum.each(contas, fn unit_contas -> Conta.changeset(unit_contas) |> Repo.insert() end)
 
 # transacao = [
-#   %{conta_origem_id: 1, conta_destino_id: 2, operacao_id: 3, valor: 600_000},
-#   %{conta_origem_id: 2, conta_destino_id: 3, operacao_id: 3, valor: 700_000},
-#   %{conta_origem_id: 3, operacao_id: 1, valor: 100_000},
-#   %{conta_origem_id: 1, operacao_id: 1, valor: 500_000}
+#   %{conta_origem_id: 1, conta_destino_id: 2, operacao_id: 3, valor: 60_000},
+#   %{conta_origem_id: 2, conta_destino_id: 3, operacao_id: 3, valor: 70_000},
+#   %{conta_origem_id: 3, operacao_id: 1, valor: 10_000},
+#   %{conta_origem_id: 1, operacao_id: 1, valor: 50_000}
 # ]
 
 # Enum.each(transacao, fn unit_transacao -> Transacao.changeset(unit_transacao) |> Repo.insert() end)

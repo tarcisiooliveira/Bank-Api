@@ -34,7 +34,7 @@ defmodule BankApi.ControllerAdminTest do
         |> json_response(:created)
 
       assert %{
-               "admin" => %{"email" => "test2@admin.com"},
+               "email" => "test2@admin.com",
                "mensagem" => "Administrador Cadastrado"
              } = response
     end
@@ -52,8 +52,7 @@ defmodule BankApi.ControllerAdminTest do
         |> json_response(422)
 
       assert %{
-               "error" => "Campo Confirmação de Senha não informado",
-               "mensagem" => "Administrador Não Cadastrado"
+               "error" => "Verifique os parametros."
              } = response
     end
 

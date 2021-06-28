@@ -20,7 +20,7 @@ defmodule BankApi.MixProject do
   def application do
     [
       mod: {BankApi.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :email_checker]
     ]
   end
 
@@ -48,6 +48,7 @@ defmodule BankApi.MixProject do
       {:argon2_elixir, "~> 2.4"},
       {:guardian, "~>2.0"},
       {:bcrypt_elixir, "~> 2.3"},
+      {:email_checker, "~> 0.1.2"},
       {:ex_machina, "~> 2.7.0", only: :test}
     ]
   end

@@ -81,7 +81,9 @@ defmodule BankApiWeb.ControllerOperacaoTest do
     response =
       state[:conn]
       |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-      |> patch(Routes.operacao_path(state[:conn], :update, id, %{nome_operacao: "Nova Transferência"}))
+      |> patch(
+        Routes.operacao_path(state[:conn], :update, id, %{nome_operacao: "Nova Transferência"})
+      )
       |> json_response(:created)
 
     assert %{

@@ -11,7 +11,7 @@ defmodule BankApiWeb.ContaView do
         }
       }) do
     %{
-      mensagem: "Tipo Conta encotrado",
+      mensagem: "Tipo Conta encotrado.",
       Conta: %{
         saldo_conta: saldo_conta,
         usuario_id: usuario_id,
@@ -28,7 +28,7 @@ defmodule BankApiWeb.ContaView do
         }
       }) do
     %{
-      mensagem: "Conta Cadastrada",
+      mensagem: "Conta Cadastrada.",
       Conta: %{
         saldo_conta: saldo_conta,
         usuario_id: usuario_id,
@@ -39,22 +39,22 @@ defmodule BankApiWeb.ContaView do
 
   def render("update.json", %{conta: %Conta{id: id, saldo_conta: saldo_conta}}) do
     %{
-      mensagem: "Conta Atualizada",
+      mensagem: "Conta Atualizada.",
       Conta: %{conta_ID: id, saldo_conta: saldo_conta}
     }
   end
 
   def render("delete.json", %{conta: %Conta{usuario_id: usuario_id, tipo_conta_id: tipo_conta_id}}) do
     %{
-      mensagem: "Conta removida",
+      mensagem: "Conta removida.",
       Conta: %{ID_Usuario: usuario_id, Tipo_Conta: tipo_conta_id}
     }
   end
 
   def render("delete.json", %{error: error}) do
     %{
-      Resultado: "Conta inexistente.",
-      Mensagem: "#{error}"
+      mensagem: "Conta inexistente.",
+      error: "#{error}"
     }
   end
 
@@ -62,7 +62,7 @@ defmodule BankApiWeb.ContaView do
         "error.json",
         %{error: %Changeset{errors: [saldo_conta: {"is invalid", _error}]}} = _params
       ) do
-    %{error: "Saldo inválido, ele deve ser maior ou igual a zero"}
+    %{error: "Saldo inválido, ele deve ser maior ou igual a zero."}
   end
 
   def render(
@@ -70,7 +70,7 @@ defmodule BankApiWeb.ContaView do
         %{error: error}
       ) do
     %{
-      mensagem: error
+      error: error
     }
   end
 end

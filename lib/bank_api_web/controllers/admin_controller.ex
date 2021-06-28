@@ -1,6 +1,7 @@
 defmodule BankApiWeb.AdminController do
   use BankApiWeb, :controller
   alias BankApi.Handle.HandleAdmin
+  alias BankApi.Multi.Admin, as: MultiAdmin
 
   # Usado pelo :create nos testes de forma automatica
   def index(conn, params) do
@@ -15,9 +16,12 @@ defmodule BankApiWeb.AdminController do
     |> handle_response(conn, "show.json", :ok)
   end
 
-  def create(conn, params) do
+  def create(
+        conn,
+        params
+      ) do
     params
-    |> HandleAdmin.create()
+    |> MultiAdmin.create()
     |> handle_create_response(conn, "create.json")
   end
 
@@ -42,7 +46,7 @@ defmodule BankApiWeb.AdminController do
   defp handle_create_response({:error, error} = _params, conn, view) do
     conn
     |> put_status(422)
-    |> render(view, error: error)
+    |> render("error.json", error: error)
   end
 
   defp handle_delete({:ok, admin}, conn) do

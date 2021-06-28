@@ -39,7 +39,7 @@ defmodule BankApiWeb.ControllerContaTest do
                  "tipo_conta_id" => ^tipo_conta_id,
                  "usuario_id" => ^usuario_id
                },
-               "mensagem" => "Tipo Conta encotrado"
+               "mensagem" => "Tipo Conta encotrado."
              } = response
     end
 
@@ -62,7 +62,7 @@ defmodule BankApiWeb.ControllerContaTest do
         |> get(Routes.conta_path(state[:conn], :show, 951_951))
         |> json_response(:not_found)
 
-      assert %{"mensagem" => "ID Inválido ou inexistente"} = response
+      assert %{"error" => "ID Inválido ou inexistente."} = response
     end
   end
 
@@ -89,7 +89,7 @@ defmodule BankApiWeb.ControllerContaTest do
                  "tipo_conta_id" => _83,
                  "usuario_id" => _147
                },
-               "mensagem" => "Conta Cadastrada"
+               "mensagem" => "Conta Cadastrada."
              } = response
     end
 
@@ -114,11 +114,11 @@ defmodule BankApiWeb.ControllerContaTest do
                  "tipo_conta_id" => _83,
                  "usuario_id" => _147
                },
-               "mensagem" => "Conta Cadastrada"
+               "mensagem" => "Conta Cadastrada."
              } = response
     end
 
-    test "erro insert Conta - Exibe mensagem de erro quando passa saldo negativo", state do
+    test "erro insert Conta - Exibe mensagem de erro quando passa saldo negativo.", state do
       %Usuario{id: usuario_id} = insert(:usuario)
       %TipoConta{id: tipo_conta_id} = insert(:tipo_conta)
 
@@ -134,10 +134,10 @@ defmodule BankApiWeb.ControllerContaTest do
         |> post(Routes.conta_path(state[:conn], :create, params))
         |> json_response(404)
 
-      assert %{"error" => "Saldo inválido, ele deve ser maior ou igual a zero"} = response
+      assert %{"error" => "Saldo inválido, ele deve ser maior ou igual a zero."} = response
     end
 
-    test "erro insert Conta - tenta inserir usuario sem token de acesso", state do
+    test "erro insert Conta - tenta inserir usuario sem token de acesso.", state do
       %Usuario{id: usuario_id} = insert(:usuario)
       %TipoConta{id: tipo_conta_id} = insert(:tipo_conta)
 
@@ -156,7 +156,7 @@ defmodule BankApiWeb.ControllerContaTest do
   end
 
   describe "UPDATE" do
-    test "assert update - atualiza saldo para valor válido maior que zero", state do
+    test "assert update - atualiza saldo para valor válido maior que zero.", state do
       %Usuario{id: usuario_id} = insert(:usuario)
       %TipoConta{id: tipo_conta_id} = insert(:tipo_conta)
 
@@ -169,12 +169,12 @@ defmodule BankApiWeb.ControllerContaTest do
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Conta Atualizada",
+               "mensagem" => "Conta Atualizada.",
                "Conta" => %{"conta_ID" => _id_usuario, "saldo_conta" => 5000}
              } = response
     end
 
-    test "assert update - atualiza saldo para valor válido igual a zero", state do
+    test "assert update - atualiza saldo para valor válido igual a zero.", state do
       %Usuario{id: usuario_id} = insert(:usuario)
       %TipoConta{id: tipo_conta_id} = insert(:tipo_conta)
 
@@ -187,7 +187,7 @@ defmodule BankApiWeb.ControllerContaTest do
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Conta Atualizada",
+               "mensagem" => "Conta Atualizada.",
                "Conta" => %{"conta_ID" => _id_usuario, "saldo_conta" => 0}
              } = response
     end
@@ -204,7 +204,7 @@ defmodule BankApiWeb.ControllerContaTest do
         |> patch(Routes.conta_path(state[:conn], :update, id, %{"saldo_conta" => -1}))
         |> json_response(404)
 
-      assert %{"error" => "Saldo inválido, ele deve ser maior ou igual a zero"} = response
+      assert %{"error" => "Saldo inválido, ele deve ser maior ou igual a zero."} = response
     end
 
     test "error update - Tenta atualizar saldo sem token de acesso", state do
@@ -236,7 +236,7 @@ defmodule BankApiWeb.ControllerContaTest do
 
       assert %{
                "Conta" => %{"ID_Usuario" => ^usuario_id, "Tipo_Conta" => ^tipo_conta_id},
-               "mensagem" => "Conta removida"
+               "mensagem" => "Conta removida."
              } = response
     end
 
@@ -247,7 +247,7 @@ defmodule BankApiWeb.ControllerContaTest do
         |> delete(Routes.conta_path(state[:conn], :delete, 951_951_951))
         |> json_response(:not_found)
 
-      assert %{"Mensagem" => "ID Inválido ou inexistente", "Resultado" => "Conta inexistente."} =
+      assert %{"error" => "ID Inválido ou inexistente.", "mensagem" => "Conta inexistente."} =
                response
     end
 

@@ -1,10 +1,11 @@
 defmodule BankApiWeb.ControllerTransacaoTest do
-  use BankApiWeb.ConnCase, async: true
+  use BankApiWeb.ConnCase, async: false
   use ExUnit.Case
   alias BankApi.Schemas.{Conta, TipoConta, Usuario, Conta, Operacao, Transacao}
   alias BankApi.Repo
   import BankApi.Factory
   alias BankApiWeb.Auth.Guardian
+  alias BankApi.Handle.Repo.Transacao, as: HandleTransacaoRepo
 
   setup do
     [conn: "Phoenix.ConnTest.build_conn()"]
@@ -17,37 +18,66 @@ defmodule BankApiWeb.ControllerTransacaoTest do
 
     %Usuario{id: id_usuario1} = insert(:usuario)
     %Usuario{id: id_usuario2} = insert(:usuario)
+    %Usuario{id: id_usuario3} = insert(:usuario)
 
     %Conta{id: conta_origem_id} =
       insert(:conta, usuario_id: id_usuario1, tipo_conta_id: id_tipo_conta)
 
-    %Conta{id: conta_destino_id} =
+    %Conta{id: conta_destino_id1} =
       insert(:conta, usuario_id: id_usuario2, tipo_conta_id: id_tipo_conta)
+
+    %Conta{id: conta_destino_id2} =
+      insert(:conta, usuario_id: id_usuario3, tipo_conta_id: id_tipo_conta)
 
     %Operacao{id: operacao_id} = insert(:operacao)
 
     {:ok,
      valores: %{
        conta_origem_id: conta_origem_id,
-       conta_destino_id: conta_destino_id,
+       conta_destino_id: conta_destino_id1,
+       conta_destino_id2: conta_destino_id2,
        operacao_id: operacao_id,
        token: token
      }}
   end
 
+  test "assert get - Exibe os dados de pagamentos.", state do
+    %Operacao{id: id_operacao} = insert(:operacao, nome_operacao: "Pagamento")
+
+    %Transacao{id: id} =
+      insert(:transacao,
+        conta_origem_id: state[:valores].conta_origem_id,
+        conta_destino_id: state[:valores].conta_destino_id,
+        operacao_id: id_operacao,
+        valor: 650
+      )
+
+    response =
+      state[:conn]
+      |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+      |> get(Routes.transacao_path(state[:conn], :show, id))
+      |> json_response(:ok)
+
+    assert %{
+             "mensagem" => "Transação encotrada",
+             "Transacao" => %{
+               "conta_origem_id" => state[:valores].conta_origem_id,
+               "conta_destino_id" => state[:valores].conta_destino_id,
+               "operacao_id" => id_operacao,
+               "valor" => 650
+             }
+           } == response
+  end
+
   test "assert get - Exibe os dados de um saque quando é informado parametros validos", state do
     %Operacao{id: id_operacao} = insert(:operacao, nome_operacao: "Saque")
 
-    params = %{
-      "conta_origem_id" => state[:valores].conta_origem_id,
-      "operacao_id" => id_operacao,
-      "valor" => 700
-    }
-
-    {:ok, %Transacao{id: id}} =
-      params
-      |> Transacao.changeset()
-      |> BankApi.Repo.insert()
+    %Transacao{id: id} =
+      insert(:transacao_saque,
+        conta_origem_id: state[:valores].conta_origem_id,
+        operacao_id: id_operacao,
+        valor: 700
+      )
 
     response =
       state[:conn]
@@ -65,13 +95,12 @@ defmodule BankApiWeb.ControllerTransacaoTest do
            } == response
   end
 
-  test "assert get - Exibe os dados de uma transferencia quando é informado parametros validos",
+  test "assert get - Retorna os dados de uma transacao quando passado ID valido",
        state do
     %Operacao{id: id_operacao} = insert(:operacao, nome_operacao: "Saque")
 
     params = %{
       "conta_origem_id" => state[:valores].conta_origem_id,
-      "conta_destino_id" => state[:valores].conta_destino_id,
       "operacao_id" => id_operacao,
       "valor" => 900
     }
@@ -91,7 +120,6 @@ defmodule BankApiWeb.ControllerTransacaoTest do
              "mensagem" => "Transação encotrada",
              "Transacao" => %{
                "conta_origem_id" => state[:valores].conta_origem_id,
-               "conta_destino_id" => state[:valores].conta_destino_id,
                "operacao_id" => id_operacao,
                "valor" => 900
              }
@@ -125,11 +153,11 @@ defmodule BankApiWeb.ControllerTransacaoTest do
   end
 
   test "assert ok insert - Todos parametros estão ok, usuario faz um saque", state do
-    %Operacao{id: id_operacao} = insert(:operacao, nome_operacao: "Saque")
+    %Operacao{id: operacao_id} = insert(:operacao, nome_operacao: "Saque")
 
     params = %{
       "conta_origem_id" => state[:valores].conta_origem_id,
-      "operacao_id" => id_operacao,
+      "operacao_id" => operacao_id,
       "valor" => 1000
     }
 
@@ -142,8 +170,7 @@ defmodule BankApiWeb.ControllerTransacaoTest do
     assert %{
              "Transacao" => %{
                "conta_origem_id" => state[:valores].conta_origem_id,
-               "operacao_id" => id_operacao,
-               "nome_operacao" => "Saque",
+               "operacao_id" => operacao_id,
                "valor" => 1000
              },
              "mensagem" => "Transação Realizada com Sucesso"
@@ -152,17 +179,17 @@ defmodule BankApiWeb.ControllerTransacaoTest do
 
   describe "delete/1" do
     test "delete ok - remove  transação de saque cadastrada na base de dados", state do
-      %Operacao{id: id_operacao} = insert(:operacao, nome_operacao: "Saque")
+      %Operacao{id: operacao_id} = insert(:operacao, nome_operacao: "Saque")
 
       params = %{
         "conta_origem_id" => state[:valores].conta_origem_id,
-        "operacao_id" => id_operacao,
+        "operacao_id" => operacao_id,
         "valor" => 1000
       }
 
       total_antes = Repo.aggregate(Transacao, :count)
 
-      {:ok, %Transacao{id: id}} =
+      {:ok, parametros} =
         params
         |> Transacao.changeset()
         |> BankApi.Repo.insert()
@@ -173,13 +200,13 @@ defmodule BankApiWeb.ControllerTransacaoTest do
       response =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> delete(Routes.transacao_path(state[:conn], :delete, id))
+        |> delete(Routes.transacao_path(state[:conn], :delete, parametros.id))
         |> json_response(:ok)
 
       assert %{
                "Transacao" => %{
                  "conta_origem_id" => state[:valores].conta_origem_id,
-                 "operacao_id" => id_operacao,
+                 "operacao_id" => operacao_id,
                  "valor" => 1000
                },
                "mensagem" => "Transação Removida com Sucesso"
@@ -197,7 +224,7 @@ defmodule BankApiWeb.ControllerTransacaoTest do
         |> json_response(:not_found)
 
       assert %{
-               "error" => "ID inválido"
+               "error" => "ID inválido."
              } = response
     end
   end

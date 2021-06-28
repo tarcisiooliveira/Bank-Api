@@ -7,7 +7,7 @@ defmodule BankApi.Handle.HandleConta do
   """
   def get(id) do
     case Repo.get_by(Conta, id: id) do
-      nil -> {:error, "ID Inválido ou inexistente"}
+      nil -> {:error, "ID Inválido ou inexistente."}
       conta -> {:ok, conta}
     end
   end
@@ -19,20 +19,32 @@ defmodule BankApi.Handle.HandleConta do
     end
   end
 
-  def update(id, %{saldo_conta: saldo_conta} = _params) do
-    case Repo.get_by(Conta, id: id) do
-      nil ->
-        {:error, "ID Inválido ou inexistente"}
+  defp is_valor_negativo?(saldo_conta) do
+    if saldo_conta >= 0, do: true, else: false
+  end
 
-      conta ->
-        Conta.update_changeset(conta, %{saldo_conta: saldo_conta})
+  defp is_saldo_suficiente?(saldo_inicial, valor),
+    do: if(saldo_inicial - valor >= 0, do: true, else: false)
+
+  def update(id, %{saldo_conta: saldo_conta} = _params) do
+    conta = Repo.get_by(Conta, id: id)
+
+    saldo = String.to_integer(saldo_conta)
+
+    case is_valor_negativo?(saldo) &&
+           is_saldo_suficiente?(conta.saldo_conta, saldo) do
+      false ->
+        {:error, "Saldo inválido, ele deve ser maior ou igual a zero."}
+
+      true ->
+        Conta.update_changeset(conta, %{saldo_conta: saldo})
         |> Repo.update()
     end
   end
 
   def delete(id) do
     case Repo.get_by(Conta, id: id) do
-      nil -> {:error, "ID Inválido ou inexistente"}
+      nil -> {:error, "ID Inválido ou inexistente."}
       conta -> Repo.delete(conta)
     end
   end
