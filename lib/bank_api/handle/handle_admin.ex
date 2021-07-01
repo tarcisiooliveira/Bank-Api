@@ -1,59 +1,30 @@
 defmodule BankApi.Handle.HandleAdmin do
-  alias BankApi.Schemas.Admin
-  alias BankApi.Repo
+  alias BankApi.Multi.Admin, as: MultiAdmin
+  alias BankApi.Handle.Repo.Admin, as: HandleRepoAdmin
 
   @moduledoc """
-  Modulo de manipulação de dados Operação através do Repo
+  Modulo de manipulação de dados Admin
   """
   def get(id) do
-    case Repo.get_by(Admin, id: id) do
+    case HandleRepoAdmin.fetch_admin(%{id: id}) do
       nil -> {:error, "ID Inválido ou inexistente"}
       admin -> {:ok, admin}
     end
   end
 
-  def create(
-        %{
-          "email" => _email,
-          "password" => _senha,
-          "password_confirmation" => _password_confirmation
-        } = params
-      ) do
+  def create(params) do
     params
-    |> Admin.changeset()
-    |> Repo.insert()
-  end
-
-  def create(
-        %{
-          "email" => _email,
-          "password" => _senha
-        } = _params
-      ) do
-    {:error, "Campo Confirmação de Senha não informado"}
+    |> MultiAdmin.create()
   end
 
   def update(id, %{email: email}) do
-    case Repo.get_by(Admin, email: email) do
-      %Admin{} ->
-        {:error, "Email já cadastrado."}
-
-      _ ->
-        case Repo.get_by(Admin, id: id) do
-          nil ->
-            {:error, "ID inválido"}
-
-          admin ->
-            Admin.update_changeset(admin, %{email: email})
-            |> Repo.update()
-        end
-    end
+    MultiAdmin.update(%{id: id, email: email})
   end
 
   def delete(id) do
-    case Repo.get_by(Admin, id: id) do
+    case HandleRepoAdmin.fetch_admin(%{id: id}) do
       nil -> {:error, "ID Inválido ou inexistente"}
-      admin -> Repo.delete(admin)
+      admin -> HandleRepoAdmin.delete(admin)
     end
   end
 end

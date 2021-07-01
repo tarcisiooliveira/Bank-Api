@@ -35,8 +35,10 @@ defmodule BankApiWeb.AdminView do
   def render(
         "update.json",
         %{
-          admin: %Admin{
-            email: email
+          admin: %{
+            update_admin: %Admin{
+              email: email
+            }
           }
         }
       ) do
@@ -80,4 +82,11 @@ defmodule BankApiWeb.AdminView do
       ) do
     %{error: error}
   end
+
+  # def render(
+  #       "error.json",
+  #       params
+  #     ) do
+  #   %{error: "Verifique os parametros."}
+  # end
 end

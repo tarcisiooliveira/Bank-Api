@@ -34,6 +34,8 @@ defmodule BankApi.Schemas.Admin do
     admin
     |> cast(params, [:email])
     |> validate_required([:email])
+    |> validate_format(:email, ~r/@/, message: "Email formato inválido")
+    |> unique_constraint(:email, message: "Email já em uso.")
     |> unique_constraint(:email)
   end
 

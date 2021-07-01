@@ -1,7 +1,7 @@
 defmodule BankApi.Multi.Admin do
-  alias BankApi.Schemas.{Admin, Conta}
+  alias BankApi.Schemas.Admin
   alias BankApi.Repo
-  alias BankApi.Handle.Repo.Conta, as: HandleContaRepo
+  alias BankApi.Handle.Repo.Admin, as: HandleRepoAdmin
   alias BankApi.Handle.Repo.Operacao, as: HandleOperacaoRepo
   alias Ecto.Changeset
 
@@ -44,33 +44,34 @@ defmodule BankApi.Multi.Admin do
     end
   end
 
-  def update(params) do
+  def update(%{id: id, email: email}) do
     multi =
       Ecto.Multi.new()
-      |> Ecto.Multi.run(:changeset_valido, fn _, _ ->
-        Admin.changeset(params)
+      |> Ecto.Multi.run(:try_admin_by_email, fn _, _ ->
+        case HandleRepoAdmin.fetch_admin_email(%{email: email}) do
+          nil ->
+            {:ok, "Email válido."}
 
-        case Admin.changeset(params) do
-          %Changeset{errors: [password_confirmation: {"Senhas diferentes.", _}]} ->
-            {:error, :senhas_diferentes}
+          admin ->
+            {:error, "Email já em uso."}
+        end
+      end)
+      |> Ecto.Multi.run(:fetch_admin_account, fn _, _ ->
+        case HandleRepoAdmin.fetch_admin(%{id: id}) do
+          nil ->
+            {:error, "ID inválido"}
 
-          %Changeset{errors: [email: {"Email já em uso.", _}]} ->
-            {:error, :email_ja_cadastrado}
+          admin ->
+            {:ok, admin}
+        end
+      end)
+      |> Ecto.Multi.update(:update_admin, fn %{fetch_admin_account: fetch_admin_account} ->
+        case HandleRepoAdmin.update(fetch_admin_account, %{email: email}) do
+          %Admin{} = admin ->
+            admin
 
-          %Changeset{errors: [email: {"Email formato inválido", _}]} ->
-            {:error, :email_formato_invalido}
-
-          %Changeset{errors: [password: {"Password deve conter entre 4 e 10 caracteres.", _}]} ->
-            {:error, :password_entre_4_e_10_caracteres}
-
-          %Changeset{errors: [password_confirmation: {"can't be blank", [validation: :required]}]} ->
-            {:error, :confirmacao_senha_necessario}
-
-          %Changeset{errors: [password_confirmation: _, password: _]} ->
-            {:error, :senhas_diferentes}
-
-          _ ->
-            {:ok, :paramentros_validos}
+          %Changeset{} = changeset ->
+            changeset
         end
       end)
 

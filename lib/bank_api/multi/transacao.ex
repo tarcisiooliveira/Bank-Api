@@ -91,8 +91,11 @@ defmodule BankApi.Multi.Transacao do
       end)
 
     case Repo.transaction(multi) do
-      {:ok, params} -> {:ok, params}
-      {:error, _, changeset, _} -> {:error, changeset}
+      {:ok, params} ->
+        {:ok, params}
+
+      {:error, _, changeset, _} ->
+        {:error, changeset}
     end
   end
 
