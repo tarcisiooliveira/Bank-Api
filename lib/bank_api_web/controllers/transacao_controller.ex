@@ -4,13 +4,13 @@ defmodule BankApiWeb.TransacaoController do
   alias BankApi.Schemas.Transacao
 
   def show(conn, %{"id" => id}) do
-    id
+    %{id: to_integer(id)}
     |> HandleTransacao.get()
     |> handle_response(conn, "show.json", :ok)
   end
 
   def delete(conn, %{"id" => id}) do
-    id
+    %{id: to_integer(id)}
     |> HandleTransacao.delete()
     |> handle_delete_response(conn, "delete.json", :ok)
   end
@@ -18,13 +18,18 @@ defmodule BankApiWeb.TransacaoController do
   def create(
         conn,
         %{
-          "conta_origem_id" => _conta_origem_id,
-          "conta_destino_id" => _conta_destino_id,
-          "operacao_id" => _operacao_id,
-          "valor" => _valor
-        } = params
+          "conta_origem_id" => conta_origem_id,
+          "conta_destino_id" => conta_destino_id,
+          "operacao_id" => operacao_id,
+          "valor" => valor
+        }
       ) do
-    params
+    %{
+      conta_origem_id: conta_origem_id,
+      conta_destino_id: conta_destino_id,
+      operacao_id: operacao_id,
+      valor: valor
+    }
     |> HandleTransacao.create()
     |> handle_response(conn, "create.json", :created)
   end
@@ -32,12 +37,16 @@ defmodule BankApiWeb.TransacaoController do
   def create(
         conn,
         %{
-          "conta_origem_id" => _conta_origem_id,
-          "operacao_id" => _operacao_id,
-          "valor" => _valor
-        } = params
+          "conta_origem_id" => conta_origem_id,
+          "operacao_id" => operacao_id,
+          "valor" => valor
+        }
       ) do
-    params
+    %{
+      conta_origem_id: conta_origem_id,
+      operacao_id: operacao_id,
+      valor: valor
+    }
     |> HandleTransacao.create()
     |> handle_response(conn, "create.json", :created)
   end
@@ -50,11 +59,13 @@ defmodule BankApiWeb.TransacaoController do
 
   defp handle_delete_response(
          {:ok,
-          %Transacao{
-            conta_origem_id: conta_origem_id,
-            conta_destino_id: conta_destino_id,
-            operacao_id: operacao_id,
-            valor: valor
+          %{
+            delete_account: %Transacao{
+              conta_origem_id: conta_origem_id,
+              conta_destino_id: conta_destino_id,
+              operacao_id: operacao_id,
+              valor: valor
+            }
           }},
          conn,
          view,
@@ -77,4 +88,6 @@ defmodule BankApiWeb.TransacaoController do
     |> put_status(:not_found)
     |> render("error.json", error: error)
   end
+
+  defp to_integer(value), do: String.to_integer(value)
 end

@@ -1,5 +1,5 @@
 defmodule BankApi.ControllerAdminTest do
-  use BankApiWeb.ConnCase, async: true
+  use BankApiWeb.ConnCase, async: false
   alias BankApiWeb.Auth.Guardian
   import BankApi.Factory
 
@@ -52,7 +52,8 @@ defmodule BankApi.ControllerAdminTest do
         |> json_response(422)
 
       assert %{
-               "error" => "Verifique os parametros."
+               "error" =>
+                 "Invalid parameters.\n        Required: \"email\" => email, \"password\" => password, \"password_confirmation\" => password_confirmation"
              } = response
     end
 
@@ -115,7 +116,7 @@ defmodule BankApi.ControllerAdminTest do
 
   describe "UPDATE" do
     test "assert update admin - admin atualiza email", state do
-      params = %{email: "update-email@email.com"}
+      params = %{email: "updated-email@email.com"}
 
       response =
         state[:conn]
@@ -123,7 +124,7 @@ defmodule BankApi.ControllerAdminTest do
         |> patch(Routes.admin_path(state[:conn], :update, state[:valores].admin.id, params))
         |> json_response(:ok)
 
-      assert %{"mensagem" => "Admininstrador Atualizado", "email" => "update-email@email.com"} =
+      assert %{"mensagem" => "Admininstrador Atualizado", "email" => "updated-email@email.com"} =
                response
     end
 
@@ -148,7 +149,7 @@ defmodule BankApi.ControllerAdminTest do
         |> patch(Routes.admin_path(state[:conn], :update, state[:valores].admin.id, params))
         |> json_response(:not_found)
 
-      assert %{"error" => "Email já cadastrado."} = response
+      assert %{"error" => "Email já em uso."} = response
     end
   end
 end

@@ -59,7 +59,7 @@ defmodule BankApiWeb.ControllerUsuarioTest do
       response =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> get(Routes.conta_path(state[:conn], :show, 951_951))
+        |> get(Routes.usuario_path(state[:conn], :show, 951_951))
         |> json_response(:not_found)
 
       assert %{"error" => "ID Inválido ou inexistente."} = response
@@ -238,7 +238,7 @@ defmodule BankApiWeb.ControllerUsuarioTest do
         |> json_response(:not_found)
 
       assert %{
-               "error" => "ID inválido"
+               "error" => "ID Inválido ou inexistente."
              } = response
     end
   end

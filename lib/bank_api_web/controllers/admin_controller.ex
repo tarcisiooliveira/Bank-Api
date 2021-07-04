@@ -1,9 +1,8 @@
 defmodule BankApiWeb.AdminController do
   use BankApiWeb, :controller
   alias BankApi.Handle.HandleAdmin
-  alias BankApi.Multi.Admin, as: MultiAdmin
+  # alias BankApi.Multi.Admin, as: MultiAdmin
 
-  # Usado pelo :create nos testes de forma automatica
   def index(conn, params) do
     params
     |> HandleAdmin.create()
@@ -18,22 +17,38 @@ defmodule BankApiWeb.AdminController do
 
   def create(
         conn,
-        params
+        %{
+          "email" => email,
+          "password" => password,
+          "password_confirmation" => password_confirmation
+        }
       ) do
-    params
-    |> MultiAdmin.create()
+    %{email: email, password: password, password_confirmation: password_confirmation}
+    |> HandleAdmin.create()
+    |> handle_create_response(conn, "create.json")
+  end
+
+  def create(
+        conn,
+        _params
+      ) do
+    {
+      :error,
+        "Invalid parameters.
+        Required: \"email\" => email, \"password\" => password, \"password_confirmation\" => password_confirmation"
+    }
     |> handle_create_response(conn, "create.json")
   end
 
   def delete(conn, %{"id" => id}) do
-    id
+    %{id: String.to_integer(id)}
     |> HandleAdmin.delete()
     |> handle_delete(conn)
   end
 
   def update(conn, %{"id" => id, "email" => email}) do
-    id
-    |> HandleAdmin.update(%{email: email})
+    %{id: id, email: email}
+    |> HandleAdmin.update()
     |> handle_response(conn, "update.json", :ok)
   end
 

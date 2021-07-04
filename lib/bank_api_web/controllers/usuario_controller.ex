@@ -15,8 +15,8 @@ defmodule BankApiWeb.UsuarioController do
     |> handle_response(conn, "show.json", :ok)
   end
 
-  def create(conn, params) do
-    params
+  def create(conn, %{"nome" => nome, "email" => email, "password" => password}) do
+    %{nome: nome, email: email, password: password}
     |> HandleUsuario.create()
     |> handle_create_response(conn, "create.json")
   end
@@ -46,8 +46,6 @@ defmodule BankApiWeb.UsuarioController do
   end
 
   defp handle_create_response({:error, error} = _params, conn, view) do
-    # {:error, %Ecto.Changeset{errors: errors}} = params
-    # {error, _as} = errors[:email]
     conn
     |> put_status(422)
     |> render(view, error: error)

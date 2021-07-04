@@ -21,10 +21,12 @@ defmodule BankApiWeb.ContaView do
   end
 
   def render("create.json", %{
-        conta: %Conta{
-          saldo_conta: saldo_conta,
-          usuario_id: usuario_id,
-          tipo_conta_id: tipo_conta_id
+        conta: %{
+          inserted_account: %Conta{
+            saldo_conta: saldo_conta,
+            usuario_id: usuario_id,
+            tipo_conta_id: tipo_conta_id
+          }
         }
       }) do
     %{
@@ -37,30 +39,37 @@ defmodule BankApiWeb.ContaView do
     }
   end
 
-  def render("update.json", %{conta: %Conta{id: id, saldo_conta: saldo_conta}}) do
+  def render("update.json", %{conta: %{update_account: %Conta{id: id, saldo_conta: saldo_conta}}}) do
     %{
       mensagem: "Conta Atualizada.",
       Conta: %{conta_ID: id, saldo_conta: saldo_conta}
     }
   end
 
-  def render("delete.json", %{conta: %Conta{usuario_id: usuario_id, tipo_conta_id: tipo_conta_id}}) do
+  def render("delete.json", %{
+        conta: %{deleted_account: %Conta{usuario_id: usuario_id, tipo_conta_id: tipo_conta_id}}
+      }) do
     %{
       mensagem: "Conta removida.",
       Conta: %{ID_Usuario: usuario_id, Tipo_Conta: tipo_conta_id}
     }
   end
 
+  def render("delete.json", %{error: :theres_no_account}) do
+    %{
+      error: "ID Inválido ou inexistente."
+    }
+  end
+
   def render("delete.json", %{error: error}) do
     %{
-      mensagem: "Conta inexistente.",
-      error: "#{error}"
+      error: error
     }
   end
 
   def render(
         "error.json",
-        %{error: %Changeset{errors: [saldo_conta: {"is invalid", _error}]}} = _params
+        %{error: :ammount_negative_value} = _params
       ) do
     %{error: "Saldo inválido, ele deve ser maior ou igual a zero."}
   end

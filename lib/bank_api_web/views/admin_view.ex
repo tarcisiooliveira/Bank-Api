@@ -1,6 +1,7 @@
 defmodule BankApiWeb.AdminView do
   use BankApiWeb, :view
   alias BankApi.Schemas.Admin
+  alias Ecto.Changeset
 
   def render("show.json", %{admin: %Admin{email: email}}) do
     %{
@@ -15,8 +16,7 @@ defmodule BankApiWeb.AdminView do
   def render(
         "create.json",
         %{
-          conn: %Plug.Conn{params: %{"email" => email}},
-          admin: %{changeset_valido: :paramentros_validos}
+          admin: %{changeset_valido: %Changeset{changes: %{email: email}}}
         }
       ) do
     %{
@@ -35,8 +35,10 @@ defmodule BankApiWeb.AdminView do
   def render(
         "update.json",
         %{
-          admin: %Admin{
-            email: email
+          admin: %{
+            update_admin: %Admin{
+              email: email
+            }
           }
         }
       ) do
@@ -49,14 +51,23 @@ defmodule BankApiWeb.AdminView do
   def render(
         "delete.json",
         %{
-          admin: %Admin{
-            email: email
+          admin: %{
+            deleted_admin: %Admin{
+              email: email
+            }
           }
         }
       ) do
     %{
       mensagem: "Administrador removido",
       email: email
+    }
+  end
+
+  def render("delete.json", %{error: :theres_no_admin}) do
+    %{
+      Erro: "Administrador não removido.",
+      Resultado: "ID Inválido ou inexistente"
     }
   end
 
@@ -80,4 +91,11 @@ defmodule BankApiWeb.AdminView do
       ) do
     %{error: error}
   end
+
+  # def render(
+  #       "error.json",
+  #       params
+  #     ) do
+  #   %{error: "Verifique os parametros."}
+  # end
 end

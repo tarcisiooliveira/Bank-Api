@@ -153,6 +153,9 @@ defmodule BankApiWeb.TransacaoView do
     }
   end
 
+  def render("error.json", %{error: :transaction_not_found}) do
+    %{error: "ID Inválido ou inexistente."}
+  end
   def render("error.json", %{error: error}) do
     %{error: error}
   end

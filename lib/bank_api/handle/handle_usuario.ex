@@ -1,38 +1,39 @@
 defmodule BankApi.Handle.HandleUsuario do
   alias BankApi.{Repo, Schemas.Usuario}
+  alias BankApi.Handle.Repo.Usuario, as: HandleUsuarioRepo
 
   @moduledoc """
   Modulo de manipulação de dados Usuario através do Repo
   """
   def get(id) do
-    case Repo.get_by(Usuario, id: id, visivel: true) do
-      nil -> {:error, "ID inválido"}
+    case HandleUsuarioRepo.fetch_user(%{id: id, visivel: true}) do
+      nil -> {:error, "ID Inválido ou inexistente."}
       usuario -> {:ok, usuario}
     end
   end
 
-  def create(%{"nome" => _nome, "email" => _email, "password" => _password} = params) do
+  def create(%{nome: _nome, email: _email, password: _password} = params) do
     params
     |> Usuario.changeset()
     |> Repo.insert()
   end
 
   def delete(id) do
-    case Repo.get_by(Usuario, id: id, visivel: true) do
-      nil -> {:error, "ID inválido"}
+    case HandleUsuarioRepo.fetch_user(%{id: id, visivel: true}) do
+      nil -> {:error, "ID Inválido ou inexistente."}
       usuario -> Usuario.update_changeset(usuario, %{visivel: false}) |> Repo.update()
     end
   end
 
   def update(id, %{email: email}) do
-    case Repo.get_by(Usuario, email: email, visivel: true) do
+    case HandleUsuarioRepo.fetch_user(%{email: email, visivel: true}) do
       %Usuario{} ->
         {:error, "Email já cadastrado."}
 
       _ ->
-        case Repo.get_by(Usuario, id: id, visivel: true) do
+        case HandleUsuarioRepo.fetch_user(%{id: id, visivel: true}) do
           nil ->
-            {:error, "ID inválido"}
+            {:error, "ID Inválido ou inexistente."}
 
           usuario ->
             Usuario.update_changeset(usuario, %{email: email, visivel: true})
@@ -42,11 +43,11 @@ defmodule BankApi.Handle.HandleUsuario do
   end
 
   def update(id, %{nome: nome}) do
-    user = Repo.get_by(Usuario, id: id, visivel: true)
+    user = HandleUsuarioRepo.fetch_user(%{id: id, visivel: true})
 
     case user do
       nil ->
-        {:error, "ID inválido"}
+        {:error, "ID Inválido ou inexistente."}
 
       usuario ->
         Usuario.update_changeset(usuario, %{nome: nome, visivel: true})
