@@ -71,7 +71,7 @@ defmodule BankApiWeb.ControllerOperacaoTest do
       |> delete(Routes.operacao_path(state[:conn], :delete, 901_000_000))
       |> json_response(404)
 
-    assert %{"Mensagem" => "ID Inválido ou inexistente", "Resultado" => "Operação inexistente."} =
+    assert %{"Mensagem" => "ID Inválido ou inexistente.", "Resultado" => "Operação inexistente."} =
              response
   end
 

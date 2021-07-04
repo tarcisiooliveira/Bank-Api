@@ -1,51 +1,29 @@
 defmodule BankApi.Handle.HandleConta do
-  alias BankApi.Schemas.Conta
-  alias BankApi.Repo
+  alias BankApi.Multi.Conta, as: MultiConta
+  alias BankApi.Handle.Repo.Conta, as: HandleRepoConta
 
   @moduledoc """
-  Modulo de manipulação de dados Operação através do Repo
+  Modulo de manipulação de dados Conta
   """
-  def get(id) do
-    case Repo.get_by(Conta, id: id) do
+  def get(%{id: _id}=params) do
+    case HandleRepoConta.fetch_account(params) do
       nil -> {:error, "ID Inválido ou inexistente."}
       conta -> {:ok, conta}
     end
   end
 
   def create(params) do
-    case Conta.changeset(params) |> Repo.insert() do
-      {:error, changeset} -> {:error, changeset}
-      {:ok, conta} -> {:ok, conta}
-    end
+    params
+    |> MultiConta.create()
   end
 
-  defp is_valor_negativo?(saldo_conta) do
-    if saldo_conta >= 0, do: true, else: false
+  def update(%{id: _id, saldo_conta: _saldo_conta} = params) do
+    params
+    |> MultiConta.update()
   end
 
-  defp is_saldo_suficiente?(saldo_inicial, valor),
-    do: if(saldo_inicial - valor >= 0, do: true, else: false)
-
-  def update(id, %{saldo_conta: saldo_conta} = _params) do
-    conta = Repo.get_by(Conta, id: id)
-
-    saldo = String.to_integer(saldo_conta)
-
-    case is_valor_negativo?(saldo) &&
-           is_saldo_suficiente?(conta.saldo_conta, saldo) do
-      false ->
-        {:error, "Saldo inválido, ele deve ser maior ou igual a zero."}
-
-      true ->
-        Conta.update_changeset(conta, %{saldo_conta: saldo})
-        |> Repo.update()
-    end
-  end
-
-  def delete(id) do
-    case Repo.get_by(Conta, id: id) do
-      nil -> {:error, "ID Inválido ou inexistente."}
-      conta -> Repo.delete(conta)
-    end
+  def delete(%{id: _id} = params) do
+    params
+    |> MultiConta.delete()
   end
 end

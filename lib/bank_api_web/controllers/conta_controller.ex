@@ -2,14 +2,8 @@ defmodule BankApiWeb.ContaController do
   use BankApiWeb, :controller
   alias BankApi.Handle.HandleConta
 
-  # def index(conn, params) do
-  #   params
-  #   |> HandleConta.create()
-  #   |> handle_response(conn, "create.json", :created)
-  # end
-
   def show(conn, %{"id" => id}) do
-    id
+    %{id: id}
     |> HandleConta.get()
     |> handle_response(conn, "show.json", :ok)
   end
@@ -17,12 +11,12 @@ defmodule BankApiWeb.ContaController do
   def create(
         conn,
         %{
-          "saldo_conta" => _100_000,
-          "usuario_id" => _usuario_id,
-          "tipo_conta_id" => _tipo_conta_id
-        } = params
+          "saldo_conta" => saldo_conta,
+          "usuario_id" => usuario_id,
+          "tipo_conta_id" => tipo_conta_id
+        }
       ) do
-    params
+    %{saldo_conta: saldo_conta, usuario_id: usuario_id, tipo_conta_id: tipo_conta_id}
     |> HandleConta.create()
     |> handle_response(conn, "create.json", :created)
   end
@@ -30,23 +24,25 @@ defmodule BankApiWeb.ContaController do
   def create(
         conn,
         %{
-          "usuario_id" => _usuario_id,
-          "tipo_conta_id" => _tipo_conta_id
-        } = params
+          "usuario_id" => usuario_id,
+          "tipo_conta_id" => tipo_conta_id
+        }
       ) do
-    params
+    %{usuario_id: to_integer(usuario_id), tipo_conta_id: to_integer(tipo_conta_id)}
     |> HandleConta.create()
     |> handle_response(conn, "create.json", :created)
   end
 
   def update(conn, %{"id" => id, "saldo_conta" => saldo_conta} = _params) do
-    id
-    |> HandleConta.update(%{saldo_conta: saldo_conta})
+    %{id: to_integer(id), saldo_conta: to_integer(saldo_conta)}
+    |> HandleConta.update()
     |> handle_response(conn, "update.json", :created)
   end
 
+  defp to_integer(number), do: String.to_integer(number)
+
   def delete(conn, %{"id" => id}) do
-    id
+    %{id: to_integer(id)}
     |> HandleConta.delete()
     |> handle_delete(conn)
   end
@@ -73,5 +69,11 @@ defmodule BankApiWeb.ContaController do
     conn
     |> put_status(:not_found)
     |> render("delete.json", error: error)
+  end
+
+  defp handle_delete(erro, conn) do
+    conn
+    |> put_status(:not_found)
+    |> render("delete.json", error: "error")
   end
 end

@@ -1,141 +1,153 @@
 defmodule BankApi.Multi.Conta do
-  alias BankApi.Schemas.{Conta, Usuario}
+  alias BankApi.Schemas.Conta
   alias BankApi.Repo
   alias BankApi.Handle.Repo.Conta, as: HandleContaRepo
-  alias BankApi.Handle.Repo.Operacao, as: HandleOperacaoRepo
+  alias BankApi.Handle.Repo.Usuario, as: HandleUserRepo
+  alias BankApi.Handle.Repo.TipoConta, as: HandleAccountTypeRepo
 
   def create(
-        %{
-          "conta_origem_id" => conta_origem_id,
-          "conta_destino_id" => conta_destino_id,
-          "operacao_id" => operacao_id,
-          "valor" => valor
-        } = params
+        %{saldo_conta: ammount, usuario_id: user_id, tipo_conta_id: account_type_id} = params
       ) do
-    saldo_inteiro = String.to_integer(valor)
-
     multi =
       Ecto.Multi.new()
-      |> Ecto.Multi.run(:mesma_conta, fn _, _ ->
-        case is_mesma_conta?(conta_origem_id, conta_destino_id) do
-          true -> {:error, :transferencia_para_conta_origem}
-          false -> {:ok, false}
+      |> Ecto.Multi.run(:ammount_non_negative, fn _, _ ->
+        case is_ammount_non_negative?(ammount) do
+          false -> {:error, :ammount_negative_value}
+          true -> {:ok, :ammount_positive_value}
         end
       end)
-      |> Ecto.Multi.run(:valor_negativo, fn _, _ ->
-        case is_valor_negativo?(saldo_inteiro) do
-          true -> {:error, :valor_zero_ou_negativo}
-          false -> {:ok, false}
+      |> Ecto.Multi.run(:theres_user_account, fn _, _ ->
+        case HandleUserRepo.fetch_user(%{id: user_id}) do
+          nil -> {:error, "There's no user with this ID."}
+          account -> {:ok, account}
         end
       end)
-      |> Ecto.Multi.run(:conta_origem, fn _, _ -> buscar_conta(conta_origem_id) end)
-      |> Ecto.Multi.run(:operacao, fn _, _ -> buscar_operacao(operacao_id) end)
-      |> Ecto.Multi.run(:saldo_insuficiente, fn _, %{conta_origem: conta_origem} ->
-        case is_saldo_suficiente?(conta_origem.saldo_conta, saldo_inteiro) do
-          true -> {:ok, :saldo_suficiente}
-          false -> {:error, :saldo_insuficiente}
+      |> Ecto.Multi.run(:theres_account_type, fn _, _ ->
+        case HandleAccountTypeRepo.fetch_account_type(%{id: account_type_id}) do
+          nil -> {:error, "There's no account type with this ID."}
+          account_type -> {:ok, account_type}
         end
       end)
-      |> Ecto.Multi.run(:conta_destino, fn _, _ -> buscar_conta(conta_destino_id) end)
-      |> Ecto.Multi.update(:changeset_saldo_conta_origem, fn %{conta_origem: conta_origem} ->
-        operacao(conta_origem, saldo_inteiro, :subtrair)
+      |> Ecto.Multi.run(:create_account, fn _, _ ->
+        params
+        |> create_account()
       end)
-      |> Ecto.Multi.update(:changeset_saldo_conta_destino, fn %{conta_destino: conta_destino} ->
-        operacao(conta_destino, saldo_inteiro, :adicionar)
-      end)
-      |> Ecto.Multi.insert(:cria_transacao, fn %{
-                                                 conta_origem: conta_origem,
-                                                 conta_destino: conta_destino
-                                               } ->
-        cria_transacao(conta_origem.id, conta_destino.id, "Transferência", saldo_inteiro)
+      |> Ecto.Multi.insert(:inserted_account, fn %{create_account: account} ->
+        account
       end)
 
     case Repo.transaction(multi) do
-      {:ok, params} -> {:ok, params}
-      {:error, _, changeset, _} -> {:error, changeset}
+      {:ok, params} ->
+        {:ok, params}
+
+      {:error, _, changeset, _} ->
+        {:error, changeset}
     end
   end
 
-  def create(%{
-        "conta_origem_id" => conta_origem_id,
-        "operacao_id" => operacao_id,
-        "valor" => valor
-      }) do
-    saldo_inteiro = String.to_integer(valor)
-
+  def create(%{usuario_id: user_id, tipo_conta_id: account_type_id} = params) do
     multi =
       Ecto.Multi.new()
-      |> Ecto.Multi.run(:valor_negativo, fn _, _ ->
-        case is_valor_negativo?(saldo_inteiro) do
-          true -> {:error, :valor_zero_ou_negativo}
-          false -> {:ok, false}
+      |> Ecto.Multi.run(:theres_user_account, fn _, _ ->
+        case HandleUserRepo.fetch_user(%{id: user_id}) do
+          nil -> {:error, "There's no user with this ID."}
+          account -> {:ok, account}
         end
       end)
-      |> Ecto.Multi.run(:conta_origem, fn _, _ -> buscar_conta(conta_origem_id) end)
-      |> Ecto.Multi.run(:operacao, fn _, _ -> buscar_operacao(operacao_id) end)
-      |> Ecto.Multi.run(:saldo_transcao_insuficiente, fn _, %{conta_origem: conta_origem} ->
-        case is_saldo_suficiente?(conta_origem.saldo_conta, saldo_inteiro) do
-          true -> {:ok, :saldo_suficiente}
-          false -> {:error, :saldo_insuficiente}
+      |> Ecto.Multi.run(:theres_account_type, fn _, _ ->
+        case HandleAccountTypeRepo.fetch_account_type(%{id: account_type_id}) do
+          nil -> {:error, "There's no account type with this ID."}
+          account_type -> {:ok, account_type}
         end
       end)
-      |> Ecto.Multi.update(:changeset_saldo_conta_origem, fn %{conta_origem: conta_origem} ->
-        operacao(conta_origem, saldo_inteiro, :subtrair)
+      |> Ecto.Multi.run(:create_account, fn _, _ ->
+        params
+        |> create_account()
       end)
-      |> Ecto.Multi.insert(:cria_transacao, fn %{conta_origem: conta_origem} ->
-        cria_transacao(conta_origem.id, operacao_id, saldo_inteiro)
+      |> Ecto.Multi.insert(:inserted_account, fn %{create_account: account} ->
+        account
       end)
 
     case Repo.transaction(multi) do
-      {:ok, params} -> {:ok, params}
-      {:error, _, changeset, _} -> {:error, changeset}
+      {:ok, params} ->
+        {:ok, params}
+
+      {:error, _, changeset, _} ->
+        {:error, changeset}
     end
   end
 
-  defp cria_transacao(conta_origem_id, conta_destino_id, operacao, valor) do
-    %Conta{}
-    |> Conta.changeset()
-  end
+  def update(%{id: id, saldo_conta: ammount}) do
+    multi =
+      Ecto.Multi.new()
+      |> Ecto.Multi.run(:ammount_non_negative, fn _, _ ->
+        case is_ammount_non_negative?(ammount) do
+          false -> {:error, :ammount_negative_value}
+          true -> {:ok, :ammount_positive_value}
+        end
+      end)
+      |> Ecto.Multi.run(:fetch_account, fn _, _ ->
+        case HandleContaRepo.fetch_account(%{id: id}) do
+          nil -> {:error, :theres_no_account}
+          account -> {:ok, account}
+        end
+      end)
+      |> Ecto.Multi.update(:update_account, fn %{fetch_account: account} ->
+        Conta.update_changeset(account, %{saldo_conta: ammount})
+      end)
 
-  defp cria_transacao(conta_origem_id, operacao, valor) do
-    %{conta_origem_id: conta_origem_id, operacao_id: String.to_integer(operacao), valor: valor}
-    |> Conta.changeset()
-  end
+    case Repo.transaction(multi) do
+      {:ok, params} ->
+        {:ok, params}
 
-  defp buscar_conta(id) do
-    case HandleContaRepo.get_account(id) do
-      nil -> {:error, :conta_nao_encontrada}
-      account -> {:ok, account}
+      {:error, _, changeset, _} ->
+        {:error, changeset}
     end
   end
 
-  defp buscar_operacao(operacao_id) do
-    case HandleOperacaoRepo.get_account(operacao_id) do
-      nil -> {:error, :operacao_nao_encontrada}
-      account -> {:ok, account}
+  @spec delete(%{:id => any, optional(any) => any}) :: {:error, any} | {:ok, any}
+  def delete(%{id: id}) do
+    multi =
+      Ecto.Multi.new()
+      |> Ecto.Multi.run(:fetch_account, fn _, _ ->
+        case HandleContaRepo.fetch_account(%{id: id}) do
+          nil -> {:error, :theres_no_account}
+          account -> {:ok, account}
+        end
+      end)
+      |> Ecto.Multi.delete(:deleted_account, fn %{fetch_account: account} ->
+        account
+      end)
+
+    case Repo.transaction(multi) do
+      {:ok, params} ->
+        {:ok, params}
+
+      {:error, _, changeset, _} ->
+        {:error, changeset}
     end
   end
 
-  defp is_mesma_conta?(id_origem, id_destino) do
-    id_origem == id_destino
+  def is_ammount_non_negative?(value) do
+    if value < 0 or Decimal.new(value) |> Decimal.negative?(), do: false, else: true
   end
 
-  defp is_valor_negativo?(value) do
-    if value == 0 or Decimal.new(value) |> Decimal.negative?(), do: true, else: false
+  defp create_account(%{
+         saldo_conta: amount,
+         usuario_id: user_id,
+         tipo_conta_id: account_type_id
+       }) do
+    {:ok,
+     %{saldo_conta: amount, usuario_id: user_id, tipo_conta_id: account_type_id}
+     |> Conta.changeset()}
   end
 
-  defp is_saldo_suficiente?(saldo_inicial, valor),
-    do: if(saldo_inicial - valor >= 0, do: true, else: false)
-
-  defp operacao(conta, valor, :subtrair) do
-    novo = conta.saldo_conta - valor
-
-    conta
-    |> Conta.update_changeset(%{saldo_conta: novo})
-  end
-
-  defp operacao(conta, valor, :adicionar) do
-    conta
-    |> Conta.update_changeset(%{saldo_conta: conta.saldo_conta + valor})
+  defp create_account(%{
+         usuario_id: user_id,
+         tipo_conta_id: account_type_id
+       }) do
+    {:ok,
+     %{usuario_id: user_id, tipo_conta_id: account_type_id}
+     |> Conta.changeset()}
   end
 end

@@ -17,14 +17,12 @@ defmodule BankApi.Handle.HandleAdmin do
     |> MultiAdmin.create()
   end
 
-  def update(id, %{email: email}) do
-    MultiAdmin.update(%{id: id, email: email})
+  def update(%{id: _id, email: _email} = params) do
+    params
+    |> MultiAdmin.update()
   end
 
-  def delete(id) do
-    case HandleRepoAdmin.fetch_admin(%{id: id}) do
-      nil -> {:error, "ID Inválido ou inexistente"}
-      admin -> HandleRepoAdmin.delete(admin)
-    end
+  def delete(%{id: _id} = params) do
+    MultiAdmin.delete(params)
   end
 end

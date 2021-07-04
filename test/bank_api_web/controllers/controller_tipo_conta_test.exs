@@ -72,7 +72,7 @@ defmodule BankApiWeb.TipoContaTest do
       |> json_response(:not_found)
 
     assert %{
-             "error" => "ID Inválido"
+             "error" => "ID Inválido ou inexistente."
            } = response
   end
 
@@ -99,7 +99,7 @@ defmodule BankApiWeb.TipoContaTest do
       |> json_response(:not_found)
 
     assert %{
-             "error" => "ID Inválido"
+             "error" => "ID Inválido ou inexistente."
            } = response
   end
 end

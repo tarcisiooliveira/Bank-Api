@@ -5,7 +5,6 @@ defmodule BankApiWeb.ControllerTransacaoTest do
   alias BankApi.Repo
   import BankApi.Factory
   alias BankApiWeb.Auth.Guardian
-  alias BankApi.Handle.Repo.Transacao, as: HandleTransacaoRepo
 
   setup do
     [conn: "Phoenix.ConnTest.build_conn()"]
@@ -224,7 +223,7 @@ defmodule BankApiWeb.ControllerTransacaoTest do
         |> json_response(:not_found)
 
       assert %{
-               "error" => "ID inválido."
+               "error" => "ID Inválido ou inexistente."
              } = response
     end
   end

@@ -52,7 +52,8 @@ defmodule BankApi.ControllerAdminTest do
         |> json_response(422)
 
       assert %{
-               "error" => "Verifique os parametros."
+               "error" =>
+                 "Invalid parameters.\n        Required: \"email\" => email, \"password\" => password, \"password_confirmation\" => password_confirmation"
              } = response
     end
 
@@ -116,6 +117,7 @@ defmodule BankApi.ControllerAdminTest do
   describe "UPDATE" do
     test "assert update admin - admin atualiza email", state do
       params = %{email: "updated-email@email.com"}
+
       response =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
@@ -140,8 +142,6 @@ defmodule BankApi.ControllerAdminTest do
 
     test "error update - tenta alterar endereço de email para um já cadastrado", state do
       params = %{email: "tarcisio@admin.com"}
-
-
 
       response =
         state[:conn]

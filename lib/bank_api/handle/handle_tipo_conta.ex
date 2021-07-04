@@ -6,14 +6,14 @@ defmodule BankApi.Handle.HandleTipoConta do
   """
   def get(id) do
     case Repo.get_by(TipoConta, id: id) do
-      nil -> {:error, "ID Inválido"}
+      nil -> {:error, "ID Inválido ou inexistente."}
       tipo_conta -> {:ok, tipo_conta}
     end
   end
 
   def delete(id) do
     case Repo.get_by(TipoConta, id: id) do
-      nil -> {:error, "ID Inválido"}
+      nil -> {:error, "ID Inválido ou inexistente."}
       tipo_conta -> Repo.delete(tipo_conta)
     end
   end
@@ -27,7 +27,7 @@ defmodule BankApi.Handle.HandleTipoConta do
   def update(id, %{nome_tipo_conta: nome_tipo_conta}) do
     case Repo.get_by(TipoConta, id: id) do
       nil ->
-        %{error: "ID Inválido"}
+        %{error: "ID Inválido ou inexistente."}
 
       tipo_conta ->
         TipoConta.changeset(tipo_conta, %{nome_tipo_conta: nome_tipo_conta})

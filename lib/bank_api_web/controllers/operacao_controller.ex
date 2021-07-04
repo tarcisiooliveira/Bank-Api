@@ -9,25 +9,25 @@ defmodule BankApiWeb.OperacaoController do
   end
 
   def show(conn, %{"id" => id}) do
-    id
+    %{id: to_integer(id)}
     |> HandleOperacao.get()
     |> handle_response(conn, "show.json", :ok)
   end
 
-  def create(conn, %{"nome_operacao" => _nome_operacao} = params) do
-    params
+  def create(conn, %{"nome_operacao" => nome_operacao}) do
+    %{nome_operacao: nome_operacao}
     |> HandleOperacao.create()
     |> handle_response(conn, "create.json", :created)
   end
 
   def update(conn, %{"id" => id, "nome_operacao" => nome_operacao}) do
-    id
-    |> HandleOperacao.update(%{nome_operacao: nome_operacao})
+    %{id: to_integer(id), nome_operacao: nome_operacao}
+    |> HandleOperacao.update()
     |> handle_response(conn, "update.json", :created)
   end
 
   def delete(conn, %{"id" => id}) do
-    id
+    %{id: to_integer(id)}
     |> HandleOperacao.delete()
     |> handle_delete(conn)
   end
@@ -55,4 +55,6 @@ defmodule BankApiWeb.OperacaoController do
     |> put_status(:not_found)
     |> render("delete.json", error: error)
   end
+
+  defp to_integer(value), do: String.to_integer(value)
 end

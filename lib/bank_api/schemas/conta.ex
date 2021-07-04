@@ -23,10 +23,9 @@ defmodule BankApi.Schemas.Conta do
     |> validate_inclusion(:saldo_conta, @saldo_conta)
   end
 
-  def update_changeset(conta, params) do
+  def update_changeset(%__MODULE__{} = conta, %{saldo_conta: _saldo} = params) do
     conta
     |> cast(params, [:saldo_conta])
     |> validate_required([:saldo_conta])
-    |> validate_inclusion(:saldo_conta, @saldo_conta)
   end
 end

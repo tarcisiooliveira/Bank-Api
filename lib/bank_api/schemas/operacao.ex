@@ -20,7 +20,7 @@ defmodule BankApi.Schemas.Operacao do
     |> unique_constraint(@required_params)
   end
 
-  def update_changeset(operacao, params) do
+  def update_changeset(%__MODULE__{} = operacao, %{nome_operacao: _nome_operacao}=params) do
     operacao
     |> cast(params, @required_params)
     |> validate_required(@required_params)

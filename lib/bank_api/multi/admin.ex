@@ -2,15 +2,18 @@ defmodule BankApi.Multi.Admin do
   alias BankApi.Schemas.Admin
   alias BankApi.Repo
   alias BankApi.Handle.Repo.Admin, as: HandleRepoAdmin
-  alias BankApi.Handle.Repo.Operacao, as: HandleOperacaoRepo
+  # alias BankApi.Handle.Repo.Operacao, as: HandleOperacaoRepo
   alias Ecto.Changeset
 
-  def create(params) do
+  alias BankApi.Handle.Repo.Admin, as: HandleRepoAdmin
+
+  def create(
+        %{email: _email, password: _password, password_confirmation: _password_confirmation} =
+          params
+      ) do
     multi =
       Ecto.Multi.new()
       |> Ecto.Multi.run(:changeset_valido, fn _, _ ->
-        Admin.changeset(params)
-
         case Admin.changeset(params) do
           %Changeset{errors: [password_confirmation: {"Senhas diferentes.", _}]} ->
             {:error, :senhas_diferentes}
@@ -30,9 +33,34 @@ defmodule BankApi.Multi.Admin do
           %Changeset{errors: [password_confirmation: _, password: _]} ->
             {:error, :senhas_diferentes}
 
-          _ ->
-            {:ok, :paramentros_validos}
+          changeset ->
+            {:ok, changeset}
         end
+      end)
+      |> Ecto.Multi.insert(:insert_admin, fn %{changeset_valido: changeset_valido} ->
+        changeset_valido
+      end)
+
+    case Repo.transaction(multi) do
+      {:ok, params} ->
+        {:ok, params}
+
+      {:error, _, changeset, _} ->
+        {:error, changeset}
+    end
+  end
+
+  def delete(%{id: _id} = params) do
+    multi =
+      Ecto.Multi.new()
+      |> Ecto.Multi.run(:fetch_admin, fn _, _ ->
+        case fetch_admin(params) do
+          nil -> {:error, :theres_no_admin}
+          admin -> {:ok, admin}
+        end
+      end)
+      |> Ecto.Multi.delete(:deleted_admin, fn %{fetch_admin: fetch_admin} ->
+        fetch_admin
       end)
 
     case Repo.transaction(multi) do
@@ -48,31 +76,26 @@ defmodule BankApi.Multi.Admin do
     multi =
       Ecto.Multi.new()
       |> Ecto.Multi.run(:try_admin_by_email, fn _, _ ->
-        case HandleRepoAdmin.fetch_admin_email(%{email: email}) do
+        case HandleRepoAdmin.fetch_admin(%{email: email}) do
           nil ->
             {:ok, "Email válido."}
 
-          admin ->
+          _ ->
             {:error, "Email já em uso."}
         end
       end)
       |> Ecto.Multi.run(:fetch_admin_account, fn _, _ ->
         case HandleRepoAdmin.fetch_admin(%{id: id}) do
           nil ->
-            {:error, "ID inválido"}
+            {:error, "ID Inválido ou inexistente."}
 
           admin ->
             {:ok, admin}
         end
       end)
       |> Ecto.Multi.update(:update_admin, fn %{fetch_admin_account: fetch_admin_account} ->
-        case HandleRepoAdmin.update(fetch_admin_account, %{email: email}) do
-          %Admin{} = admin ->
-            admin
-
-          %Changeset{} = changeset ->
-            changeset
-        end
+        fetch_admin_account
+        |> Admin.update_changeset(%{email: email})
       end)
 
     case Repo.transaction(multi) do
@@ -84,52 +107,8 @@ defmodule BankApi.Multi.Admin do
     end
   end
 
-  # defp cria_transacao(conta_origem_id, conta_destino_id, operacao, valor) do
-  #   %Admin{
-
-  #   }
-  #   |> Admin.changeset()
-  # end
-
-  # defp cria_transacao(conta_origem_id, operacao, valor) do
-  #   %{conta_origem_id: conta_origem_id, operacao_id: String.to_integer(operacao), valor: valor}
-  #   |> Admin.changeset()
-  # end
-
-  # defp buscar_conta(id) do
-  #   case HandleContaRepo.get_account(id) do
-  #     nil -> {:error, :conta_nao_encontrada}
-  #     account -> {:ok, account}
-  #   end
-  # end
-
-  # defp buscar_operacao(operacao_id) do
-  #   case HandleOperacaoRepo.get_account(operacao_id) do
-  #     nil -> {:error, :operacao_nao_encontrada}
-  #     account -> {:ok, account}
-  #   end
-  # end
-
-  # defp is_mesma_conta?(id_origem, id_destino) do
-  #   id_origem == id_destino
-  # end
-
-  # defp is_valor_negativo?(value) do
-  #   if value == 0 or Decimal.new(value) |> Decimal.negative?(), do: true, else: false
-  # end
-
-  # defp is_saldo_suficiente?(saldo_inicial, valor),
-  #   do: if(saldo_inicial - valor >= 0, do: true, else: false)
-
-  # defp operacao(conta, valor, :subtrair) do
-  #   novo = conta.saldo_conta - valor
-
-  #   conta
-  #   |> Conta.update_changeset(%{saldo_conta: novo})
-  # end
-
-  # defp operacao(conta, valor, :adicionar) do
-  #   conta
-  #   |> Conta.update_changeset(%{saldo_conta: conta.saldo_conta + valor})
-  # end
+  defp fetch_admin(params) do
+    params
+    |> HandleRepoAdmin.fetch_admin()
+  end
 end

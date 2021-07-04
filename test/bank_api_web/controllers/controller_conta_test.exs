@@ -247,8 +247,7 @@ defmodule BankApiWeb.ControllerContaTest do
         |> delete(Routes.conta_path(state[:conn], :delete, 951_951_951))
         |> json_response(:not_found)
 
-      assert %{"error" => "ID Inválido ou inexistente.", "mensagem" => "Conta inexistente."} =
-               response
+      assert %{"error" => "ID Inválido ou inexistente."} = response
     end
 
     test "error delete - Tenta deletar conta sem token de acesso", state do
