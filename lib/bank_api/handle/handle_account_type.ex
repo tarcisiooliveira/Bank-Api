@@ -1,0 +1,29 @@
+defmodule BankApi.Handle.HandleAccountType do
+  alias BankApi.{Repo, Schemas.TipoAccount}
+  alias BankApi.Multi.TipoAccount, as: MultiAccountType
+
+  @moduledoc """
+  Modulo de manipulação de dados Tipo Account através do Repo
+  """
+  def get(%{id: id}) do
+    case Repo.get_by(TipoAccount, id: id) do
+      nil -> {:error, "Invalid ID or inexistent."}
+      account_type -> {:ok, account_type}
+    end
+  end
+
+  def delete(%{id: _id} = params) do
+    params
+    |> MultiTipoAccount.delete()
+  end
+
+  def create(%{account_type_name: _name_account_type} = params) do
+    params
+    |> MultiTipoAccount.create()
+  end
+
+  def update(%{id: _id, account_type_name: _name_account_type} = params) do
+    params
+    |> MultiTipoAccount.update()
+  end
+end

@@ -20,45 +20,45 @@
 # |> Admin.changeset()
 # |> Repo.insert()
 
-# usuario = [
-#   %{email: "tarcisio@ymail.com", nome: "Tarcisio", password: "123456"},
-#   %{email: "cida@ymail.com", nome: "Cida", password: "234567"},
-#   %{email: "benicio@ymail.com", nome: "Benicio", password: "345678"}
+# User = [
+#   %{email: "tarcisio@ymail.com", name: "Tarcisio", password: "123456"},
+#   %{email: "cida@ymail.com", name: "Cida", password: "234567"},
+#   %{email: "benicio@ymail.com", name: "Benicio", password: "345678"}
 # ]
 
-# Enum.each(usuario, fn pessoa -> Usuario.changeset(pessoa) |> Repo.insert() end)
+# Enum.each(User, fn pessoa -> User.changeset(pessoa) |> Repo.insert() end)
 
-# tipoConta = [
-#   %{nome_tipo_conta: "Corrente"},
-#   %{nome_tipo_conta: "Poupança"},
-#   %{nome_tipo_conta: "Digital"}
+# tipoAccount = [
+#   %{account_type_name: "Corrente"},
+#   %{account_type_name: "Poupança"},
+#   %{account_type_name: "Digital"}
 # ]
 
-# Enum.each(tipoConta, fn tipo -> TipoConta.changeset(tipo) |> Repo.insert() end)
+# Enum.each(tipoAccount, fn tipo -> TipoAccount.changeset(tipo) |> Repo.insert() end)
 
-# operacao = [
-#   %{nome_operacao: "Saque"},
-#   %{nome_operacao: "Depósito"},
-#   %{nome_operacao: "Transferência"},
-#   %{nome_operacao: "Investimento"}
+# Operation = [
+#   %{operation_name: "Withdraw"},
+#   %{operation_name: "Depósito"},
+#   %{operation_name: "Transfer"},
+#   %{operation_name: "Investimento"}
 # ]
 
-# Enum.each(operacao, fn unit_operacao -> Operacao.changeset(unit_operacao) |> Repo.insert() end)
+# Enum.each(Operation, fn unit_operation -> Operation.changeset(unit_operation) |> Repo.insert() end)
 
-# contas = [
-#   %{usuario_id: 1, tipo_conta_id: 1},
-#   %{usuario_id: 2, tipo_conta_id: 1},
-#   %{usuario_id: 3, tipo_conta_id: 2},
-#   %{usuario_id: 1, tipo_conta_id: 3}
+# accounts = [
+#   %{user_id: 1, account_type_id: 1},
+#   %{user_id: 2, account_type_id: 1},
+#   %{user_id: 3, account_type_id: 2},
+#   %{user_id: 1, account_type_id: 3}
 # ]
 
-# Enum.each(contas, fn unit_contas -> Conta.changeset(unit_contas) |> Repo.insert() end)
+# Enum.each(accounts, fn unit_accounts -> Account.changeset(unit_accounts) |> Repo.insert() end)
 
-# transacao = [
-#   %{conta_origem_id: 1, conta_destino_id: 2, operacao_id: 3, valor: 60_000},
-#   %{conta_origem_id: 2, conta_destino_id: 3, operacao_id: 3, valor: 70_000},
-#   %{conta_origem_id: 3, operacao_id: 1, valor: 10_000},
-#   %{conta_origem_id: 1, operacao_id: 1, valor: 50_000}
+# Transaction = [
+#   %{from_account_id: 1, to_account_id: 2, operation_id: 3, value: 60_000},
+#   %{from_account_id: 2, to_account_id: 3, operation_id: 3, value: 70_000},
+#   %{from_account_id: 3, operation_id: 1, value: 10_000},
+#   %{from_account_id: 1, operation_id: 1, value: 50_000}
 # ]
 
-# Enum.each(transacao, fn unit_transacao -> Transacao.changeset(unit_transacao) |> Repo.insert() end)
+# Enum.each(Transaction, fn unit_transacao -> Transaction.changeset(unit_transacao) |> Repo.insert() end)

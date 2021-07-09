@@ -68,7 +68,7 @@ defmodule BankApi.ControllerAdminTest do
         state[:conn]
         |> post(Routes.admin_path(state[:conn], :create, params2))
 
-      assert %{resp_body: "{\"messagem\":\"Autorização Negada\"}", status: 401} = response
+      assert %{resp_body: "{\"messagem\":\"Authorization Denied\"}", status: 401} = response
     end
   end
 
@@ -92,7 +92,7 @@ defmodule BankApi.ControllerAdminTest do
 
       assert %{
                "Erro" => "Administrador não removido.",
-               "Resultado" => "ID Inválido ou inexistente"
+               "Resultado" => "Invalid ID or inexistent."
              } = response
     end
 
@@ -110,7 +110,7 @@ defmodule BankApi.ControllerAdminTest do
         state[:conn]
         |> delete(Routes.admin_path(state[:conn], :delete, 789_456_123))
 
-      assert %{resp_body: "{\"messagem\":\"Autorização Negada\"}", status: 401} = response
+      assert %{resp_body: "{\"messagem\":\"Authorization Denied\"}", status: 401} = response
     end
   end
 
@@ -137,7 +137,7 @@ defmodule BankApi.ControllerAdminTest do
           })
         )
 
-      assert %{resp_body: "{\"messagem\":\"Autorização Negada\"}", status: 401} = response
+      assert %{resp_body: "{\"messagem\":\"Authorization Denied\"}", status: 401} = response
     end
 
     test "error update - tenta alterar endereço de email para um já cadastrado", state do
@@ -149,7 +149,7 @@ defmodule BankApi.ControllerAdminTest do
         |> patch(Routes.admin_path(state[:conn], :update, state[:valores].admin.id, params))
         |> json_response(:not_found)
 
-      assert %{"error" => "Email já em uso."} = response
+      assert %{"error" => "Email already in use."} = response
     end
   end
 end

@@ -1,41 +1,41 @@
-defmodule BankApiWeb.ContaController do
+defmodule BankApiWeb.AccountController do
   use BankApiWeb, :controller
-  alias BankApi.Handle.HandleConta
+  alias BankApi.Handle.HandleAccount
 
   def show(conn, %{"id" => id}) do
-    %{id: id}
-    |> HandleConta.get()
+    %{id: String.to_integer(id)}
+    |> HandleAccount.get()
     |> handle_response(conn, "show.json", :ok)
   end
 
   def create(
         conn,
         %{
-          "saldo_conta" => saldo_conta,
-          "usuario_id" => usuario_id,
-          "tipo_conta_id" => tipo_conta_id
+          "balance_account" => balance_account,
+          "user_id" => user_id,
+          "account_type_id" => account_type_id
         }
       ) do
-    %{saldo_conta: saldo_conta, usuario_id: usuario_id, tipo_conta_id: tipo_conta_id}
-    |> HandleConta.create()
+    %{balance_account: balance_account, user_id: user_id, account_type_id: account_type_id}
+    |> HandleAccount.create()
     |> handle_response(conn, "create.json", :created)
   end
 
   def create(
         conn,
         %{
-          "usuario_id" => usuario_id,
-          "tipo_conta_id" => tipo_conta_id
+          "user_id" => user_id,
+          "account_type_id" => account_type_id
         }
       ) do
-    %{usuario_id: to_integer(usuario_id), tipo_conta_id: to_integer(tipo_conta_id)}
-    |> HandleConta.create()
+    %{user_id: to_integer(user_id), account_type_id: to_integer(account_type_id)}
+    |> HandleAccount.create()
     |> handle_response(conn, "create.json", :created)
   end
 
-  def update(conn, %{"id" => id, "saldo_conta" => saldo_conta} = _params) do
-    %{id: to_integer(id), saldo_conta: to_integer(saldo_conta)}
-    |> HandleConta.update()
+  def update(conn, %{"id" => id, "balance_account" => balance_account} = _params) do
+    %{id: to_integer(id), balance_account: to_integer(balance_account)}
+    |> HandleAccount.update()
     |> handle_response(conn, "update.json", :created)
   end
 
@@ -43,14 +43,14 @@ defmodule BankApiWeb.ContaController do
 
   def delete(conn, %{"id" => id}) do
     %{id: to_integer(id)}
-    |> HandleConta.delete()
+    |> HandleAccount.delete()
     |> handle_delete(conn)
   end
 
-  defp handle_response({:ok, conta}, conn, view, status) do
+  defp handle_response({:ok, account}, conn, view, status) do
     conn
     |> put_status(status)
-    |> render(view, conta: conta)
+    |> render(view, account: account)
   end
 
   defp handle_response({:error, error}, conn, _view, _status) do
@@ -59,10 +59,10 @@ defmodule BankApiWeb.ContaController do
     |> render("error.json", error: error)
   end
 
-  defp handle_delete({:ok, conta}, conn) do
+  defp handle_delete({:ok, account}, conn) do
     conn
     |> put_status(:ok)
-    |> render("delete.json", conta: conta)
+    |> render("delete.json", account: account)
   end
 
   defp handle_delete({:error, error}, conn) do

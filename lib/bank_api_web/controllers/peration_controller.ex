@@ -1,41 +1,41 @@
-defmodule BankApiWeb.OperacaoController do
+defmodule BankApiWeb.OperationController do
   use BankApiWeb, :controller
-  alias BankApi.Handle.HandleOperacao
+  alias BankApi.Handle.HandleOperation
 
   def index(conn, params) do
     params
-    |> HandleOperacao.create()
+    |> HandleOperation.create()
     |> handle_response(conn, "create.json", :created)
   end
 
   def show(conn, %{"id" => id}) do
     %{id: to_integer(id)}
-    |> HandleOperacao.get()
+    |> HandleOperation.get()
     |> handle_response(conn, "show.json", :ok)
   end
 
-  def create(conn, %{"nome_operacao" => nome_operacao}) do
-    %{nome_operacao: nome_operacao}
-    |> HandleOperacao.create()
+  def create(conn, %{"operation_name" => operation_name}) do
+    %{operation_name: operation_name}
+    |> HandleOperation.create()
     |> handle_response(conn, "create.json", :created)
   end
 
-  def update(conn, %{"id" => id, "nome_operacao" => nome_operacao}) do
-    %{id: to_integer(id), nome_operacao: nome_operacao}
-    |> HandleOperacao.update()
+  def update(conn, %{"id" => id, "operation_name" => operation_name}) do
+    %{id: to_integer(id), operation_name: operation_name}
+    |> HandleOperation.update()
     |> handle_response(conn, "update.json", :created)
   end
 
   def delete(conn, %{"id" => id}) do
     %{id: to_integer(id)}
-    |> HandleOperacao.delete()
+    |> HandleOperation.delete()
     |> handle_delete(conn)
   end
 
-  defp handle_response({:ok, operacao}, conn, view, status) do
+  defp handle_response({:ok, Operation}, conn, view, status) do
     conn
     |> put_status(status)
-    |> render(view, operacao: operacao)
+    |> render(view, Operation: Operation)
   end
 
   defp handle_response({:error, error}, conn, _view, _status) do
@@ -44,10 +44,10 @@ defmodule BankApiWeb.OperacaoController do
     |> render("error.json", error: error)
   end
 
-  defp handle_delete({:ok, operacao}, conn) do
+  defp handle_delete({:ok, Operation}, conn) do
     conn
     |> put_status(:ok)
-    |> render("delete.json", operacao: operacao)
+    |> render("delete.json", Operation: Operation)
   end
 
   defp handle_delete({:error, error}, conn) do

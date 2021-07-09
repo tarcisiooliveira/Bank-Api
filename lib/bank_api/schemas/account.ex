@@ -1,0 +1,31 @@
+defmodule BankApi.Schemas.Account do
+  use Ecto.Schema
+  alias BankApi.Schemas.{User, TipoAccount}
+  import Ecto.Changeset
+
+  @moduledoc """
+  Modulo de schema de Accounts
+  """
+  schema "accounts" do
+    field(:balance_account, :integer, default: 100_000)
+    belongs_to(:user, User)
+    belongs_to(:account_type, TipoAccount)
+    timestamps()
+  end
+
+  @request_params [:balance_account, :user_id, :account_type_id]
+  @balance_account 0..10_000_000
+
+  def changeset(params) do
+    %__MODULE__{}
+    |> cast(params, @request_params)
+    |> validate_required(@request_params)
+    |> validate_inclusion(:balance_account, @balance_account)
+  end
+
+  def update_changeset(%__MODULE__{} = Account, %{balance_account: _balance} = params) do
+    Account
+    |> cast(params, [:balance_account])
+    |> validate_required([:balance_account])
+  end
+end

@@ -67,7 +67,7 @@ defmodule BankApiWeb.AdminView do
   def render("delete.json", %{error: :theres_no_admin}) do
     %{
       Erro: "Administrador não removido.",
-      Resultado: "ID Inválido ou inexistente"
+      Resultado: "Invalid ID or inexistent."
     }
   end
 

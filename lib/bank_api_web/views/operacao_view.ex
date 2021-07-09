@@ -1,68 +1,69 @@
-defmodule BankApiWeb.OperacaoView do
+defmodule BankApiWeb.OperationView do
   use BankApiWeb, :view
-  alias BankApi.Schemas.Operacao
+  alias BankApi.Schemas.Operation
   alias Ecto.Changeset
 
-  def render("show.json", %{operacao: %Operacao{nome_operacao: _nome_operacao}}) do
+  def render("show.json", %{Operation: %Operation{operation_name: name_operation}}) do
     %{
-      mensagem: "Tipo Operação encotrado"
+      mensagem: "Operation Type found.",
+      Operation: name_operation
     }
   end
 
-  def render("create.json", %{operacao: %{create_transaction: %Operacao{nome_operacao: nome_operacao}}}) do
+  def render("create.json", %{Operation: %{create_transaction: %Operation{operation_name: operation_name}}}) do
     %{
-      mensagem: "Operação Cadastrada",
-      Operação: %{nome_operacao: nome_operacao}
+      mensagem: "Operation Recorded",
+      Operação: %{operation_name: operation_name}
     }
   end
-  def render("create.json", %{operacao: %Operacao{nome_operacao: nome_operacao}}) do
+  def render("create.json", %{Operation: %Operation{operation_name: operation_name}}) do
     %{
-      mensagem: "Operação Cadastrada",
-      Operação: %{nome_operacao: nome_operacao}
+      mensagem: "Operation Recorded",
+      Operação: %{operation_name: operation_name}
     }
   end
 
-  def render("update.json", %{operacao: %{update_operacao: %Operacao{nome_operacao: nome_operacao}}}) do
+  def render("update.json", %{Operation: %{update_operation: %Operation{operation_name: operation_name}}}) do
     %{
-      mensagem: "Operação Atualizada",
-      Operação: %{nome_operacao: nome_operacao}
+      mensagem: "Operation Updated",
+      Operação: %{operation_name: operation_name}
     }
   end
 
   def render("delete.json", %{
-        operacao: %{fetch_operation: %Operacao{nome_operacao: nome_operacao}}
+        Operation: %{fetch_operation: %Operation{operation_name: operation_name}}
       }) do
     %{
-      mensagem: "Operacao #{nome_operacao} removida com sucesso."
+      mensagem: "Operation #{operation_name} deleted successfully."
     }
   end
 
   def render("delete.json", %{error: :operation_not_exists}) do
     %{
-      Resultado: "Operação inexistente.",
-      Mensagem: "ID Inválido ou inexistente."
+      Resultado: "Non-existent operation.",
+      Mensagem: "Invalid ID or inexistent."
     }
   end
 
   def render("delete.json", %{error: error}) do
     %{
-      Resultado: "Operação inexistente.",
+      Resultado: "Non-existent operation.",
       Mensagem: error
     }
   end
 
   def render("error.json", %{error: :operation_already_exists}) do
     %{
-      error: "Operação já cadastrada previamente."
+      error: "Previously registered operation. "
     }
   end
 
   def render(
         "error.json",
-        %{error: %Changeset{errors: [nome_operacao: {"has already been taken", _error}]}} =
+        %{error: %Changeset{errors: [operation_name: {"has already been taken", _error}]}} =
           _params
       ) do
-    %{error: "Operação já cadastrada previamente."}
+    %{error: "Previously registered operation. "}
   end
 
   def render("error.json", %{error: error} = _params) do

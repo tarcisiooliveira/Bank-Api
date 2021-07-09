@@ -1,6 +1,6 @@
-defmodule BankApiWeb.ControllerUsuarioTest do
+defmodule BankApiWeb.ControllerUserTest do
   use BankApiWeb.ConnCase, async: true
-  alias BankApi.Schemas.{Usuario, Admin}
+  alias BankApi.Schemas.{User, Admin}
   import BankApi.Factory
   alias BankApiWeb.Auth.Guardian
 
@@ -30,215 +30,216 @@ defmodule BankApiWeb.ControllerUsuarioTest do
   end
 
   describe "SHOW" do
-    test "assert show - Exibe os dados de uma usuario quando informado ID correto", state do
-      %Usuario{id: usuario_id} = insert(:usuario)
+    test "assert show - Exibe os dados de uma User quando informado ID correto", state do
+      %User{id: user_id} = insert(:User)
 
       response =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> get(Routes.usuario_path(state[:conn], :show, usuario_id))
+        |> get(Routes.User_path(state[:conn], :show, user_id))
         |> json_response(:ok)
 
       assert %{
                "mensagem" => "Show",
-               "usuario" => %{"email" => _email, "id" => _id, "nome" => "Tarcisio"}
+               "User" => %{"email" => _email, "id" => _id, "name" => "Tarcisio"}
              } = response
     end
 
     test "error show - retorna erro quando não passa  toke de autorização", state do
-      %Usuario{id: usuario_id} = insert(:usuario)
+      %User{id: user_id} = insert(:User)
 
       response =
         state[:conn]
-        |> get(Routes.usuario_path(state[:conn], :show, usuario_id))
+        |> get(Routes.User_path(state[:conn], :show, user_id))
 
-      assert %{resp_body: "{\"messagem\":\"Autorização Negada\"}", status: 401} = response
+      assert %{resp_body: "{\"messagem\":\"Authorization Denied\"}", status: 401} = response
     end
 
-    test "error show - Exibe os dados de uma conta quando informado ID errado", state do
+    test "error show - Exibe os dados de uma Account quando informado ID errado", state do
       response =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> get(Routes.usuario_path(state[:conn], :show, 951_951))
+        |> get(Routes.User_path(state[:conn], :show, 951_951))
         |> json_response(:not_found)
 
-      assert %{"error" => "ID Inválido ou inexistente."} = response
+      assert %{"error" => "Invalid ID or inexistent."} = response
     end
   end
 
   describe "CREATE" do
-    test "assert create - cria usuario quando os dados são passados corretamente", state do
+    test "assert create - cria User quando os dados são passados corretamente", state do
       params = %{
-        "nome" => "Tarcisio",
+        "name" => "Tarcisio",
         "email" => "tarcisiooliveira@protonmail.com",
-        "password" => "123456"
+        "password" => "123456",
+        "password_validation" => "123456"
       }
 
       response =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.usuario_path(state[:conn], :create, params))
+        |> post(Routes.User_path(state[:conn], :create, params))
         |> json_response(:created)
 
       assert %{
                "mensagem" => "Usuário criado com sucesso!",
-               "usuario" => %{
+               "User" => %{
                  "email" => "tarcisiooliveira@protonmail.com",
                  "id" => _id,
-                 "nome" => "Tarcisio"
+                 "name" => "Tarcisio"
                }
              } = response
     end
 
-    test "error assert - tenta criar usuario sem token de acessor ", state do
+    test "error assert - tenta criar User sem token de acessor ", state do
       params = %{
-        "nome" => "Tarcisio",
+        "name" => "Tarcisio",
         "email" => "tarcisiooliveira@protonmail.com",
         "password" => "123456"
       }
 
       response =
         state[:conn]
-        |> post(Routes.usuario_path(state[:conn], :create, params))
+        |> post(Routes.User_path(state[:conn], :create, params))
 
-      assert %{resp_body: "{\"messagem\":\"Autorização Negada\"}", status: 401} = response
+      assert %{resp_body: "{\"messagem\":\"Authorization Denied\"}", status: 401} = response
     end
 
-    test "error insert - quando já existe usuario com aquele email, retorna erro informando",
+    test "error insert - quando já existe User com aquele email, retorna erro informando",
          state do
-      %Usuario{email: email} = insert(:usuario)
+      %User{email: email} = insert(:User)
 
       params = %{
         "email" => email,
-        "nome" => "Tarcisio",
-        "password" => "123456"
+        "name" => "Tarcisio2",
+        "password" => "123456",
+        "password_validation" => "123456"
       }
 
       response =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.usuario_path(state[:conn], :create, params))
+        |> post(Routes.User_path(state[:conn], :create, params))
         |> json_response(:unprocessable_entity)
 
       assert %{
-               "mensagem" => "Erro",
-               "email" => "Email já cadastrado"
+               "message" => "Email já cadastrado."
              } = response
     end
   end
 
   describe "UPDATE" do
-    test "cadastra usuario corretamente e depois altera email para outro email valido", state do
-      %Usuario{id: id} = insert(:usuario)
+    test "cadastra User corretamente e depois altera email para outro email valido", state do
+      %User{id: id} = insert(:User)
       params = %{email: "tarcisiooliveira@protonmail.com"}
 
       response =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> patch(Routes.usuario_path(state[:conn], :update, id, params))
+        |> patch(Routes.User_path(state[:conn], :update, id, params))
         |> json_response(:ok)
 
       assert %{
                "mensagem" => "Usuário atualizado com sucesso!",
-               "usuario" => %{
+               "User" => %{
                  "email" => "tarcisiooliveira@protonmail.com",
                  "id" => _id,
-                 "nome" => "Tarcisio"
+                 "name" => "Tarcisio"
                }
              } = response
     end
 
-    test "error update - tenta remover usuario sem token de acesso", state do
-      %Usuario{id: id} = insert(:usuario)
+    test "error update - tenta remover User sem token de acesso", state do
+      %User{id: id} = insert(:User)
 
       params = %{
         "email" => "email@email.com",
-        "nome" => "Tarcisio",
+        "name" => "Tarcisio",
         "password" => "123456"
       }
 
       response =
         state[:conn]
-        |> patch(Routes.usuario_path(state[:conn], :update, id, params))
+        |> patch(Routes.User_path(state[:conn], :update, id, params))
 
-      assert %{resp_body: "{\"messagem\":\"Autorização Negada\"}", status: 401} = response
+      assert %{resp_body: "{\"messagem\":\"Authorization Denied\"}", status: 401} = response
     end
 
-    test "error update - cadastra usuario corretamente e depois tenta altera email para outro email já cadastrado",
+    test "error update - cadastra User corretamente e depois tenta altera email para outro email já cadastrado",
          state do
-      %Usuario{id: id} = insert(:usuario)
-      insert(:usuario, email: "tarcisiooliveira@protonmail.com")
+      %User{id: id} = insert(:User)
+      insert(:User, email: "tarcisiooliveira@protonmail.com")
       params = %{email: "tarcisiooliveira@protonmail.com"}
 
       response =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> patch(Routes.usuario_path(state[:conn], :update, id, params))
+        |> patch(Routes.User_path(state[:conn], :update, id, params))
         |> json_response(:not_found)
 
       assert %{"error" => "Email já cadastrado."} = response
     end
 
-    test "assert update - Cadastra usuario corretamente e depois altera nome", state do
-      %Usuario{id: id} = insert(:usuario, email: "tarcisiooliveira@protonmail.com")
-      params = %{nome: "oisicraT", visivel: true}
+    test "assert update - Cadastra User corretamente e depois altera name", state do
+      %User{id: id} = insert(:User, email: "tarcisiooliveira@protonmail.com")
+      params = %{name: "oisicraT"}
 
       response =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> patch(Routes.usuario_path(state[:conn], :update, id, params))
+        |> patch(Routes.User_path(state[:conn], :update, id, params))
         |> json_response(:ok)
 
       assert %{
                "mensagem" => "Usuário atualizado com sucesso!",
-               "usuario" => %{
+               "User" => %{
                  "email" => "tarcisiooliveira@protonmail.com",
                  "id" => ^id,
-                 "nome" => "oisicraT"
+                 "name" => "oisicraT"
                }
              } = response
     end
   end
 
   describe "DELETE" do
-    test "assert delete - Retorna os dados do usuario excluido do banco e mensagem confirmando",
+    test "assert delete - Retorna os dados do User excluido do banco e mensagem confirmando",
          state do
-      %Usuario{id: id} = insert(:usuario)
+      %User{id: id} = insert(:User)
 
       response =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> delete(Routes.usuario_path(state[:conn], :delete, id))
+        |> delete(Routes.User_path(state[:conn], :delete, id))
         |> json_response(:ok)
 
       assert %{
                "email" => _email,
                "id" => _id,
-               "message" => "Usuario Removido",
-               "nome" => "Tarcisio"
+               "message" => "User Removido",
+               "name" => "Tarcisio"
              } = response
     end
 
-    test "error delete - tenta remover usuario sem token de acesso", state do
-      %Usuario{id: id = insert(:usuario)}
+    test "error delete - tenta remover User sem token de acesso", state do
+      %User{id: id = insert(:User)}
 
       response =
         state[:conn]
-        |> delete(Routes.usuario_path(state[:conn], :delete, id))
+        |> delete(Routes.User_path(state[:conn], :delete, id))
 
-      assert %{resp_body: "{\"messagem\":\"Autorização Negada\"}", status: 401} = response
+      assert %{resp_body: "{\"messagem\":\"Authorization Denied\"}", status: 401} = response
     end
 
-    test "error delete - tenta apagar usuario passando id que não existe ou já foi deletado previamente",
+    test "error delete - tenta apagar User passando id que não existe ou já foi deletado previamente",
          state do
       response =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> delete(Routes.usuario_path(state[:conn], :delete, 100_001))
+        |> delete(Routes.User_path(state[:conn], :delete, 100_001))
         |> json_response(:not_found)
 
       assert %{
-               "error" => "ID Inválido ou inexistente."
+               "error" => "User not found."
              } = response
     end
   end

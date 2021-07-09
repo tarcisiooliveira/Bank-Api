@@ -1,13 +1,13 @@
-defmodule BankApi.Repo.Migrations.Conta do
+defmodule BankApi.Repo.Migrations.Account do
   use Ecto.Migration
 
   def change do
-    create table(:contas) do
-      add :saldo_conta,    :integer, null: false
-      add :usuario_id,    references(:usuarios, null: false)
-      add :tipo_conta_id, references(:tipo_contas, null: false)
+    create table(:accounts) do
+      add :balance_account,    :integer, null: false
+      add :user_id,    references(:Users, null: false)
+      add :account_type_id, references(:account_types, null: false)
       timestamps()
     end
-    create unique_index(:contas, [:usuario_id, :tipo_conta_id])
+    create unique_index(:accounts, [:user_id, :account_type_id])
   end
 end

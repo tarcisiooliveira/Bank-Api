@@ -19,14 +19,14 @@ defmodule BankApi.Schemas.Admin do
     %__MODULE__{}
     |> cast(params, [:email, :password, :password_confirmation])
     |> validate_required([:email, :password, :password_confirmation])
-    |> validate_format(:email, ~r/@/, message: "Email formato inválido")
+    |> validate_format(:email, ~r/@/, message: "Invalid format email.")
     |> validate_length(:password,
       min: 4,
       max: 10,
-      message: "Password deve conter entre 4 e 10 caracteres."
+      message: "Password must accountin between 4 and 10 characters."
     )
-    |> validate_confirmation(:password, message: "Senhas diferentes.")
-    |> unique_constraint(:email, message: "Email já em uso.")
+    |> validate_confirmation(:password, message: "Differents password.")
+    |> unique_constraint(:email, message: "Email already in use.")
     |> put_password()
   end
 
@@ -34,8 +34,8 @@ defmodule BankApi.Schemas.Admin do
     admin
     |> cast(params, [:email])
     |> validate_required([:email])
-    |> validate_format(:email, ~r/@/, message: "Email formato inválido")
-    |> unique_constraint(:email, message: "Email já em uso.")
+    |> validate_format(:email, ~r/@/, message: "Invalid format email.")
+    |> unique_constraint(:email, message: "Email already in use.")
     |> unique_constraint(:email)
   end
 

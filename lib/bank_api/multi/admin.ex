@@ -2,7 +2,7 @@ defmodule BankApi.Multi.Admin do
   alias BankApi.Schemas.Admin
   alias BankApi.Repo
   alias BankApi.Handle.Repo.Admin, as: HandleRepoAdmin
-  # alias BankApi.Handle.Repo.Operacao, as: HandleOperacaoRepo
+  # alias BankApi.Handle.Repo.Operation, as: HandleOperationRepo
   alias Ecto.Changeset
 
   alias BankApi.Handle.Repo.Admin, as: HandleRepoAdmin
@@ -15,16 +15,16 @@ defmodule BankApi.Multi.Admin do
       Ecto.Multi.new()
       |> Ecto.Multi.run(:changeset_valido, fn _, _ ->
         case Admin.changeset(params) do
-          %Changeset{errors: [password_confirmation: {"Senhas diferentes.", _}]} ->
+          %Changeset{errors: [password_confirmation: {"Differents password.", _}]} ->
             {:error, :senhas_diferentes}
 
-          %Changeset{errors: [email: {"Email já em uso.", _}]} ->
+          %Changeset{errors: [email: {"Email already in use.", _}]} ->
             {:error, :email_ja_cadastrado}
 
-          %Changeset{errors: [email: {"Email formato inválido", _}]} ->
+          %Changeset{errors: [email: {"Invalid format email.", _}]} ->
             {:error, :email_formato_invalido}
 
-          %Changeset{errors: [password: {"Password deve conter entre 4 e 10 caracteres.", _}]} ->
+          %Changeset{errors: [password: {"Password must accountin between 4 and 10 characters.", _}]} ->
             {:error, :password_entre_4_e_10_caracteres}
 
           %Changeset{errors: [password_confirmation: {"can't be blank", [validation: :required]}]} ->
@@ -81,13 +81,13 @@ defmodule BankApi.Multi.Admin do
             {:ok, "Email válido."}
 
           _ ->
-            {:error, "Email já em uso."}
+            {:error, "Email already in use."}
         end
       end)
       |> Ecto.Multi.run(:fetch_admin_account, fn _, _ ->
         case HandleRepoAdmin.fetch_admin(%{id: id}) do
           nil ->
-            {:error, "ID Inválido ou inexistente."}
+            {:error, "Invalid ID or inexistent."}
 
           admin ->
             {:ok, admin}

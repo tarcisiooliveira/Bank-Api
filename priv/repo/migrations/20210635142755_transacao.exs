@@ -1,12 +1,12 @@
-defmodule BankApi.Repo.Migrations.Transacao do
+defmodule BankApi.Repo.Migrations.Transaction do
   use Ecto.Migration
 
   def change do
-    create table(:transacoes) do
-      add :conta_origem_id, references(:contas, null: false)
-      add :conta_destino_id,  references(:contas)
-      add :valor, :integer, null: false
-      add :operacao_id,  references(:operacoes, null: false)
+    create table(:transactions) do
+      add :from_account_id, references(:accounts, null: false)
+      add :to_account_id,  references(:accounts)
+      add :value, :integer, null: false
+      add :operation_id,  references(:operations, null: false)
       timestamps()
     end
   end

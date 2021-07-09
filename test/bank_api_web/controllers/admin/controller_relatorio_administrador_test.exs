@@ -1,145 +1,144 @@
-defmodule BankApiWeb.ControllerRelatorioAdministradorTest do
+defmodule BankApiWeb.ControllerReportAdministradorTest do
   use BankApiWeb.ConnCase, async: false
   import BankApi.Factory
   alias BankApiWeb.Auth.Guardian
-  alias BankApi.Schemas.{Operacao, TipoConta, Conta, Usuario}
+  alias BankApi.Schemas.{Operation, TipoAccount, Account, User}
 
   setup do
     [conn: "Phoenix.ConnTest.build_conn()"]
     admin = insert(:admin)
     {:ok, token, _claims} = Guardian.encode_and_sign(admin)
-    %TipoConta{id: id_tipo_conta} = insert(:tipo_conta, nome_tipo_conta: "Poupança")
+    %TipoAccount{id: id_account_type} = insert(:account_type, account_type_name: "Poupança")
 
-    %Usuario{id: id_usuario1, email: email1} = insert(:usuario)
-    %Usuario{id: id_usuario2, email: email2} = insert(:usuario)
-    %Usuario{id: id_usuario3, email: _email3} = insert(:usuario)
+    %User{id: id_User1, email: email1} = insert(:User)
+    %User{id: id_User2, email: email2} = insert(:User)
+    %User{id: id_User3, email: _email3} = insert(:User)
 
-    %Conta{id: conta_id_1} = insert(:conta, usuario_id: id_usuario1, tipo_conta_id: id_tipo_conta)
+    %Account{id: account_id_1} = insert(:Account, user_id: id_User1, account_type_id: id_account_type)
 
-    %Conta{id: conta_id_2} = insert(:conta, usuario_id: id_usuario2, tipo_conta_id: id_tipo_conta)
-    %Conta{id: conta_id_3} = insert(:conta, usuario_id: id_usuario3, tipo_conta_id: id_tipo_conta)
+    %Account{id: account_id_2} = insert(:Account, user_id: id_User2, account_type_id: id_account_type)
+    %Account{id: account_id_3} = insert(:Account, user_id: id_User3, account_type_id: id_account_type)
 
-    %Operacao{id: operacao_id_saque} = insert(:operacao, nome_operacao: "Saque")
-    %Operacao{id: operacao_id_pagamento} = insert(:operacao, nome_operacao: "Pagamento")
+    %Operation{id: operation_id_saque} = insert(:Operation, operation_name: "Withdraw")
+    %Operation{id: operation_id_payment} = insert(:Operation, operation_name: "Payment")
 
-    %Operacao{id: operacao_id_transferencia} = insert(:operacao)
+    %Operation{id: operation_id_transferencia} = insert(:Operation)
 
-    insert(:transacao_saque,
-      conta_origem_id: conta_id_1,
-      operacao_id: operacao_id_saque,
-      valor: 2_000,
+    insert(:withdraw_transaction,
+      from_account_id: account_id_1,
+      operation_id: operation_id_saque,
+      value: 2_000,
       inserted_at: ~N[2021-06-14 16:50:03]
     )
 
-    insert(:transacao_saque,
-      conta_origem_id: conta_id_1,
-      operacao_id: operacao_id_saque,
-      valor: 1_100,
+    insert(:withdraw_transaction,
+      from_account_id: account_id_1,
+      operation_id: operation_id_saque,
+      value: 1_100,
       inserted_at: ~N[2021-06-14 02:30:10]
     )
 
-    insert(:transacao_saque,
-      conta_origem_id: conta_id_1,
-      operacao_id: operacao_id_saque,
-      valor: 750,
+    insert(:withdraw_transaction,
+      from_account_id: account_id_1,
+      operation_id: operation_id_saque,
+      value: 750,
       inserted_at: ~N[2021-06-15 02:17:10]
     )
 
-    # saques usuario 1 - 3850
-    insert(:transacao_saque,
-      conta_origem_id: conta_id_2,
-      operacao_id: operacao_id_saque,
-      valor: 500,
+    # saques User 1 - 3850
+    insert(:withdraw_transaction,
+      from_account_id: account_id_2,
+      operation_id: operation_id_saque,
+      value: 500,
       inserted_at: ~N[2021-06-16 02:17:10]
     )
 
-    # saques usuario 2 - 500
-
-    insert(:transacao,
-      conta_origem_id: conta_id_1,
-      conta_destino_id: conta_id_2,
-      operacao_id: operacao_id_transferencia,
-      valor: 4250,
+    # saques User 2 - 500
+    insert(:Transaction,
+      from_account_id: account_id_1,
+      to_account_id: account_id_2,
+      operation_id: operation_id_transferencia,
+      value: 4250,
       inserted_at: ~N[2021-06-15 02:17:10]
     )
 
-    insert(:transacao,
-      conta_origem_id: conta_id_1,
-      conta_destino_id: conta_id_2,
-      operacao_id: operacao_id_transferencia,
-      valor: 3250,
+    insert(:Transaction,
+      from_account_id: account_id_1,
+      to_account_id: account_id_2,
+      operation_id: operation_id_transferencia,
+      value: 3250,
       inserted_at: ~N[2021-06-16 02:17:10]
     )
 
-    insert(:transacao,
-      conta_origem_id: conta_id_1,
-      conta_destino_id: conta_id_3,
-      operacao_id: operacao_id_transferencia,
-      valor: 250,
+    insert(:Transaction,
+      from_account_id: account_id_1,
+      to_account_id: account_id_3,
+      operation_id: operation_id_transferencia,
+      value: 250,
       inserted_at: ~N[2021-06-16 02:17:10]
     )
 
-    insert(:transacao,
-      conta_origem_id: conta_id_1,
-      conta_destino_id: conta_id_2,
-      operacao_id: operacao_id_transferencia,
-      valor: 3250,
+    insert(:Transaction,
+      from_account_id: account_id_1,
+      to_account_id: account_id_2,
+      operation_id: operation_id_transferencia,
+      value: 3250,
       inserted_at: ~N[2021-06-17 02:17:10]
     )
 
-    insert(:transacao,
-      conta_origem_id: conta_id_2,
-      conta_destino_id: conta_id_1,
-      operacao_id: operacao_id_transferencia,
-      valor: 7250,
+    insert(:Transaction,
+      from_account_id: account_id_2,
+      to_account_id: account_id_1,
+      operation_id: operation_id_transferencia,
+      value: 7250,
       inserted_at: ~N[2021-06-16 02:17:10]
     )
 
-    insert(:transacao_pagamento,
-      conta_origem_id: conta_id_1,
-      conta_destino_id: conta_id_3,
-      operacao_id: operacao_id_pagamento,
-      valor: 100,
+    insert(:transaction_payment,
+      from_account_id: account_id_1,
+      to_account_id: account_id_3,
+      operation_id: operation_id_payment,
+      value: 100,
       inserted_at: ~N[2021-07-02 09:17:10]
     )
 
-    insert(:transacao_pagamento,
-      conta_origem_id: conta_id_1,
-      conta_destino_id: conta_id_2,
-      operacao_id: operacao_id_pagamento,
-      valor: 200,
+    insert(:transaction_payment,
+      from_account_id: account_id_1,
+      to_account_id: account_id_2,
+      operation_id: operation_id_payment,
+      value: 200,
       inserted_at: ~N[2021-07-03 09:17:10]
     )
 
-    insert(:transacao_pagamento,
-      conta_origem_id: conta_id_1,
-      conta_destino_id: conta_id_2,
-      operacao_id: operacao_id_pagamento,
-      valor: 300,
+    insert(:transaction_payment,
+      from_account_id: account_id_1,
+      to_account_id: account_id_2,
+      operation_id: operation_id_payment,
+      value: 300,
       inserted_at: ~N[2021-08-02 09:17:10]
     )
 
-    insert(:transacao_pagamento,
-      conta_origem_id: conta_id_3,
-      conta_destino_id: conta_id_1,
-      operacao_id: operacao_id_pagamento,
-      valor: 400,
+    insert(:transaction_payment,
+      from_account_id: account_id_3,
+      to_account_id: account_id_1,
+      operation_id: operation_id_payment,
+      value: 400,
       inserted_at: ~N[2021-08-03 09:17:10]
     )
 
-    insert(:transacao_pagamento,
-      conta_origem_id: conta_id_3,
-      conta_destino_id: conta_id_2,
-      operacao_id: operacao_id_pagamento,
-      valor: 500,
+    insert(:transaction_payment,
+      from_account_id: account_id_3,
+      to_account_id: account_id_2,
+      operation_id: operation_id_payment,
+      value: 500,
       inserted_at: ~N[2021-08-03 09:17:10]
     )
 
-    insert(:transacao_pagamento,
-      conta_origem_id: conta_id_2,
-      conta_destino_id: conta_id_3,
-      operacao_id: operacao_id_pagamento,
-      valor: 600,
+    insert(:transaction_payment,
+      from_account_id: account_id_2,
+      to_account_id: account_id_3,
+      operation_id: operation_id_payment,
+      value: 600,
       inserted_at: ~N[2021-09-02 09:17:10]
     )
 
@@ -147,101 +146,101 @@ defmodule BankApiWeb.ControllerRelatorioAdministradorTest do
      valores: %{
        email1: email1,
        email2: email2,
-       conta_id_1: conta_id_1,
-       conta_id_2: conta_id_2,
-       conta_id_3: conta_id_3,
-       operacao_id_saque: operacao_id_saque,
-       operacao_id_transferencia: operacao_id_transferencia,
+       account_id_1: account_id_1,
+       account_id_2: account_id_2,
+       account_id_3: account_id_3,
+       operation_id_saque: operation_id_saque,
+       operation_id_transferencia: operation_id_transferencia,
        token: token
      }}
   end
 
   describe "PAGAMENTO" do
-    test "assert pagamentos - Todos os valores pagos durante todo o período", state do
+    test "assert payments - Todos os valores pagos durante todo o período", state do
       params = %{"periodo" => "todo"}
 
       resultado =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.relatorio_path(state[:conn], :pagamento, params))
+        |> post(Routes.report_path(state[:conn], :payment, params))
         |> json_response(:created)
 
       assert %{
                "mensagem" => "Total durante todo o período",
                "resultado" => 2100,
-               "operacao" => "Pagamento"
+               "Operation" => "Payment"
              } = resultado
     end
 
-    test "assert Pagamento - Todos os valores transferidos por determinada conta.", state do
-      params = %{"conta_origem_id" => state[:valores].conta_id_3}
+    test "assert Payment - Todos os valores transferidos por determinada Account.", state do
+      params = %{"from_account_id" => state[:valores].account_id_3}
 
       resultado =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.relatorio_path(state[:conn], :pagamento, params))
+        |> post(Routes.report_path(state[:conn], :payment, params))
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total realizado por determinada conta.",
-               "operacao" => "Pagamento",
+               "mensagem" => "Total realizado por determinada Account.",
+               "Operation" => "Payment",
                "resultado" => 900
              } = resultado
 
-      params2 = %{"conta_origem_id" => state[:valores].conta_id_2}
+      params2 = %{"from_account_id" => state[:valores].account_id_2}
 
       resultado2 =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.relatorio_path(state[:conn], :pagamento, params2))
+        |> post(Routes.report_path(state[:conn], :payment, params2))
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total realizado por determinada conta.",
-               "operacao" => "Pagamento",
+               "mensagem" => "Total realizado por determinada Account.",
+               "Operation" => "Payment",
                "resultado" => 600
              } = resultado2
     end
 
-    test "assert Pagamento efetuada por uma conta e entre datas",
+    test "assert Payment efetuada por uma Account e entre datas",
          state do
       params = %{
         "periodo_inicial" => "2021-07-01 00:00:01",
         "periodo_final" => "2021-07-16 23:00:01",
-        "conta_origem_id" => state[:valores].conta_id_1
+        "from_account_id" => state[:valores].account_id_1
       }
 
       resultado =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.relatorio_path(state[:conn], :pagamento, params))
+        |> post(Routes.report_path(state[:conn], :payment, params))
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total durante determinado período por determinada conta.",
-               "operacao" => "Pagamento",
+               "mensagem" => "Total durante determinado período por determinada Account.",
+               "Operation" => "Payment",
                "resultado" => 300
              } = resultado
     end
 
-    test "assert Pagamento -> Todos os valores pagos entre conta x -> y entre datas",
+    test "assert Payment -> Todos os valores pagos entre Account x -> y entre datas",
          state do
       params = %{
         "periodo_inicial" => "2021-07-01 00:00:01",
         "periodo_final" => "2021-07-16 23:00:01",
-        "conta_origem_id" => state[:valores].conta_id_1,
-        "conta_destino_id" => state[:valores].conta_id_2
+        "from_account_id" => state[:valores].account_id_1,
+        "to_account_id" => state[:valores].account_id_2
       }
 
       resultado =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.relatorio_path(state[:conn], :pagamento, params))
+        |> post(Routes.report_path(state[:conn], :payment, params))
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total durante determinado período entre duas contas.",
-               "operacao" => "Pagamento",
+               "mensagem" => "Total durante determinado período entre duas accounts.",
+               "Operation" => "Payment",
                "resultado" => 200
              } = resultado
     end
@@ -251,17 +250,17 @@ defmodule BankApiWeb.ControllerRelatorioAdministradorTest do
       params = %{
         "periodo_inicial" => "2021-06-13 00:00:01",
         "periodo_final" => "2021-06-15 23:00:01",
-        "conta_origem_id" => "12312312313"
+        "from_account_id" => "12312312313"
       }
 
       resultado =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.relatorio_path(state[:conn], :pagamento, params))
+        |> post(Routes.report_path(state[:conn], :payment, params))
         |> json_response(:bad_request)
 
       assert %{
-               "mensagem" => "Dados inválidos. Verifique Id da Conta, Data ou Operção."
+               "mensagem" => "Dados inválidos. Verifique Id da Account, Data ou Operção."
              } = resultado
 
       params2 = %{
@@ -272,7 +271,7 @@ defmodule BankApiWeb.ControllerRelatorioAdministradorTest do
       resultado2 =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.relatorio_path(state[:conn], :pagamento, params2))
+        |> post(Routes.report_path(state[:conn], :payment, params2))
         |> json_response(:bad_request)
 
       assert %{
@@ -280,7 +279,7 @@ defmodule BankApiWeb.ControllerRelatorioAdministradorTest do
              } = resultado2
     end
 
-    test "assert Pagamento de entre datas - Todos os valores transferidos durante determinado período por todos",
+    test "assert Payment de entre datas - Todos os valores transferidos durante determinado período por todos",
          state do
       params = %{
         "periodo_inicial" => "2021-08-01 00:00:01",
@@ -290,12 +289,12 @@ defmodule BankApiWeb.ControllerRelatorioAdministradorTest do
       resultado =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.relatorio_path(state[:conn], :pagamento, params))
+        |> post(Routes.report_path(state[:conn], :payment, params))
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total durante determinado período por todas contas.",
-               "operacao" => "Pagamento",
+               "mensagem" => "Total durante determinado período por todas accounts.",
+               "Operation" => "Payment",
                "resultado" => 1800
              } = resultado
     end
@@ -308,85 +307,85 @@ defmodule BankApiWeb.ControllerRelatorioAdministradorTest do
       resultado =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.relatorio_path(state[:conn], :transferencia, params))
+        |> post(Routes.report_path(state[:conn], :transferencia, params))
         |> json_response(:created)
 
       assert %{
                "mensagem" => "Total durante todo o período",
                "resultado" => 18250,
-               "operacao" => "Transferência"
+               "Operation" => "Transfer"
              } = resultado
     end
 
-    test "assert Transferência - Todos os valores transferidos por determinado conta.", state do
-      params = %{"conta_origem_id" => state[:valores].conta_id_1}
+    test "assert Transfer - Todos os valores transferidos por determinado Account.", state do
+      params = %{"from_account_id" => state[:valores].account_id_1}
 
       resultado =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.relatorio_path(state[:conn], :transferencia, params))
+        |> post(Routes.report_path(state[:conn], :transferencia, params))
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total realizado por determinada conta.",
-               "operacao" => "Transferência",
+               "mensagem" => "Total realizado por determinada Account.",
+               "Operation" => "Transfer",
                "resultado" => 11000
              } = resultado
 
-      params2 = %{"conta_origem_id" => state[:valores].conta_id_2}
+      params2 = %{"from_account_id" => state[:valores].account_id_2}
 
       resultado2 =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.relatorio_path(state[:conn], :transferencia, params2))
+        |> post(Routes.report_path(state[:conn], :transferencia, params2))
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total realizado por determinada conta.",
-               "operacao" => "Transferência",
+               "mensagem" => "Total realizado por determinada Account.",
+               "Operation" => "Transfer",
                "resultado" => 7250
              } = resultado2
     end
 
-    test "assert transferência efetuada entre contras e entre datas",
+    test "assert transfer efetuada entre contras e entre datas",
          state do
       params = %{
         "periodo_inicial" => "2021-06-13 00:00:01",
         "periodo_final" => "2021-06-15 23:00:01",
-        "conta_origem_id" => state[:valores].conta_id_1
+        "from_account_id" => state[:valores].account_id_1
       }
 
       resultado =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.relatorio_path(state[:conn], :transferencia, params))
+        |> post(Routes.report_path(state[:conn], :transferencia, params))
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total durante determinado período por determinada conta.",
-               "operacao" => "Transferência",
+               "mensagem" => "Total durante determinado período por determinada Account.",
+               "Operation" => "Transfer",
                "resultado" => 4250
              } = resultado
     end
 
-    test "assert transferencia -> Todos os valores transferidos entre conta x -> y entre datas",
+    test "assert transferencia -> Todos os valores transferidos entre Account x -> y entre datas",
          state do
       params = %{
         "periodo_inicial" => "2021-06-13 00:00:01",
         "periodo_final" => "2021-06-17 00:00:01",
-        "conta_origem_id" => state[:valores].conta_id_1,
-        "conta_destino_id" => state[:valores].conta_id_2
+        "from_account_id" => state[:valores].account_id_1,
+        "to_account_id" => state[:valores].account_id_2
       }
 
       resultado =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.relatorio_path(state[:conn], :transferencia, params))
+        |> post(Routes.report_path(state[:conn], :transferencia, params))
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total durante determinado período entre duas contas.",
-               "operacao" => "Transferência",
+               "mensagem" => "Total durante determinado período entre duas accounts.",
+               "Operation" => "Transfer",
                "resultado" => 7500
              } = resultado
     end
@@ -396,17 +395,17 @@ defmodule BankApiWeb.ControllerRelatorioAdministradorTest do
       params = %{
         "periodo_inicial" => "2021-06-13 00:00:01",
         "periodo_final" => "2021-06-15 23:00:01",
-        "conta_origem_id" => "12312312313"
+        "from_account_id" => "12312312313"
       }
 
       resultado =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.relatorio_path(state[:conn], :transferencia, params))
+        |> post(Routes.report_path(state[:conn], :transferencia, params))
         |> json_response(:bad_request)
 
       assert %{
-               "mensagem" => "Dados inválidos. Verifique Id da Conta, Data ou Operção."
+               "mensagem" => "Dados inválidos. Verifique Id da Account, Data ou Operção."
              } = resultado
 
       params2 = %{
@@ -417,7 +416,7 @@ defmodule BankApiWeb.ControllerRelatorioAdministradorTest do
       resultado2 =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.relatorio_path(state[:conn], :transferencia, params2))
+        |> post(Routes.report_path(state[:conn], :transferencia, params2))
         |> json_response(:bad_request)
 
       assert %{
@@ -425,7 +424,7 @@ defmodule BankApiWeb.ControllerRelatorioAdministradorTest do
              } = resultado2
     end
 
-    test "assert transferência de entre datas - Todos os valores transferidos durante determinado período por todos",
+    test "assert transfer de entre datas - Todos os valores transferidos durante determinado período por todos",
          state do
       params = %{
         "periodo_inicial" => "2021-06-15 00:00:01",
@@ -435,12 +434,12 @@ defmodule BankApiWeb.ControllerRelatorioAdministradorTest do
       resultado =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.relatorio_path(state[:conn], :transferencia, params))
+        |> post(Routes.report_path(state[:conn], :transferencia, params))
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total durante determinado período por todas contas.",
-               "operacao" => "Transferência",
+               "mensagem" => "Total durante determinado período por todas accounts.",
+               "Operation" => "Transfer",
                "resultado" => 15000
              } = resultado
     end
@@ -453,62 +452,62 @@ defmodule BankApiWeb.ControllerRelatorioAdministradorTest do
       resultado =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.relatorio_path(state[:conn], :saque, params))
+        |> post(Routes.report_path(state[:conn], :saque, params))
         |> json_response(:created)
 
       assert %{
                "mensagem" => "Total durante todo o período",
                "resultado" => 4350,
-               "operacao" => "Saque"
+               "Operation" => "Withdraw"
              } = resultado
     end
 
     test "assert saque - Todos os valores sacados por determinado email", state do
-      params = %{"conta_origem_id" => state[:valores].conta_id_1}
+      params = %{"from_account_id" => state[:valores].account_id_1}
 
       resultado =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.relatorio_path(state[:conn], :saque, params))
+        |> post(Routes.report_path(state[:conn], :saque, params))
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total realizado por determinada conta.",
-               "operacao" => "Saque",
+               "mensagem" => "Total realizado por determinada Account.",
+               "Operation" => "Withdraw",
                "resultado" => 3850
              } = resultado
 
-      params2 = %{"conta_origem_id" => state[:valores].conta_id_2}
+      params2 = %{"from_account_id" => state[:valores].account_id_2}
 
       resultado2 =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.relatorio_path(state[:conn], :saque, params2))
+        |> post(Routes.report_path(state[:conn], :saque, params2))
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total realizado por determinada conta.",
-               "operacao" => "Saque",
+               "mensagem" => "Total realizado por determinada Account.",
+               "Operation" => "Withdraw",
                "resultado" => 500
              } = resultado2
     end
 
-    test "assert saque de conta entre datas - Todos os valores sacados durante determinado período por conta",
+    test "assert saque de Account entre datas - Todos os valores sacados durante determinado período por Account",
          state do
       params = %{
         "periodo_inicial" => "2021-06-13 00:00:01",
         "periodo_final" => "2021-06-17 23:00:01",
-        "conta_origem_id" => state[:valores].conta_id_1
+        "from_account_id" => state[:valores].account_id_1
       }
 
       resultado =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.relatorio_path(state[:conn], :saque, params))
+        |> post(Routes.report_path(state[:conn], :saque, params))
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total durante determinado período por determinada conta.",
+               "mensagem" => "Total durante determinado período por determinada Account.",
                "resultado" => 3850
              } = resultado
     end
@@ -518,17 +517,17 @@ defmodule BankApiWeb.ControllerRelatorioAdministradorTest do
       params = %{
         "periodo_inicial" => "2021-06-13 00:00:01",
         "periodo_final" => "2021-06-15 23:00:01",
-        "conta_origem_id" => 123_123_123_123
+        "from_account_id" => 123_123_123_123
       }
 
       resultado =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.relatorio_path(state[:conn], :saque, params))
+        |> post(Routes.report_path(state[:conn], :saque, params))
         |> json_response(:bad_request)
 
       assert %{
-               "mensagem" => "Dados inválidos. Verifique Id da Conta, Data ou Operção."
+               "mensagem" => "Dados inválidos. Verifique Id da Account, Data ou Operção."
              } = resultado
 
       params2 = %{
@@ -539,7 +538,7 @@ defmodule BankApiWeb.ControllerRelatorioAdministradorTest do
       resultado2 =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.relatorio_path(state[:conn], :saque, params2))
+        |> post(Routes.report_path(state[:conn], :saque, params2))
         |> json_response(:bad_request)
 
       assert %{
@@ -557,11 +556,11 @@ defmodule BankApiWeb.ControllerRelatorioAdministradorTest do
       resultado =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.relatorio_path(state[:conn], :saque, params))
+        |> post(Routes.report_path(state[:conn], :saque, params))
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total durante determinado período por todas contas.",
+               "mensagem" => "Total durante determinado período por todas accounts.",
                "resultado" => 1250
              } = resultado
     end

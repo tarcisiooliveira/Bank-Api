@@ -1,13 +1,12 @@
-defmodule BankApi.Multi.Operacao do
-  alias BankApi.Schemas.{Operacao, Conta}
+defmodule BankApi.Multi.Operation do
+  alias BankApi.Schemas.Operation
   alias BankApi.Repo
-  # alias BankApi.Handle.Repo.Conta, as: HandleContaRepo
-  alias BankApi.Handle.Repo.Operacao, as: HandleOperacaoRepo
+  alias BankApi.Handle.Repo.Operation, as: HandleOperationRepo
   alias Ecto.Changeset
 
   def create(
         %{
-          nome_operacao: _nome_operacao
+          operation_name: _name_operation
         } = params
       ) do
     multi =
@@ -23,8 +22,8 @@ defmodule BankApi.Multi.Operacao do
           %Changeset{valid?: true} = changeset ->
             {:ok, changeset}
 
-          %Changeset{errors: [nome_operacao: {"can't be blank", _}]} ->
-            {:error, :nome_operacao_necessario}
+          %Changeset{errors: [operation_name: {error, _}]} ->
+            {:error, error}
         end
       end)
       |> Ecto.Multi.insert(:create_transaction, fn %{operation_changeset: operation_changeset} ->
@@ -37,7 +36,7 @@ defmodule BankApi.Multi.Operacao do
     end
   end
 
-  def update(%{id: id, nome_operacao: nome_operacao}) do
+  def update(%{id: id, operation_name: operation_name}) do
     multi =
       Ecto.Multi.new()
       |> Ecto.Multi.run(:fetch_operation, fn _, _ ->
@@ -46,8 +45,19 @@ defmodule BankApi.Multi.Operacao do
           operation -> {:ok, operation}
         end
       end)
-      |> Ecto.Multi.update(:update_operacao, fn %{fetch_operation: fetch_operation} ->
-        Operacao.update_changeset(fetch_operation, %{nome_operacao: nome_operacao})
+      |> Ecto.Multi.run(:create_operation_changeset, fn _, %{fetch_operation: fetch_operation} ->
+        fetch_operation
+        |> update_changest(%{operation_name: operation_name})
+        |> case  do
+          nil -> {:error, :error_update_changeset}
+          operation -> {:ok, operation}
+        end
+      end)
+      |> Ecto.Multi.update(:update_operation, fn %{
+                                                  create_operation_changeset:
+                                                    create_operation_changeset
+                                                } ->
+        create_operation_changeset
       end)
 
     case Repo.transaction(multi) do
@@ -76,11 +86,16 @@ defmodule BankApi.Multi.Operacao do
   end
 
   defp fetch_operation(params) do
-    HandleOperacaoRepo.fetch_operation(params)
+    HandleOperationRepo.fetch_operation(params)
+  end
+
+  defp update_changest(Operation, %{operation_name: _name_operation} = params) do
+    Operation
+    |> Operation.update_changeset(params)
   end
 
   defp create_changest(params) do
     params
-    |> Operacao.changeset()
+    |> Operation.changeset()
   end
 end

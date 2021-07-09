@@ -1,7 +1,7 @@
 defmodule BankApiWeb.ControllerTransacaoTest do
   use BankApiWeb.ConnCase, async: false
   use ExUnit.Case
-  alias BankApi.Schemas.{Conta, TipoConta, Usuario, Conta, Operacao, Transacao}
+  alias BankApi.Schemas.{Account, TipoAccount, User, Account, Operation, Transaction}
   alias BankApi.Repo
   import BankApi.Factory
   alias BankApiWeb.Auth.Guardian
@@ -13,164 +13,164 @@ defmodule BankApiWeb.ControllerTransacaoTest do
 
     {:ok, token, _claims} = Guardian.encode_and_sign(admin)
 
-    %TipoConta{id: id_tipo_conta} = insert(:tipo_conta, nome_tipo_conta: "Poupança")
+    %TipoAccount{id: id_account_type} = insert(:account_type, account_type_name: "Poupança")
 
-    %Usuario{id: id_usuario1} = insert(:usuario)
-    %Usuario{id: id_usuario2} = insert(:usuario)
-    %Usuario{id: id_usuario3} = insert(:usuario)
+    %User{id: id_User1} = insert(:User)
+    %User{id: id_User2} = insert(:User)
+    %User{id: id_User3} = insert(:User)
 
-    %Conta{id: conta_origem_id} =
-      insert(:conta, usuario_id: id_usuario1, tipo_conta_id: id_tipo_conta)
+    %Account{id: from_account_id} =
+      insert(:Account, user_id: id_User1, account_type_id: id_account_type)
 
-    %Conta{id: conta_destino_id1} =
-      insert(:conta, usuario_id: id_usuario2, tipo_conta_id: id_tipo_conta)
+    %Account{id: account_destino_id1} =
+      insert(:Account, user_id: id_User2, account_type_id: id_account_type)
 
-    %Conta{id: conta_destino_id2} =
-      insert(:conta, usuario_id: id_usuario3, tipo_conta_id: id_tipo_conta)
+    %Account{id: account_destino_id2} =
+      insert(:Account, user_id: id_User3, account_type_id: id_account_type)
 
-    %Operacao{id: operacao_id} = insert(:operacao)
+    %Operation{id: operation_id} = insert(:Operation)
 
     {:ok,
      valores: %{
-       conta_origem_id: conta_origem_id,
-       conta_destino_id: conta_destino_id1,
-       conta_destino_id2: conta_destino_id2,
-       operacao_id: operacao_id,
+       from_account_id: from_account_id,
+       to_account_id: account_destino_id1,
+       account_destino_id2: account_destino_id2,
+       operation_id: operation_id,
        token: token
      }}
   end
 
-  test "assert get - Exibe os dados de pagamentos.", state do
-    %Operacao{id: id_operacao} = insert(:operacao, nome_operacao: "Pagamento")
+  test "assert get - Exibe os dados de payments.", state do
+    %Operation{id: id_operation} = insert(:Operation, operation_name: "Payment")
 
-    %Transacao{id: id} =
-      insert(:transacao,
-        conta_origem_id: state[:valores].conta_origem_id,
-        conta_destino_id: state[:valores].conta_destino_id,
-        operacao_id: id_operacao,
-        valor: 650
+    %Transaction{id: id} =
+      insert(:Transaction,
+        from_account_id: state[:valores].from_account_id,
+        to_account_id: state[:valores].to_account_id,
+        operation_id: id_operation,
+        value: 650
       )
 
     response =
       state[:conn]
       |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-      |> get(Routes.transacao_path(state[:conn], :show, id))
+      |> get(Routes.transaction_path(state[:conn], :show, id))
       |> json_response(:ok)
 
     assert %{
-             "mensagem" => "Transação encotrada",
-             "Transacao" => %{
-               "conta_origem_id" => state[:valores].conta_origem_id,
-               "conta_destino_id" => state[:valores].conta_destino_id,
-               "operacao_id" => id_operacao,
-               "valor" => 650
+             "mensagem" => "Transaction founded",
+             "Transaction" => %{
+               "from_account_id" => state[:valores].from_account_id,
+               "to_account_id" => state[:valores].to_account_id,
+               "operation_id" => id_operation,
+               "value" => 650
              }
            } == response
   end
 
   test "assert get - Exibe os dados de um saque quando é informado parametros validos", state do
-    %Operacao{id: id_operacao} = insert(:operacao, nome_operacao: "Saque")
+    %Operation{id: id_operation} = insert(:Operation, operation_name: "Withdraw")
 
-    %Transacao{id: id} =
-      insert(:transacao_saque,
-        conta_origem_id: state[:valores].conta_origem_id,
-        operacao_id: id_operacao,
-        valor: 700
+    %Transaction{id: id} =
+      insert(:withdraw_transaction,
+        from_account_id: state[:valores].from_account_id,
+        operation_id: id_operation,
+        value: 700
       )
 
     response =
       state[:conn]
       |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-      |> get(Routes.transacao_path(state[:conn], :show, id))
+      |> get(Routes.transaction_path(state[:conn], :show, id))
       |> json_response(:ok)
 
     assert %{
-             "mensagem" => "Transação encotrada",
-             "Transacao" => %{
-               "conta_origem_id" => state[:valores].conta_origem_id,
-               "operacao_id" => id_operacao,
-               "valor" => 700
+             "mensagem" => "Transaction founded",
+             "Transaction" => %{
+               "from_account_id" => state[:valores].from_account_id,
+               "operation_id" => id_operation,
+               "value" => 700
              }
            } == response
   end
 
-  test "assert get - Retorna os dados de uma transacao quando passado ID valido",
+  test "assert get - Retorna os dados de uma Transaction quando passado ID valido",
        state do
-    %Operacao{id: id_operacao} = insert(:operacao, nome_operacao: "Saque")
+    %Operation{id: id_operation} = insert(:Operation, operation_name: "Withdraw")
 
     params = %{
-      "conta_origem_id" => state[:valores].conta_origem_id,
-      "operacao_id" => id_operacao,
-      "valor" => 900
+      "from_account_id" => state[:valores].from_account_id,
+      "operation_id" => id_operation,
+      "value" => 900
     }
 
-    {:ok, %Transacao{id: id}} =
+    {:ok, %Transaction{id: id}} =
       params
-      |> Transacao.changeset()
+      |> Transaction.changeset()
       |> BankApi.Repo.insert()
 
     response =
       state[:conn]
       |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-      |> get(Routes.transacao_path(state[:conn], :show, id))
+      |> get(Routes.transaction_path(state[:conn], :show, id))
       |> json_response(:ok)
 
     assert %{
-             "mensagem" => "Transação encotrada",
-             "Transacao" => %{
-               "conta_origem_id" => state[:valores].conta_origem_id,
-               "operacao_id" => id_operacao,
-               "valor" => 900
+             "mensagem" => "Transaction founded",
+             "Transaction" => %{
+               "from_account_id" => state[:valores].from_account_id,
+               "operation_id" => id_operation,
+               "value" => 900
              }
            } == response
   end
 
-  test "assert ok insert/4 - Todos parametros estão ok, cria transacao entre duas contas",
+  test "assert ok insert/4 - Todos parametros estão ok, cria Transaction entre duas accounts",
        state do
     params = %{
-      "conta_origem_id" => state[:valores].conta_origem_id,
-      "conta_destino_id" => state[:valores].conta_destino_id,
-      "operacao_id" => state[:valores].operacao_id,
-      "valor" => 600
+      "from_account_id" => state[:valores].from_account_id,
+      "to_account_id" => state[:valores].to_account_id,
+      "operation_id" => state[:valores].operation_id,
+      "value" => 600
     }
 
     response =
       state[:conn]
       |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-      |> post(Routes.transacao_path(state[:conn], :create, params))
+      |> post(Routes.transaction_path(state[:conn], :create, params))
       |> json_response(:created)
 
     assert %{
-             "Transacao" => %{
-               "conta_origem_id" => state[:valores].conta_origem_id,
-               "conta_destino_id" => state[:valores].conta_destino_id,
-               "operacao_id" => state[:valores].operacao_id,
-               "valor" => 600
+             "Transaction" => %{
+               "from_account_id" => state[:valores].from_account_id,
+               "to_account_id" => state[:valores].to_account_id,
+               "operation_id" => state[:valores].operation_id,
+               "value" => 600
              },
              "mensagem" => "Transação Realizada com Sucesso"
            } == response
   end
 
-  test "assert ok insert - Todos parametros estão ok, usuario faz um saque", state do
-    %Operacao{id: operacao_id} = insert(:operacao, nome_operacao: "Saque")
+  test "assert ok insert - Todos parametros estão ok, User faz um saque", state do
+    %Operation{id: operation_id} = insert(:Operation, operation_name: "Withdraw")
 
     params = %{
-      "conta_origem_id" => state[:valores].conta_origem_id,
-      "operacao_id" => operacao_id,
-      "valor" => 1000
+      "from_account_id" => state[:valores].from_account_id,
+      "operation_id" => operation_id,
+      "value" => 1000
     }
 
     response =
       state[:conn]
       |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-      |> post(Routes.transacao_path(state[:conn], :create, params))
+      |> post(Routes.transaction_path(state[:conn], :create, params))
       |> json_response(:created)
 
     assert %{
-             "Transacao" => %{
-               "conta_origem_id" => state[:valores].conta_origem_id,
-               "operacao_id" => operacao_id,
-               "valor" => 1000
+             "Transaction" => %{
+               "from_account_id" => state[:valores].from_account_id,
+               "operation_id" => operation_id,
+               "value" => 1000
              },
              "mensagem" => "Transação Realizada com Sucesso"
            } == response
@@ -178,40 +178,40 @@ defmodule BankApiWeb.ControllerTransacaoTest do
 
   describe "delete/1" do
     test "delete ok - remove  transação de saque cadastrada na base de dados", state do
-      %Operacao{id: operacao_id} = insert(:operacao, nome_operacao: "Saque")
+      %Operation{id: operation_id} = insert(:Operation, operation_name: "Withdraw")
 
       params = %{
-        "conta_origem_id" => state[:valores].conta_origem_id,
-        "operacao_id" => operacao_id,
-        "valor" => 1000
+        "from_account_id" => state[:valores].from_account_id,
+        "operation_id" => operation_id,
+        "value" => 1000
       }
 
-      total_antes = Repo.aggregate(Transacao, :count)
+      total_antes = Repo.aggregate(Transaction, :count)
 
       {:ok, parametros} =
         params
-        |> Transacao.changeset()
+        |> Transaction.changeset()
         |> BankApi.Repo.insert()
 
-      total_depois = Repo.aggregate(Transacao, :count)
+      total_depois = Repo.aggregate(Transaction, :count)
       assert total_antes < total_depois
 
       response =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> delete(Routes.transacao_path(state[:conn], :delete, parametros.id))
+        |> delete(Routes.transaction_path(state[:conn], :delete, parametros.id))
         |> json_response(:ok)
 
       assert %{
-               "Transacao" => %{
-                 "conta_origem_id" => state[:valores].conta_origem_id,
-                 "operacao_id" => operacao_id,
-                 "valor" => 1000
+               "Transaction" => %{
+                 "from_account_id" => state[:valores].from_account_id,
+                 "operation_id" => operation_id,
+                 "value" => 1000
                },
                "mensagem" => "Transação Removida com Sucesso"
              } == response
 
-      total_mais_a_frente = Repo.aggregate(Transacao, :count)
+      total_mais_a_frente = Repo.aggregate(Transaction, :count)
       assert total_antes == total_mais_a_frente
     end
 
@@ -219,11 +219,11 @@ defmodule BankApiWeb.ControllerTransacaoTest do
       response =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> delete(Routes.transacao_path(state[:conn], :delete, 987_654_321))
+        |> delete(Routes.transaction_path(state[:conn], :delete, 987_654_321))
         |> json_response(:not_found)
 
       assert %{
-               "error" => "ID Inválido ou inexistente."
+               "error" => "Invalid ID or inexistent."
              } = response
     end
   end

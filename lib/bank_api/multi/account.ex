@@ -1,12 +1,12 @@
-defmodule BankApi.Multi.Conta do
-  alias BankApi.Schemas.Conta
+defmodule BankApi.Multi.Account do
+  alias BankApi.Schemas.Account
   alias BankApi.Repo
-  alias BankApi.Handle.Repo.Conta, as: HandleContaRepo
-  alias BankApi.Handle.Repo.Usuario, as: HandleUserRepo
-  alias BankApi.Handle.Repo.TipoConta, as: HandleAccountTypeRepo
+  alias BankApi.Handle.Repo.Account, as: HandleAccountRepo
+  alias BankApi.Handle.Repo.User, as: HandleUserRepo
+  alias BankApi.Handle.Repo.TipoAccount, as: HandleAccountTypeRepo
 
   def create(
-        %{saldo_conta: ammount, usuario_id: user_id, tipo_conta_id: account_type_id} = params
+        %{balance_account: ammount, user_id: user_id, account_type_id: account_type_id} = params
       ) do
     multi =
       Ecto.Multi.new()
@@ -45,7 +45,7 @@ defmodule BankApi.Multi.Conta do
     end
   end
 
-  def create(%{usuario_id: user_id, tipo_conta_id: account_type_id} = params) do
+  def create(%{user_id: user_id, account_type_id: account_type_id} = params) do
     multi =
       Ecto.Multi.new()
       |> Ecto.Multi.run(:theres_user_account, fn _, _ ->
@@ -77,7 +77,7 @@ defmodule BankApi.Multi.Conta do
     end
   end
 
-  def update(%{id: id, saldo_conta: ammount}) do
+  def update(%{id: id, balance_account: ammount}) do
     multi =
       Ecto.Multi.new()
       |> Ecto.Multi.run(:ammount_non_negative, fn _, _ ->
@@ -87,13 +87,13 @@ defmodule BankApi.Multi.Conta do
         end
       end)
       |> Ecto.Multi.run(:fetch_account, fn _, _ ->
-        case HandleContaRepo.fetch_account(%{id: id}) do
+        case HandleAccountRepo.fetch_account(%{id: id}) do
           nil -> {:error, :theres_no_account}
           account -> {:ok, account}
         end
       end)
       |> Ecto.Multi.update(:update_account, fn %{fetch_account: account} ->
-        Conta.update_changeset(account, %{saldo_conta: ammount})
+        Account.update_changeset(account, %{balance_account: ammount})
       end)
 
     case Repo.transaction(multi) do
@@ -105,12 +105,12 @@ defmodule BankApi.Multi.Conta do
     end
   end
 
-  @spec delete(%{:id => any, optional(any) => any}) :: {:error, any} | {:ok, any}
+  @spec delete(%{:id => Integer}) :: {:error, :message} | {:ok, :confirmation}
   def delete(%{id: id}) do
     multi =
       Ecto.Multi.new()
       |> Ecto.Multi.run(:fetch_account, fn _, _ ->
-        case HandleContaRepo.fetch_account(%{id: id}) do
+        case HandleAccountRepo.fetch_account(%{id: id}) do
           nil -> {:error, :theres_no_account}
           account -> {:ok, account}
         end
@@ -133,21 +133,21 @@ defmodule BankApi.Multi.Conta do
   end
 
   defp create_account(%{
-         saldo_conta: amount,
-         usuario_id: user_id,
-         tipo_conta_id: account_type_id
+         balance_account: amount,
+         user_id: user_id,
+         account_type_id: account_type_id
        }) do
     {:ok,
-     %{saldo_conta: amount, usuario_id: user_id, tipo_conta_id: account_type_id}
-     |> Conta.changeset()}
+     %{balance_account: amount, user_id: user_id, account_type_id: account_type_id}
+     |> Account.changeset()}
   end
 
   defp create_account(%{
-         usuario_id: user_id,
-         tipo_conta_id: account_type_id
+         user_id: user_id,
+         account_type_id: account_type_id
        }) do
     {:ok,
-     %{usuario_id: user_id, tipo_conta_id: account_type_id}
-     |> Conta.changeset()}
+     %{user_id: user_id, account_type_id: account_type_id}
+     |> Account.changeset()}
   end
 end

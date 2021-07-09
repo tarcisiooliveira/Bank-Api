@@ -1,11 +1,11 @@
-defmodule BankApiWeb.TipoContaView do
+defmodule BankApiWeb.TipoAccountView do
   use BankApiWeb, :view
-  alias BankApi.Schemas.TipoConta
+  alias BankApi.Schemas.AccountType
 
-  def render("show.json", %{tipo_conta: %TipoConta{nome_tipo_conta: nome_tipo_conta}}) do
+  def render("show.json", %{account_type: %TipoAccount{account_type_name: account_type_name}}) do
     %{
-      mensagem: "Tipo Conta encotrado",
-      "Tipo Conta": %{nome_tipo_conta: nome_tipo_conta}
+      mensagem: "Tipo Account encotrado",
+      "Tipo Account": %{account_type_name: account_type_name}
     }
   end
 
@@ -15,26 +15,47 @@ defmodule BankApiWeb.TipoContaView do
     }
   end
 
-  def render("create.json", %{tipo_conta: %TipoConta{nome_tipo_conta: nome_tipo_conta}}) do
+  def render("create.json", %{account_type: %{create_account_type: %TipoAccount{account_type_name: account_type_name}}}) do
     %{
-      mensagem: "Tipo Conta criado com sucesso!",
-      "Tipo Conta": %{nome_tipo_conta: nome_tipo_conta}
+      mensagem: "Tipo Account criado com sucesso!",
+      "Tipo Account": %{account_type_name: account_type_name}
     }
   end
 
-  def render("update.json", %{tipo_conta: %TipoConta{nome_tipo_conta: nome_tipo_conta}}) do
+  def render("update.json", %{
+        account_type: %{update_account_type: %TipoAccount{account_type_name: account_type_name}}
+      }) do
     %{
-      mensagem: "Tipo Conta alterado com sucesso!",
-      "Tipo Conta": %{nome_tipo_conta: nome_tipo_conta}
+      mensagem: "Tipo Account alterado com sucesso!",
+      "Tipo Account": %{account_type_name: account_type_name}
     }
   end
 
-  def render("delete.json", %{tipo_conta: %TipoConta{nome_tipo_conta: nome_tipo_conta}}) do
+  def render("update.json", %{account_type: %TipoAccount{account_type_name: account_type_name}}) do
     %{
-      mensagem: "Tipo Conta removido com sucesso!",
-      Nome: nome_tipo_conta
+      mensagem: "Tipo Account alterado com sucesso!",
+      "Tipo Account": %{account_type_name: account_type_name}
     }
   end
+
+  def render("delete.json", %{
+        account_type: %{delete_operation: %TipoAccount{account_type_name: account_type_name}}
+      }) do
+    %{
+      mensagem: "Tipo Account removido com sucesso!",
+      Nome: account_type_name
+    }
+  end
+
+  def render("delete.json", %{account_type: %TipoAccount{account_type_name: account_type_name}}) do
+    %{
+      mensagem: "Tipo Account removido com sucesso!",
+      Nome: account_type_name
+    }
+  end
+
+  def render("error.json", %{error: :operation_not_exists}),
+    do: %{error: "Invalid ID or inexistent."}
 
   def render("error.json", %{error: error}), do: %{error: "#{error}"}
 end

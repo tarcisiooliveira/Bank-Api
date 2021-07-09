@@ -1,11 +1,11 @@
-defmodule BankApi.Repo.Migrations.TipoConta do
+defmodule BankApi.Repo.Migrations.TipoAccount do
   use Ecto.Migration
 
   def change do
-    create table(:tipo_contas)do
-      add :nome_tipo_conta, :string, null: false
+    create table(:account_types)do
+      add :account_type_name, :string, null: false
       timestamps()
     end
-    create unique_index(:tipo_contas, [:nome_tipo_conta])
+    create unique_index(:account_types, [:account_type_name])
   end
 end

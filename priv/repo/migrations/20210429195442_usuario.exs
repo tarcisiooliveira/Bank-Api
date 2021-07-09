@@ -1,14 +1,13 @@
-defmodule BankApi.Repo.Migrations.Usuario do
+defmodule BankApi.Repo.Migrations.User do
   use Ecto.Migration
 
   def change do
-    create table(:usuarios) do
+    create table(:Users) do
       add :email, :string, null: false
-      add :nome, :string, null: false
+      add :name, :string, null: false
       add :password_hash, :string
-      add :visivel, :boolean, default: :true
       timestamps()
     end
-    create unique_index(:usuarios, [:email])
+    create unique_index(:Users, [:email])
   end
 end

@@ -1,9 +1,9 @@
-defmodule BankApi.Handle.Repo.Transacao do
+defmodule BankApi.Handle.Repo.Transaction do
   alias BankApi.Repo
-  alias BankApi.Schemas.Transacao
+  alias BankApi.Schemas.Transaction
 
   def fetch_transaction(id) do
-    Repo.get(Transacao, id)
+    Repo.get(Transaction, id)
   end
 
   def delete(transaction) do
