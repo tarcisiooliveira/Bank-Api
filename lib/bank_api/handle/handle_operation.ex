@@ -9,7 +9,7 @@ defmodule BankApi.Handle.HandleOperation do
   def get(%{id: id}) do
     case Repo.get_by(Operation, id: id) do
       nil -> {:error, "Invalid ID or inexistent."}
-      Operation -> {:ok, Operation}
+      operation -> {:ok, operation}
     end
   end
 

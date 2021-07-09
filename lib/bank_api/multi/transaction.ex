@@ -15,7 +15,7 @@ defmodule BankApi.Multi.Transaction do
       Ecto.Multi.new()
       |> Ecto.Multi.run(:mesma_account, fn _, _ ->
         case is_mesma_account?(from_account_id, to_account_id) do
-          true -> {:error, :transferencia_para_account_origem}
+          true -> {:error, :transfer_para_account_origem}
           false -> {:ok, false}
         end
       end)
@@ -41,9 +41,9 @@ defmodule BankApi.Multi.Transaction do
         operation(to_account, value, :adicionar)
       end)
       |> Ecto.Multi.insert(:create_transaction, fn %{
-                                                 from_account: from_account,
-                                                 to_account: to_account
-                                               } ->
+                                                     from_account: from_account,
+                                                     to_account: to_account
+                                                   } ->
         create_transaction(from_account.id, to_account.id, operation_id, value)
       end)
 
@@ -93,10 +93,10 @@ defmodule BankApi.Multi.Transaction do
     end
   end
 
-  def delete(%{id: id}) do
+  def delete(%{id: _id} = params) do
     multi =
       Ecto.Multi.new()
-      |> Ecto.Multi.run(:fetch_transaction, fn _, _ -> fetch_transaction(id) end)
+      |> Ecto.Multi.run(:fetch_transaction, fn _, _ -> fetch_transaction(params) end)
       |> Ecto.Multi.delete(:delete_account, fn %{fetch_transaction: Account} ->
         Account
       end)
@@ -136,8 +136,8 @@ defmodule BankApi.Multi.Transaction do
     end
   end
 
-  defp fetch_transaction(id) do
-    case HandleTransactionRepo.fetch_transaction(id) do
+  defp fetch_transaction(%{id: _id} = params) do
+    case HandleTransactionRepo.fetch_transaction(params) do
       nil -> {:error, :transaction_not_found}
       Transaction -> {:ok, Transaction}
     end

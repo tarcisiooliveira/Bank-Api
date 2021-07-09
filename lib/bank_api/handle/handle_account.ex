@@ -8,10 +8,12 @@ defmodule BankApi.Handle.HandleAccount do
   def get(%{id: _id}=params) do
     case HandleRepoAccount.fetch_account(params) do
       nil -> {:error, "Invalid ID or inexistent."}
-      Account -> {:ok, Account}
+      account -> {:ok, account}
     end
   end
 
+  @spec create(%{:account_type_id => any, :user_id => any, optional(any) => any}) ::
+          {:error, any} | {:ok, any}
   def create(params) do
     params
     |> MultiAccount.create()

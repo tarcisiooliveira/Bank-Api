@@ -37,10 +37,10 @@ defmodule BankApiWeb.UserController do
     |> handle_response(conn, "update.json", :ok)
   end
 
-  defp handle_create_response({:ok, User}, conn, view) do
+  defp handle_create_response({:ok, user}, conn, view) do
     conn
     |> put_status(:created)
-    |> render(view, User: User)
+    |> render(view, user: user)
   end
 
   defp handle_create_response({:error, error} = _params, conn, view) do
@@ -49,10 +49,10 @@ defmodule BankApiWeb.UserController do
     |> render(view, error: error)
   end
 
-  defp handle_delete({:ok, User}, conn) do
+  defp handle_delete({:ok, user}, conn) do
     conn
     |> put_status(:ok)
-    |> render("delete.json", User: User)
+    |> render("delete.json", user: user)
   end
 
   defp handle_delete({:error, mensagem}, conn) do

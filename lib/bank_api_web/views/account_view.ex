@@ -1,10 +1,9 @@
 defmodule BankApiWeb.AccountView do
   use BankApiWeb, :view
   alias BankApi.Schemas.Account
-  alias Ecto.Changeset
 
   def render("show.json", %{
-        Account: %Account{
+        account: %Account{
           balance_account: balance_account,
           user_id: user_id,
           account_type_id: account_type_id
@@ -12,7 +11,7 @@ defmodule BankApiWeb.AccountView do
       }) do
     %{
       mensagem: "Account Type found.",
-      Account: %{
+      account: %{
         balance_account: balance_account,
         user_id: user_id,
         account_type_id: account_type_id
@@ -21,7 +20,7 @@ defmodule BankApiWeb.AccountView do
   end
 
   def render("create.json", %{
-        Account: %{
+        account: %{
           inserted_account: %Account{
             balance_account: balance_account,
             user_id: user_id,
@@ -31,7 +30,7 @@ defmodule BankApiWeb.AccountView do
       }) do
     %{
       mensagem: "Account recorded.",
-      Account: %{
+      account: %{
         balance_account: balance_account,
         user_id: user_id,
         account_type_id: account_type_id
@@ -42,16 +41,16 @@ defmodule BankApiWeb.AccountView do
   def render("update.json", %{Account: %{update_account: %Account{id: id, balance_account: balance_account}}}) do
     %{
       mensagem: "Account updated.",
-      Account: %{account_ID: id, balance_account: balance_account}
+      account: %{account_ID: id, balance_account: balance_account}
     }
   end
 
   def render("delete.json", %{
-        Account: %{deleted_account: %Account{user_id: user_id, account_type_id: account_type_id}}
+        account: %{deleted_account: %Account{user_id: user_id, account_type_id: account_type_id}}
       }) do
     %{
       mensagem: "Account deleted.",
-      Account: %{ID_User: user_id, account_type: account_type_id}
+      account: %{user_id: user_id, account_type: account_type_id}
     }
   end
 

@@ -35,7 +35,7 @@ defmodule BankApiWeb.ControllerAdminTest do
 
       assert %{
                "email" => "test2@admin.com",
-               "mensagem" => "Administrador Cadastrado"
+               "mensagem" => "Admin recorded."
              } = response
     end
 
@@ -73,17 +73,17 @@ defmodule BankApiWeb.ControllerAdminTest do
   end
 
   describe "DELETE" do
-    test "assert delete ok- remove administrador", state do
+    test "assert delete ok- remove admin", state do
       response =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
         |> delete(Routes.admin_path(state[:conn], :delete, state[:valores].admin.id))
         |> json_response(:ok)
 
-      assert %{"email" => "tarcisio@admin.com", "mensagem" => "Administrador removido"} = response
+      assert %{"email" => "tarcisio@admin.com", "mensagem" => "Admin deleted."} = response
     end
 
-    test "error delete - tenta remover administrador inexistente", state do
+    test "error delete - try remove inexistent admin", state do
       response =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
@@ -91,12 +91,12 @@ defmodule BankApiWeb.ControllerAdminTest do
         |> json_response(404)
 
       assert %{
-               "Erro" => "Administrador não removido.",
-               "Resultado" => "Invalid ID or inexistent."
+               "Erro" => "Admin not deleted.",
+               "Result" => "Invalid ID or inexistent."
              } = response
     end
 
-    test "error delete - tenta remover administrador com token invalido", state do
+    test "error delete - try remove admin with invalid token", state do
       response =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token <> ".")
@@ -105,7 +105,7 @@ defmodule BankApiWeb.ControllerAdminTest do
       assert %{resp_body: "{\"messagem\":\"invalid_token\"}", status: 401} = response
     end
 
-    test "error delete - tenta remover administrador sem token de acesso", state do
+    test "error delete - try remove admin without access token", state do
       response =
         state[:conn]
         |> delete(Routes.admin_path(state[:conn], :delete, 789_456_123))
@@ -124,7 +124,7 @@ defmodule BankApiWeb.ControllerAdminTest do
         |> patch(Routes.admin_path(state[:conn], :update, state[:valores].admin.id, params))
         |> json_response(:ok)
 
-      assert %{"mensagem" => "Admininstrador Atualizado", "email" => "updated-email@email.com"} =
+      assert %{"mensagem" => "Admin updated.", "email" => "updated-email@email.com"} =
                response
     end
 

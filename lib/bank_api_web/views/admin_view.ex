@@ -20,14 +20,14 @@ defmodule BankApiWeb.AdminView do
         }
       ) do
     %{
-      mensagem: "Administrador Cadastrado",
+      mensagem: "Admin recorded.",
       email: email
     }
   end
 
   def render("create.json", %{error: error}) do
     %{
-      mensagem: "Administrador Não Cadastrado",
+      mensagem: "Admin not recorded.",
       error: error
     }
   end
@@ -43,7 +43,7 @@ defmodule BankApiWeb.AdminView do
         }
       ) do
     %{
-      mensagem: "Admininstrador Atualizado",
+      mensagem: "Admin updated.",
       email: email
     }
   end
@@ -59,22 +59,22 @@ defmodule BankApiWeb.AdminView do
         }
       ) do
     %{
-      mensagem: "Administrador removido",
+      mensagem: "Admin deleted.",
       email: email
     }
   end
 
   def render("delete.json", %{error: :theres_no_admin}) do
     %{
-      Erro: "Administrador não removido.",
-      Resultado: "Invalid ID or inexistent."
+      Erro: "Admin not deleted.",
+      Result: "Invalid ID or inexistent."
     }
   end
 
   def render("delete.json", %{error: error}) do
     %{
-      Erro: "Administrador não removido.",
-      Resultado: error
+      Erro: "Admin not deleted.",
+      Result: error
     }
   end
 
@@ -82,7 +82,7 @@ defmodule BankApiWeb.AdminView do
         "error.json",
         %{error: :confirmacao_senha_necessario}
       ) do
-    %{error: "Verifique os parametros."}
+    %{error: "Verify parameters."}
   end
 
   def render(
@@ -91,11 +91,4 @@ defmodule BankApiWeb.AdminView do
       ) do
     %{error: error}
   end
-
-  # def render(
-  #       "error.json",
-  #       params
-  #     ) do
-  #   %{error: "Verifique os parametros."}
-  # end
 end

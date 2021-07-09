@@ -11,7 +11,7 @@ defmodule BankApiWeb.ErrorView do
   # the template name. For example, "404.json" becomes
   # "Not Found".
   def render("401.json", %{error: _error}) do
-    %{error: "Administrador não autorizado."}
+    %{error: "Admin not found."}
   end
 
   def render("400.json", %{error: error}) do

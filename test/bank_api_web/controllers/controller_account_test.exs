@@ -67,7 +67,7 @@ defmodule BankApiWeb.ControllerAccountTest do
   end
 
   describe "CREATE" do
-    test "insert Account - Cadastra Account quando todos parametros estão OK", state do
+    test "insert Account - Cadastra Account quando alls parametros estão OK", state do
       %User{id: user_id} = insert(:user)
       %AccountType{id: account_type_id} = insert(:account_type)
 
@@ -84,12 +84,12 @@ defmodule BankApiWeb.ControllerAccountTest do
         |> json_response(:created)
 
       assert %{
-               "Account" => %{
+               "account" => %{
                  "balance_account" => 100_000,
                  "account_type_id" => _83,
                  "user_id" => _147
                },
-               "mensagem" => "Account Cadastrada."
+               "mensagem" => "Account recorded."
              } = response
     end
 
@@ -114,7 +114,7 @@ defmodule BankApiWeb.ControllerAccountTest do
                  "account_type_id" => _83,
                  "user_id" => _147
                },
-               "mensagem" => "Account Cadastrada."
+               "mensagem" => "Account recorded."
              } = response
     end
 
@@ -236,7 +236,7 @@ defmodule BankApiWeb.ControllerAccountTest do
 
       assert %{
                "Account" => %{"ID_User" => ^user_id, "account_type" => ^account_type_id},
-               "mensagem" => "Account removida."
+               "mensagem" => "Account deleted."
              } = response
     end
 

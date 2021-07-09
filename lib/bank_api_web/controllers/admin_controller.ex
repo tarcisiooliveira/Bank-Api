@@ -9,7 +9,7 @@ defmodule BankApiWeb.AdminController do
   end
 
   def show(conn, %{"id" => id}) do
-    id
+    %{id: String.to_integer(id)}
     |> HandleAdmin.get()
     |> handle_response(conn, "show.json", :ok)
   end
@@ -33,7 +33,7 @@ defmodule BankApiWeb.AdminController do
       ) do
     {
       :error,
-        "Invalid parameters.
+      "Invalid parameters.
         Required: \"email\" => email, \"password\" => password, \"password_confirmation\" => password_confirmation"
     }
     |> handle_create_response(conn, "create.json")
@@ -46,7 +46,7 @@ defmodule BankApiWeb.AdminController do
   end
 
   def update(conn, %{"id" => id, "email" => email}) do
-    %{id: id, email: email}
+    %{id: String.to_integer(id), email: email}
     |> HandleAdmin.update()
     |> handle_response(conn, "update.json", :ok)
   end
@@ -57,7 +57,7 @@ defmodule BankApiWeb.AdminController do
     |> render(view, admin: admin)
   end
 
-  defp handle_create_response({:error, error} = _params, conn, view) do
+  defp handle_create_response({:error, error} = _params, conn, _view) do
     conn
     |> put_status(422)
     |> render("error.json", error: error)

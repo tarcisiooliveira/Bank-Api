@@ -5,10 +5,10 @@ defmodule BankApi.Handle.HandleTransaction do
   @moduledoc """
   Modulo to manipulate Transaction by Repo
   """
-  def get(%{id: id}) do
-    case HandleTransactionRepo.fetch_transaction(id) do
+  def get(%{id: _id}=params) do
+    case HandleTransactionRepo.fetch_transaction(params) do
       nil -> {:error, "ID inválido."}
-      Transaction -> {:ok, Transaction}
+      transaction -> {:ok, transaction}
     end
   end
 

@@ -10,7 +10,7 @@ defmodule BankApi.Handle.HandleUser do
   def get(%{id: _id} = params) do
     case HandleUserRepo.fetch_user(params) do
       nil -> {:error, "Invalid ID or inexistent."}
-      User -> {:ok, User}
+      user -> {:ok, user}
     end
   end
 

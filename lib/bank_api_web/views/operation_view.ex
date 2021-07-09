@@ -3,27 +3,27 @@ defmodule BankApiWeb.OperationView do
   alias BankApi.Schemas.Operation
   alias Ecto.Changeset
 
-  def render("show.json", %{Operation: %Operation{operation_name: name_operation}}) do
+  def render("show.json", %{operation:  %Operation{operation_name: operation_name}}) do
     %{
       mensagem: "Operation Type found.",
-      Operation: name_operation
+      operation:  operation_name
     }
   end
 
-  def render("create.json", %{Operation: %{create_transaction: %Operation{operation_name: operation_name}}}) do
+  def render("create.json", %{operation:  %{create_transaction: %Operation{operation_name: operation_name}}}) do
     %{
       mensagem: "Operation Recorded",
       Operação: %{operation_name: operation_name}
     }
   end
-  def render("create.json", %{Operation: %Operation{operation_name: operation_name}}) do
+  def render("create.json", %{operation:  %Operation{operation_name: operation_name}}) do
     %{
       mensagem: "Operation Recorded",
       Operação: %{operation_name: operation_name}
     }
   end
 
-  def render("update.json", %{Operation: %{update_operation: %Operation{operation_name: operation_name}}}) do
+  def render("update.json", %{operation:  %{update_operation: %Operation{operation_name: operation_name}}}) do
     %{
       mensagem: "Operation Updated",
       Operação: %{operation_name: operation_name}
@@ -31,7 +31,7 @@ defmodule BankApiWeb.OperationView do
   end
 
   def render("delete.json", %{
-        Operation: %{fetch_operation: %Operation{operation_name: operation_name}}
+        operation:  %{fetch_operation: %Operation{operation_name: operation_name}}
       }) do
     %{
       mensagem: "Operation #{operation_name} deleted successfully."
@@ -40,14 +40,14 @@ defmodule BankApiWeb.OperationView do
 
   def render("delete.json", %{error: :operation_not_exists}) do
     %{
-      Resultado: "Non-existent operation.",
+      Result: "Non-existent operation.",
       Mensagem: "Invalid ID or inexistent."
     }
   end
 
   def render("delete.json", %{error: error}) do
     %{
-      Resultado: "Non-existent operation.",
+      Result: "Non-existent operation.",
       Mensagem: error
     }
   end

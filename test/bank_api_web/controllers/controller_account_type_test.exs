@@ -17,7 +17,7 @@ defmodule BankApiWeb.AccountTypeTest do
      }}
   end
 
-  test "quando todos parametros estão ok, cria AccountType no banco", state do
+  test "quando alls parametros estão ok, cria AccountType no banco", state do
     params = %{"account_type_name" => "Corrente23"}
 
     response =
@@ -27,7 +27,7 @@ defmodule BankApiWeb.AccountTypeTest do
       |> json_response(:created)
 
     assert %{
-             "mensagem" => "Tipo Account criado com sucesso!",
+             "mensagem" => "Account Type created successfully!",
              "Tipo Account" => %{"account_type_name" => "Corrente23"}
            } = response
   end
@@ -44,7 +44,7 @@ defmodule BankApiWeb.AccountTypeTest do
       |> json_response(:ok)
 
     assert %{
-             "mensagem" => "Tipo Account alterado com sucesso!",
+             "mensagem" => "Account Type updated successfully!",
              "Tipo Account" => %{"account_type_name" => "Savings Account"}
            } = response
   end
@@ -60,7 +60,7 @@ defmodule BankApiWeb.AccountTypeTest do
 
     assert %{
              "Nome" => "Savings Account",
-             "mensagem" => "Tipo Account removido com sucesso!"
+             "mensagem" => "Account Type deleted successfully!"
            } = response
   end
 
@@ -86,7 +86,7 @@ defmodule BankApiWeb.AccountTypeTest do
       |> json_response(:ok)
 
     assert %{
-             "mensagem" => "Tipo Account encotrado",
+             "mensagem" => "Account Type found.",
              "Tipo Account" => %{"account_type_name" => "Savings Account"}
            } = response
   end

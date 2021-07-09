@@ -51,10 +51,10 @@ defmodule BankApiWeb.TransactionController do
     |> handle_response(conn, "create.json", :created)
   end
 
-  defp handle_response(Transaction, conn, view, status) do
+  defp handle_response(transaction, conn, view, status) do
     conn
     |> put_status(status)
-    |> render(view, Transaction: Transaction)
+    |> render(view, transaction: transaction)
   end
 
   defp handle_delete_response(

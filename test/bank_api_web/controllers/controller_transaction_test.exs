@@ -152,7 +152,7 @@ defmodule BankApiWeb.ControllerTransactionTest do
            } == response
   end
 
-  test "assert ok insert - Todos parametros estão ok, User faz um withdraw", state do
+  test "assert ok insert - alls parametros estão ok, User faz um withdraw", state do
     %Operation{id: operation_id} = insert(:operation, operation_name: "Withdraw")
 
     params = %{

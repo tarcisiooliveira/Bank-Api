@@ -3,29 +3,24 @@ defmodule BankApiWeb.ReportController do
   alias BankApi.Handle.Report.HandleReportAdmin
 
   def withdraw(conn, params) do
-    Map.merge(params, %{"Operation" => "Withdraw"})
+    Map.merge(params, %{"operation" => "Withdraw"})
     |> HandleReportAdmin.report()
     |> handle_response(conn, "report.json", :created)
   end
 
-  def transferencia(conn, params) do
-    Map.merge(params, %{"Operation" => "Transfer"})
+  def transfer(conn, params) do
+    Map.merge(params, %{"operation" => "Transfer"})
     |> HandleReportAdmin.report()
     |> handle_response(conn, "report.json", :created)
   end
 
   def payment(conn, params) do
-    Map.merge(params, %{"Operation" => "Payment"})
+    Map.merge(params, %{"operation" => "Payment"})
     |> HandleReportAdmin.report()
     |> handle_response(conn, "report.json", :created)
   end
 
-  defp handle_response(
-         {:ok, return},
-         conn,
-         view,
-         status
-       ) do
+  defp handle_response({:ok, return}, conn, view, status) do
     conn
     |> put_status(status)
     |> render(view, return: return)

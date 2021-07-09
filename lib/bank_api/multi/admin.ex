@@ -2,7 +2,6 @@ defmodule BankApi.Multi.Admin do
   alias BankApi.Schemas.Admin
   alias BankApi.Repo
   alias BankApi.Handle.Repo.Admin, as: HandleRepoAdmin
-  # alias BankApi.Handle.Repo.Operation, as: HandleOperationRepo
   alias Ecto.Changeset
 
   alias BankApi.Handle.Repo.Admin, as: HandleRepoAdmin
@@ -76,7 +75,7 @@ defmodule BankApi.Multi.Admin do
     multi =
       Ecto.Multi.new()
       |> Ecto.Multi.run(:try_admin_by_email, fn _, _ ->
-        case HandleRepoAdmin.fetch_admin(%{email: email}) do
+        case fetch_admin(%{email: email}) do
           nil ->
             {:ok, "Email válido."}
 
@@ -85,7 +84,7 @@ defmodule BankApi.Multi.Admin do
         end
       end)
       |> Ecto.Multi.run(:fetch_admin_account, fn _, _ ->
-        case HandleRepoAdmin.fetch_admin(%{id: id}) do
+        case fetch_admin(%{id: id}) do
           nil ->
             {:error, "Invalid ID or inexistent."}
 
@@ -109,6 +108,6 @@ defmodule BankApi.Multi.Admin do
 
   defp fetch_admin(params) do
     params
-    |> HandleRepoAdmin.fetch_admin()
+    |> HandleRepoAdmin.fetch_admin_by()
   end
 end

@@ -32,10 +32,10 @@ defmodule BankApiWeb.OperationController do
     |> handle_delete(conn)
   end
 
-  defp handle_response({:ok, Operation}, conn, view, status) do
+  defp handle_response({:ok, operation}, conn, view, status) do
     conn
     |> put_status(status)
-    |> render(view, Operation: Operation)
+    |> render(view, operation: operation)
   end
 
   defp handle_response({:error, error}, conn, _view, _status) do
@@ -44,10 +44,10 @@ defmodule BankApiWeb.OperationController do
     |> render("error.json", error: error)
   end
 
-  defp handle_delete({:ok, Operation}, conn) do
+  defp handle_delete({:ok, operation}, conn) do
     conn
     |> put_status(:ok)
-    |> render("delete.json", Operation: Operation)
+    |> render("delete.json", operation: operation)
   end
 
   defp handle_delete({:error, error}, conn) do

@@ -5,7 +5,7 @@ defmodule BankApiWeb.TransactionView do
   def render(
         "show.json",
         %{
-          Transaction:
+          transaction:
             {:ok,
              %Transaction{
                from_account_id: from_account_id,
@@ -24,7 +24,7 @@ defmodule BankApiWeb.TransactionView do
   def render(
         "show.json",
         %{
-          Transaction:
+          transaction:
             {:ok,
              %Transaction{
                from_account_id: from_account_id,
@@ -32,7 +32,7 @@ defmodule BankApiWeb.TransactionView do
                operation_id: operation_id,
                value: value
              }}
-        } = params
+        }
       ) do
     %{
       mensagem: "Transaction founded",
@@ -48,7 +48,7 @@ defmodule BankApiWeb.TransactionView do
   def render(
         "create.json",
         %{
-          Transaction:
+          transaction:
             {:ok,
              %{
                create_transaction: %Transaction{
@@ -148,7 +148,7 @@ defmodule BankApiWeb.TransactionView do
 
   def render("delete.json", %{error: error}) do
     %{
-      Resultado: "Non-existent operation.",
+      Result: "Non-existent operation.",
       Mensagem: "#{error}"
     }
   end
@@ -156,6 +156,7 @@ defmodule BankApiWeb.TransactionView do
   def render("error.json", %{error: :transaction_not_found}) do
     %{error: "Invalid ID or inexistent."}
   end
+
   def render("error.json", %{error: error}) do
     %{error: error}
   end
