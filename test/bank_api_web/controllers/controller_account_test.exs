@@ -1,6 +1,6 @@
 defmodule BankApiWeb.ControllerAccountTest do
   use BankApiWeb.ConnCase, async: true
-  alias BankApi.Schemas.{User, TipoAccount, Account}
+  alias BankApi.Schemas.{User, AccountType, Account}
   import BankApi.Factory
   alias BankApiWeb.Auth.Guardian
 
@@ -23,9 +23,9 @@ defmodule BankApiWeb.ControllerAccountTest do
 
   describe "SHOW" do
     test "assert get - Exibe os dados de uma Account quando informado ID correto + token", state do
-      %User{id: user_id} = insert(:User)
-      %TipoAccount{id: account_type_id} = insert(:account_type)
-      %Account{id: account_id} = insert(:Account, user_id: user_id, account_type_id: account_type_id)
+      %User{id: user_id} = insert(:user)
+      %AccountType{id: account_type_id} = insert(:account_type)
+      %Account{id: account_id} = insert(:account, user_id: user_id, account_type_id: account_type_id)
 
       response =
         state[:conn]
@@ -39,14 +39,14 @@ defmodule BankApiWeb.ControllerAccountTest do
                  "account_type_id" => ^account_type_id,
                  "user_id" => ^user_id
                },
-               "mensagem" => "Tipo Account encotrado."
+               "mensagem" => "Account Type found."
              } = response
     end
 
     test "error show - exibe mensagem de erro quando não tem token de acesso", state do
-      %User{id: user_id} = insert(:User)
-      %TipoAccount{id: account_type_id} = insert(:account_type)
-      %Account{id: account_id} = insert(:Account, user_id: user_id, account_type_id: account_type_id)
+      %User{id: user_id} = insert(:user)
+      %AccountType{id: account_type_id} = insert(:account_type)
+      %Account{id: account_id} = insert(:account, user_id: user_id, account_type_id: account_type_id)
 
       response =
         state[:conn]
@@ -68,8 +68,8 @@ defmodule BankApiWeb.ControllerAccountTest do
 
   describe "CREATE" do
     test "insert Account - Cadastra Account quando todos parametros estão OK", state do
-      %User{id: user_id} = insert(:User)
-      %TipoAccount{id: account_type_id} = insert(:account_type)
+      %User{id: user_id} = insert(:user)
+      %AccountType{id: account_type_id} = insert(:account_type)
 
       params = %{
         "balance_account" => 100_000,
@@ -94,8 +94,8 @@ defmodule BankApiWeb.ControllerAccountTest do
     end
 
     test "assert ok insert Account - Cadastra Account faltando balance, default 100_000", state do
-      %User{id: user_id} = insert(:User)
-      %TipoAccount{id: account_type_id} = insert(:account_type)
+      %User{id: user_id} = insert(:user)
+      %AccountType{id: account_type_id} = insert(:account_type)
 
       params = %{
         "user_id" => user_id,
@@ -119,8 +119,8 @@ defmodule BankApiWeb.ControllerAccountTest do
     end
 
     test "erro insert Account - Exibe mensagem de erro quando passa balance negativo.", state do
-      %User{id: user_id} = insert(:User)
-      %TipoAccount{id: account_type_id} = insert(:account_type)
+      %User{id: user_id} = insert(:user)
+      %AccountType{id: account_type_id} = insert(:account_type)
 
       params = %{
         "balance_account" => -10_000,
@@ -134,12 +134,12 @@ defmodule BankApiWeb.ControllerAccountTest do
         |> post(Routes.account_path(state[:conn], :create, params))
         |> json_response(404)
 
-      assert %{"error" => "Saldo inválido, ele deve ser maior ou igual a zero."} = response
+      assert %{"error" => "Balance Account should be higher or equal zero."} = response
     end
 
     test "erro insert Account - tenta inserir User sem token de acesso.", state do
-      %User{id: user_id} = insert(:User)
-      %TipoAccount{id: account_type_id} = insert(:account_type)
+      %User{id: user_id} = insert(:user)
+      %AccountType{id: account_type_id} = insert(:account_type)
 
       params = %{
         "balance_account" => -10_000,
@@ -157,10 +157,10 @@ defmodule BankApiWeb.ControllerAccountTest do
 
   describe "UPDATE" do
     test "assert update - atualiza balance para value válido maior que zero.", state do
-      %User{id: user_id} = insert(:User)
-      %TipoAccount{id: account_type_id} = insert(:account_type)
+      %User{id: user_id} = insert(:user)
+      %AccountType{id: account_type_id} = insert(:account_type)
 
-      %Account{id: id} = insert(:Account, user_id: user_id, account_type_id: account_type_id)
+      %Account{id: id} = insert(:account, user_id: user_id, account_type_id: account_type_id)
 
       response =
         state[:conn]
@@ -175,10 +175,10 @@ defmodule BankApiWeb.ControllerAccountTest do
     end
 
     test "assert update - atualiza balance para value válido igual a zero.", state do
-      %User{id: user_id} = insert(:User)
-      %TipoAccount{id: account_type_id} = insert(:account_type)
+      %User{id: user_id} = insert(:user)
+      %AccountType{id: account_type_id} = insert(:account_type)
 
-      %Account{id: id} = insert(:Account, user_id: user_id, account_type_id: account_type_id)
+      %Account{id: id} = insert(:account, user_id: user_id, account_type_id: account_type_id)
 
       response =
         state[:conn]
@@ -193,10 +193,10 @@ defmodule BankApiWeb.ControllerAccountTest do
     end
 
     test "error update - tenta atualizar balance para value menor que zero", state do
-      %User{id: user_id} = insert(:User)
-      %TipoAccount{id: account_type_id} = insert(:account_type)
+      %User{id: user_id} = insert(:user)
+      %AccountType{id: account_type_id} = insert(:account_type)
 
-      %Account{id: id} = insert(:Account, user_id: user_id, account_type_id: account_type_id)
+      %Account{id: id} = insert(:account, user_id: user_id, account_type_id: account_type_id)
 
       response =
         state[:conn]
@@ -204,14 +204,14 @@ defmodule BankApiWeb.ControllerAccountTest do
         |> patch(Routes.account_path(state[:conn], :update, id, %{"balance_account" => -1}))
         |> json_response(404)
 
-      assert %{"error" => "Saldo inválido, ele deve ser maior ou igual a zero."} = response
+      assert %{"error" => "Balance Account should be higher or equal zero."} = response
     end
 
     test "error update - Tenta atualizar balance sem token de acesso", state do
-      %User{id: user_id} = insert(:User)
-      %TipoAccount{id: account_type_id} = insert(:account_type)
+      %User{id: user_id} = insert(:user)
+      %AccountType{id: account_type_id} = insert(:account_type)
 
-      %Account{id: id} = insert(:Account, user_id: user_id, account_type_id: account_type_id)
+      %Account{id: id} = insert(:account, user_id: user_id, account_type_id: account_type_id)
 
       response =
         state[:conn]
@@ -223,10 +223,10 @@ defmodule BankApiWeb.ControllerAccountTest do
 
   describe "DELETE" do
     test "assert delete - Deleta Account quando ID é passado corretamente", state do
-      %User{id: user_id} = insert(:User)
-      %TipoAccount{id: account_type_id} = insert(:account_type)
+      %User{id: user_id} = insert(:user)
+      %AccountType{id: account_type_id} = insert(:account_type)
 
-      %Account{id: id} = insert(:Account, user_id: user_id, account_type_id: account_type_id)
+      %Account{id: id} = insert(:account, user_id: user_id, account_type_id: account_type_id)
 
       response =
         state[:conn]

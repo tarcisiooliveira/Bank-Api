@@ -8,7 +8,7 @@ defmodule BankApi.Schemas.Operation do
   """
   schema "operations" do
     field :operation_name, :string, null: false
-    has_many(:Transaction, Transaction)
+    has_many(:transaction, Transaction)
     timestamps()
   end
 

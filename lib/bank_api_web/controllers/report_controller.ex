@@ -2,7 +2,7 @@ defmodule BankApiWeb.ReportController do
   use BankApiWeb, :controller
   alias BankApi.Handle.Report.HandleReportAdmin
 
-  def saque(conn, params) do
+  def withdraw(conn, params) do
     Map.merge(params, %{"Operation" => "Withdraw"})
     |> HandleReportAdmin.report()
     |> handle_response(conn, "report.json", :created)

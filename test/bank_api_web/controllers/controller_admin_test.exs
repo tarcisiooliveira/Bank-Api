@@ -1,4 +1,4 @@
-defmodule BankApi.ControllerAdminTest do
+defmodule BankApiWeb.ControllerAdminTest do
   use BankApiWeb.ConnCase, async: false
   alias BankApiWeb.Auth.Guardian
   import BankApi.Factory

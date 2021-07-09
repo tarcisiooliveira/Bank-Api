@@ -34,7 +34,7 @@ defmodule BankApiWeb.ControllerOperationTest do
   end
 
   test "erro insert - tenta cadastrar Operação com tipo já existente", state do
-    insert(:Operation)
+    insert(:operation)
     params = %{"operation_name" => "Transfer"}
 
     response =
@@ -50,7 +50,7 @@ defmodule BankApiWeb.ControllerOperationTest do
 
   test "sucesso delete - retorna mensagem de sucesso quando remove operação já cadastrado.",
        state do
-    %Operation{id: id} = insert(:Operation)
+    %Operation{id: id} = insert(:operation)
 
     response =
       state[:conn]
@@ -63,7 +63,7 @@ defmodule BankApiWeb.ControllerOperationTest do
 
   test "error delete - retorna mensagem de erro quando tenta remover operação inexistente.",
        state do
-    insert(:Operation)
+    insert(:operation)
 
     response =
       state[:conn]
@@ -76,7 +76,7 @@ defmodule BankApiWeb.ControllerOperationTest do
   end
 
   test "sucesso update - atualiza Operation previamente cadastrada", state do
-    %Operation{id: id} = insert(:Operation)
+    %Operation{id: id} = insert(:operation)
 
     response =
       state[:conn]

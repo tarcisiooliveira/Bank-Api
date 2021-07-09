@@ -1,4 +1,4 @@
-defmodule BankApiWeb.TransacaoController do
+defmodule BankApiWeb.TransactionController do
   use BankApiWeb, :controller
   alias BankApi.Handle.HandleTransaction
   alias BankApi.Schemas.Transaction

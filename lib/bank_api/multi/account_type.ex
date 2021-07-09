@@ -1,7 +1,7 @@
-defmodule BankApi.Multi.TipoAccount do
+defmodule BankApi.Multi.AccountType do
   alias BankApi.Schemas.AccountType
   alias BankApi.Repo
-  alias BankApi.Handle.Repo.TipoAccount, as: HandleAccountTypeRepo
+  alias BankApi.Handle.Repo.AccountType, as: HandleAccountTypeRepo
   alias Ecto.Changeset
 
   def create(
@@ -54,7 +54,7 @@ defmodule BankApi.Multi.TipoAccount do
                                                                fetch_account_type
                                                            } ->
         fetch_account_type
-        |> TipoAccount.changeset(%{account_type_name: account_type_name})
+        |> AccountType.changeset(%{account_type_name: account_type_name})
         |> case do
           %Ecto.Changeset{valid?: true} = changeset -> {:ok, changeset}
           _ -> {:error, "error_create_changeset"}
@@ -98,6 +98,6 @@ defmodule BankApi.Multi.TipoAccount do
 
   defp create_changest(params) do
     params
-    |> TipoAccount.changeset()
+    |> AccountType.changeset()
   end
 end

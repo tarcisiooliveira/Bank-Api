@@ -2,59 +2,59 @@ defmodule BankApiWeb.ControllerReportAdministradorTest do
   use BankApiWeb.ConnCase, async: false
   import BankApi.Factory
   alias BankApiWeb.Auth.Guardian
-  alias BankApi.Schemas.{Operation, TipoAccount, Account, User}
+  alias BankApi.Schemas.{Operation, AccountType, Account, User}
 
   setup do
     [conn: "Phoenix.ConnTest.build_conn()"]
     admin = insert(:admin)
     {:ok, token, _claims} = Guardian.encode_and_sign(admin)
-    %TipoAccount{id: id_account_type} = insert(:account_type, account_type_name: "Poupança")
+    %AccountType{id: id_account_type} = insert(:account_type, account_type_name: "Poupança")
 
-    %User{id: id_User1, email: email1} = insert(:User)
-    %User{id: id_User2, email: email2} = insert(:User)
-    %User{id: id_User3, email: _email3} = insert(:User)
+    %User{id: id_User1, email: email1} = insert(:user)
+    %User{id: id_User2, email: email2} = insert(:user)
+    %User{id: id_User3, email: _email3} = insert(:user)
 
-    %Account{id: account_id_1} = insert(:Account, user_id: id_User1, account_type_id: id_account_type)
+    %Account{id: account_id_1} = insert(:account, user_id: id_User1, account_type_id: id_account_type)
 
-    %Account{id: account_id_2} = insert(:Account, user_id: id_User2, account_type_id: id_account_type)
-    %Account{id: account_id_3} = insert(:Account, user_id: id_User3, account_type_id: id_account_type)
+    %Account{id: account_id_2} = insert(:account, user_id: id_User2, account_type_id: id_account_type)
+    %Account{id: account_id_3} = insert(:account, user_id: id_User3, account_type_id: id_account_type)
 
-    %Operation{id: operation_id_saque} = insert(:Operation, operation_name: "Withdraw")
-    %Operation{id: operation_id_payment} = insert(:Operation, operation_name: "Payment")
+    %Operation{id: operation_id_withdraw} = insert(:operation, operation_name: "Withdraw")
+    %Operation{id: operation_id_payment} = insert(:operation, operation_name: "Payment")
 
-    %Operation{id: operation_id_transferencia} = insert(:Operation)
+    %Operation{id: operation_id_transferencia} = insert(:operation)
 
     insert(:withdraw_transaction,
       from_account_id: account_id_1,
-      operation_id: operation_id_saque,
+      operation_id: operation_id_withdraw,
       value: 2_000,
       inserted_at: ~N[2021-06-14 16:50:03]
     )
 
     insert(:withdraw_transaction,
       from_account_id: account_id_1,
-      operation_id: operation_id_saque,
+      operation_id: operation_id_withdraw,
       value: 1_100,
       inserted_at: ~N[2021-06-14 02:30:10]
     )
 
     insert(:withdraw_transaction,
       from_account_id: account_id_1,
-      operation_id: operation_id_saque,
+      operation_id: operation_id_withdraw,
       value: 750,
       inserted_at: ~N[2021-06-15 02:17:10]
     )
 
-    # saques User 1 - 3850
+    # withdraws User 1 - 3850
     insert(:withdraw_transaction,
       from_account_id: account_id_2,
-      operation_id: operation_id_saque,
+      operation_id: operation_id_withdraw,
       value: 500,
       inserted_at: ~N[2021-06-16 02:17:10]
     )
 
-    # saques User 2 - 500
-    insert(:Transaction,
+    # withdraws User 2 - 500
+    insert(:transaction,
       from_account_id: account_id_1,
       to_account_id: account_id_2,
       operation_id: operation_id_transferencia,
@@ -62,7 +62,7 @@ defmodule BankApiWeb.ControllerReportAdministradorTest do
       inserted_at: ~N[2021-06-15 02:17:10]
     )
 
-    insert(:Transaction,
+    insert(:transaction,
       from_account_id: account_id_1,
       to_account_id: account_id_2,
       operation_id: operation_id_transferencia,
@@ -70,7 +70,7 @@ defmodule BankApiWeb.ControllerReportAdministradorTest do
       inserted_at: ~N[2021-06-16 02:17:10]
     )
 
-    insert(:Transaction,
+    insert(:transaction,
       from_account_id: account_id_1,
       to_account_id: account_id_3,
       operation_id: operation_id_transferencia,
@@ -78,7 +78,7 @@ defmodule BankApiWeb.ControllerReportAdministradorTest do
       inserted_at: ~N[2021-06-16 02:17:10]
     )
 
-    insert(:Transaction,
+    insert(:transaction,
       from_account_id: account_id_1,
       to_account_id: account_id_2,
       operation_id: operation_id_transferencia,
@@ -86,7 +86,7 @@ defmodule BankApiWeb.ControllerReportAdministradorTest do
       inserted_at: ~N[2021-06-17 02:17:10]
     )
 
-    insert(:Transaction,
+    insert(:transaction,
       from_account_id: account_id_2,
       to_account_id: account_id_1,
       operation_id: operation_id_transferencia,
@@ -149,7 +149,7 @@ defmodule BankApiWeb.ControllerReportAdministradorTest do
        account_id_1: account_id_1,
        account_id_2: account_id_2,
        account_id_3: account_id_3,
-       operation_id_saque: operation_id_saque,
+       operation_id_withdraw: operation_id_withdraw,
        operation_id_transferencia: operation_id_transferencia,
        token: token
      }}
@@ -445,14 +445,14 @@ defmodule BankApiWeb.ControllerReportAdministradorTest do
     end
   end
 
-  describe "SAQUE" do
-    test "assert saque - Todos os valores sacados durante todo o período", state do
+  describe "Withdraw" do
+    test "assert withdraw - Todos os valores sacados durante todo o período", state do
       params = %{"periodo" => "todo"}
 
       resultado =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.report_path(state[:conn], :saque, params))
+        |> post(Routes.report_path(state[:conn], :withdraw, params))
         |> json_response(:created)
 
       assert %{
@@ -462,13 +462,13 @@ defmodule BankApiWeb.ControllerReportAdministradorTest do
              } = resultado
     end
 
-    test "assert saque - Todos os valores sacados por determinado email", state do
+    test "assert withdraw - Todos os valores sacados por determinado email", state do
       params = %{"from_account_id" => state[:valores].account_id_1}
 
       resultado =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.report_path(state[:conn], :saque, params))
+        |> post(Routes.report_path(state[:conn], :withdraw, params))
         |> json_response(:created)
 
       assert %{
@@ -482,7 +482,7 @@ defmodule BankApiWeb.ControllerReportAdministradorTest do
       resultado2 =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.report_path(state[:conn], :saque, params2))
+        |> post(Routes.report_path(state[:conn], :withdraw, params2))
         |> json_response(:created)
 
       assert %{
@@ -492,7 +492,7 @@ defmodule BankApiWeb.ControllerReportAdministradorTest do
              } = resultado2
     end
 
-    test "assert saque de Account entre datas - Todos os valores sacados durante determinado período por Account",
+    test "assert withdraw de Account entre datas - Todos os valores sacados durante determinado período por Account",
          state do
       params = %{
         "periodo_inicial" => "2021-06-13 00:00:01",
@@ -503,7 +503,7 @@ defmodule BankApiWeb.ControllerReportAdministradorTest do
       resultado =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.report_path(state[:conn], :saque, params))
+        |> post(Routes.report_path(state[:conn], :withdraw, params))
         |> json_response(:created)
 
       assert %{
@@ -523,7 +523,7 @@ defmodule BankApiWeb.ControllerReportAdministradorTest do
       resultado =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.report_path(state[:conn], :saque, params))
+        |> post(Routes.report_path(state[:conn], :withdraw, params))
         |> json_response(:bad_request)
 
       assert %{
@@ -538,7 +538,7 @@ defmodule BankApiWeb.ControllerReportAdministradorTest do
       resultado2 =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.report_path(state[:conn], :saque, params2))
+        |> post(Routes.report_path(state[:conn], :withdraw, params2))
         |> json_response(:bad_request)
 
       assert %{
@@ -546,7 +546,7 @@ defmodule BankApiWeb.ControllerReportAdministradorTest do
              } = resultado2
     end
 
-    test "assert saque de entre datas - Todos os valores sacados durante determinado período por todos",
+    test "assert withdraw de entre datas - Todos os valores sacados durante determinado período por todos",
          state do
       params = %{
         "periodo_inicial" => "2021-06-15 00:00:01",
@@ -556,7 +556,7 @@ defmodule BankApiWeb.ControllerReportAdministradorTest do
       resultado =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.report_path(state[:conn], :saque, params))
+        |> post(Routes.report_path(state[:conn], :withdraw, params))
         |> json_response(:created)
 
       assert %{

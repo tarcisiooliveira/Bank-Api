@@ -11,7 +11,7 @@ defmodule BankApiWeb.AccountView do
         }
       }) do
     %{
-      mensagem: "Tipo Account encotrado.",
+      mensagem: "Account Type found.",
       Account: %{
         balance_account: balance_account,
         user_id: user_id,
@@ -30,7 +30,7 @@ defmodule BankApiWeb.AccountView do
         }
       }) do
     %{
-      mensagem: "Account Cadastrada.",
+      mensagem: "Account recorded.",
       Account: %{
         balance_account: balance_account,
         user_id: user_id,
@@ -41,7 +41,7 @@ defmodule BankApiWeb.AccountView do
 
   def render("update.json", %{Account: %{update_account: %Account{id: id, balance_account: balance_account}}}) do
     %{
-      mensagem: "Account Atualizada.",
+      mensagem: "Account updated.",
       Account: %{account_ID: id, balance_account: balance_account}
     }
   end
@@ -50,7 +50,7 @@ defmodule BankApiWeb.AccountView do
         Account: %{deleted_account: %Account{user_id: user_id, account_type_id: account_type_id}}
       }) do
     %{
-      mensagem: "Account removida.",
+      mensagem: "Account deleted.",
       Account: %{ID_User: user_id, account_type: account_type_id}
     }
   end
@@ -71,7 +71,7 @@ defmodule BankApiWeb.AccountView do
         "error.json",
         %{error: :ammount_negative_value} = _params
       ) do
-    %{error: "Saldo inválido, ele deve ser maior ou igual a zero."}
+    %{error: "Balance Account should be higher or equal zero."}
   end
 
   def render(

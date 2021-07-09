@@ -51,7 +51,7 @@ defmodule BankApiWeb.TransactionView do
           Transaction:
             {:ok,
              %{
-               cria_transacao: %Transaction{
+               create_transaction: %Transaction{
                  from_account_id: from_account_id,
                  to_account_id: nil,
                  operation_id: operation_id,
@@ -61,7 +61,7 @@ defmodule BankApiWeb.TransactionView do
         } = _params
       ) do
     %{
-      mensagem: "Transação Realizada com Sucesso",
+      mensagem: "Transaction finished successfully",
       Transaction: %{
         from_account_id: from_account_id,
         operation_id: operation_id,
@@ -76,7 +76,7 @@ defmodule BankApiWeb.TransactionView do
           Transaction:
             {:ok,
              %{
-               cria_transacao: %Transaction{
+               create_transaction: %Transaction{
                  from_account_id: from_account_id,
                  to_account_id: to_account_id,
                  operation_id: operation_id,
@@ -86,7 +86,7 @@ defmodule BankApiWeb.TransactionView do
         } = _params
       ) do
     %{
-      mensagem: "Transação Realizada com Sucesso",
+      mensagem: "Transaction finished successfully",
       Transaction: %{
         from_account_id: from_account_id,
         to_account_id: to_account_id,
@@ -115,7 +115,7 @@ defmodule BankApiWeb.TransactionView do
         }
       ) do
     %{
-      mensagem: "Transação Removida com Sucesso",
+      mensagem: "Transaction deleted successfully.",
       Transaction: %{
         from_account_id: from_account_id,
         operation_id: operation_id,
@@ -136,7 +136,7 @@ defmodule BankApiWeb.TransactionView do
         }
       ) do
     %{
-      mensagem: "Transação Removida com Sucesso2",
+      mensagem: "Transaction deleted successfully.2",
       Transaction: %{
         from_account_id: from_account_id,
         to_account_id: to_account_id,

@@ -31,12 +31,12 @@ defmodule BankApiWeb.ControllerUserTest do
 
   describe "SHOW" do
     test "assert show - Exibe os dados de uma User quando informado ID correto", state do
-      %User{id: user_id} = insert(:User)
+      %User{id: user_id} = insert(:user)
 
       response =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> get(Routes.User_path(state[:conn], :show, user_id))
+        |> get(Routes.user_path(state[:conn], :show, user_id))
         |> json_response(:ok)
 
       assert %{
@@ -46,11 +46,11 @@ defmodule BankApiWeb.ControllerUserTest do
     end
 
     test "error show - retorna erro quando não passa  toke de autorização", state do
-      %User{id: user_id} = insert(:User)
+      %User{id: user_id} = insert(:user)
 
       response =
         state[:conn]
-        |> get(Routes.User_path(state[:conn], :show, user_id))
+        |> get(Routes.user_path(state[:conn], :show, user_id))
 
       assert %{resp_body: "{\"messagem\":\"Authorization Denied\"}", status: 401} = response
     end
@@ -59,7 +59,7 @@ defmodule BankApiWeb.ControllerUserTest do
       response =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> get(Routes.User_path(state[:conn], :show, 951_951))
+        |> get(Routes.user_path(state[:conn], :show, 951_951))
         |> json_response(:not_found)
 
       assert %{"error" => "Invalid ID or inexistent."} = response
@@ -78,7 +78,7 @@ defmodule BankApiWeb.ControllerUserTest do
       response =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.User_path(state[:conn], :create, params))
+        |> post(Routes.user_path(state[:conn], :create, params))
         |> json_response(:created)
 
       assert %{
@@ -100,14 +100,14 @@ defmodule BankApiWeb.ControllerUserTest do
 
       response =
         state[:conn]
-        |> post(Routes.User_path(state[:conn], :create, params))
+        |> post(Routes.user_path(state[:conn], :create, params))
 
       assert %{resp_body: "{\"messagem\":\"Authorization Denied\"}", status: 401} = response
     end
 
     test "error insert - quando já existe User com aquele email, retorna erro informando",
          state do
-      %User{email: email} = insert(:User)
+      %User{email: email} = insert(:user)
 
       params = %{
         "email" => email,
@@ -119,7 +119,7 @@ defmodule BankApiWeb.ControllerUserTest do
       response =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.User_path(state[:conn], :create, params))
+        |> post(Routes.user_path(state[:conn], :create, params))
         |> json_response(:unprocessable_entity)
 
       assert %{
@@ -130,13 +130,13 @@ defmodule BankApiWeb.ControllerUserTest do
 
   describe "UPDATE" do
     test "cadastra User corretamente e depois altera email para outro email valido", state do
-      %User{id: id} = insert(:User)
+      %User{id: id} = insert(:user)
       params = %{email: "tarcisiooliveira@protonmail.com"}
 
       response =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> patch(Routes.User_path(state[:conn], :update, id, params))
+        |> patch(Routes.user_path(state[:conn], :update, id, params))
         |> json_response(:ok)
 
       assert %{
@@ -150,7 +150,7 @@ defmodule BankApiWeb.ControllerUserTest do
     end
 
     test "error update - tenta remover User sem token de acesso", state do
-      %User{id: id} = insert(:User)
+      %User{id: id} = insert(:user)
 
       params = %{
         "email" => "email@email.com",
@@ -160,34 +160,34 @@ defmodule BankApiWeb.ControllerUserTest do
 
       response =
         state[:conn]
-        |> patch(Routes.User_path(state[:conn], :update, id, params))
+        |> patch(Routes.user_path(state[:conn], :update, id, params))
 
       assert %{resp_body: "{\"messagem\":\"Authorization Denied\"}", status: 401} = response
     end
 
     test "error update - cadastra User corretamente e depois tenta altera email para outro email já cadastrado",
          state do
-      %User{id: id} = insert(:User)
-      insert(:User, email: "tarcisiooliveira@protonmail.com")
+      %User{id: id} = insert(:user)
+      insert(:user, email: "tarcisiooliveira@protonmail.com")
       params = %{email: "tarcisiooliveira@protonmail.com"}
 
       response =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> patch(Routes.User_path(state[:conn], :update, id, params))
+        |> patch(Routes.user_path(state[:conn], :update, id, params))
         |> json_response(:not_found)
 
       assert %{"error" => "Email já cadastrado."} = response
     end
 
     test "assert update - Cadastra User corretamente e depois altera name", state do
-      %User{id: id} = insert(:User, email: "tarcisiooliveira@protonmail.com")
+      %User{id: id} = insert(:user, email: "tarcisiooliveira@protonmail.com")
       params = %{name: "oisicraT"}
 
       response =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> patch(Routes.User_path(state[:conn], :update, id, params))
+        |> patch(Routes.user_path(state[:conn], :update, id, params))
         |> json_response(:ok)
 
       assert %{
@@ -204,12 +204,12 @@ defmodule BankApiWeb.ControllerUserTest do
   describe "DELETE" do
     test "assert delete - Retorna os dados do User excluido do banco e mensagem confirmando",
          state do
-      %User{id: id} = insert(:User)
+      %User{id: id} = insert(:user)
 
       response =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> delete(Routes.User_path(state[:conn], :delete, id))
+        |> delete(Routes.user_path(state[:conn], :delete, id))
         |> json_response(:ok)
 
       assert %{
@@ -221,11 +221,11 @@ defmodule BankApiWeb.ControllerUserTest do
     end
 
     test "error delete - tenta remover User sem token de acesso", state do
-      %User{id: id = insert(:User)}
+      %User{id: id = insert(:user)}
 
       response =
         state[:conn]
-        |> delete(Routes.User_path(state[:conn], :delete, id))
+        |> delete(Routes.user_path(state[:conn], :delete, id))
 
       assert %{resp_body: "{\"messagem\":\"Authorization Denied\"}", status: 401} = response
     end
@@ -235,7 +235,7 @@ defmodule BankApiWeb.ControllerUserTest do
       response =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> delete(Routes.User_path(state[:conn], :delete, 100_001))
+        |> delete(Routes.user_path(state[:conn], :delete, 100_001))
         |> json_response(:not_found)
 
       assert %{

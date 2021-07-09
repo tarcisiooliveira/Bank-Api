@@ -3,7 +3,7 @@ defmodule BankApi.Multi.Account do
   alias BankApi.Repo
   alias BankApi.Handle.Repo.Account, as: HandleAccountRepo
   alias BankApi.Handle.Repo.User, as: HandleUserRepo
-  alias BankApi.Handle.Repo.TipoAccount, as: HandleAccountTypeRepo
+  alias BankApi.Handle.Repo.AccountType, as: HandleAccountTypeRepo
 
   def create(
         %{balance_account: ammount, user_id: user_id, account_type_id: account_type_id} = params

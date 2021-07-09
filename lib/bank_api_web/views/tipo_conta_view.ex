@@ -1,8 +1,8 @@
-defmodule BankApiWeb.TipoAccountView do
+defmodule BankApiWeb.AccountTypeView do
   use BankApiWeb, :view
   alias BankApi.Schemas.AccountType
 
-  def render("show.json", %{account_type: %TipoAccount{account_type_name: account_type_name}}) do
+  def render("show.json", %{account_type: %AccountType{account_type_name: account_type_name}}) do
     %{
       mensagem: "Tipo Account encotrado",
       "Tipo Account": %{account_type_name: account_type_name}
@@ -15,7 +15,7 @@ defmodule BankApiWeb.TipoAccountView do
     }
   end
 
-  def render("create.json", %{account_type: %{create_account_type: %TipoAccount{account_type_name: account_type_name}}}) do
+  def render("create.json", %{account_type: %{create_account_type: %AccountType{account_type_name: account_type_name}}}) do
     %{
       mensagem: "Tipo Account criado com sucesso!",
       "Tipo Account": %{account_type_name: account_type_name}
@@ -23,7 +23,7 @@ defmodule BankApiWeb.TipoAccountView do
   end
 
   def render("update.json", %{
-        account_type: %{update_account_type: %TipoAccount{account_type_name: account_type_name}}
+        account_type: %{update_account_type: %AccountType{account_type_name: account_type_name}}
       }) do
     %{
       mensagem: "Tipo Account alterado com sucesso!",
@@ -31,7 +31,7 @@ defmodule BankApiWeb.TipoAccountView do
     }
   end
 
-  def render("update.json", %{account_type: %TipoAccount{account_type_name: account_type_name}}) do
+  def render("update.json", %{account_type: %AccountType{account_type_name: account_type_name}}) do
     %{
       mensagem: "Tipo Account alterado com sucesso!",
       "Tipo Account": %{account_type_name: account_type_name}
@@ -39,7 +39,7 @@ defmodule BankApiWeb.TipoAccountView do
   end
 
   def render("delete.json", %{
-        account_type: %{delete_operation: %TipoAccount{account_type_name: account_type_name}}
+        account_type: %{delete_operation: %AccountType{account_type_name: account_type_name}}
       }) do
     %{
       mensagem: "Tipo Account removido com sucesso!",
@@ -47,7 +47,7 @@ defmodule BankApiWeb.TipoAccountView do
     }
   end
 
-  def render("delete.json", %{account_type: %TipoAccount{account_type_name: account_type_name}}) do
+  def render("delete.json", %{account_type: %AccountType{account_type_name: account_type_name}}) do
     %{
       mensagem: "Tipo Account removido com sucesso!",
       Nome: account_type_name

@@ -3,7 +3,7 @@ defmodule BankApi.Handle.HandleTransaction do
   alias BankApi.Handle.Repo.Transaction, as: HandleTransactionRepo
 
   @moduledoc """
-  Modulo de manipulação de dados Transação através do Repo
+  Modulo to manipulate Transaction by Repo
   """
   def get(%{id: id}) do
     case HandleTransactionRepo.fetch_transaction(id) do
@@ -24,7 +24,7 @@ defmodule BankApi.Handle.HandleTransaction do
       operation_id: operation_id,
       value: value
     }
-    |> MultiTransacao.create()
+    |> MultiTransaction.create()
   end
 
   def create(%{
@@ -37,11 +37,11 @@ defmodule BankApi.Handle.HandleTransaction do
       operation_id: operation_id,
       value: value
     }
-    |> MultiTransacao.create()
+    |> MultiTransaction.create()
   end
 
   def delete(%{id: _id} = params) do
     params
-    |> MultiTransacao.delete()
+    |> MultiTransaction.delete()
   end
 end

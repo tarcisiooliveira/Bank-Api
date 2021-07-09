@@ -7,12 +7,12 @@ defmodule BankApi.Schemas.User do
   Modulo de schema de User
   """
   # Schema com o mesmo name da tabela
-  schema "Users" do
+  schema "users" do
     field :email, :string, null: false
     field :name, :string, null: false
     field :password, :string, virtual: true
     field :password_hash, :string
-    has_many(:Account, Account)
+    has_many(:account, Account)
     timestamps()
   end
 

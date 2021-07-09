@@ -1,6 +1,6 @@
 defmodule BankApi.Schemas.Account do
   use Ecto.Schema
-  alias BankApi.Schemas.{User, TipoAccount}
+  alias BankApi.Schemas.{User, AccountType}
   import Ecto.Changeset
 
   @moduledoc """
@@ -9,7 +9,7 @@ defmodule BankApi.Schemas.Account do
   schema "accounts" do
     field(:balance_account, :integer, default: 100_000)
     belongs_to(:user, User)
-    belongs_to(:account_type, TipoAccount)
+    belongs_to(:account_type, AccountType)
     timestamps()
   end
 
@@ -23,8 +23,8 @@ defmodule BankApi.Schemas.Account do
     |> validate_inclusion(:balance_account, @balance_account)
   end
 
-  def update_changeset(%__MODULE__{} = Account, %{balance_account: _balance} = params) do
-    Account
+  def update_changeset(%__MODULE__{} = account, %{balance_account: _balance} = params) do
+    account
     |> cast(params, [:balance_account])
     |> validate_required([:balance_account])
   end

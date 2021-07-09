@@ -1,7 +1,7 @@
-defmodule BankApiWeb.ControllerTransacaoTest do
+defmodule BankApiWeb.ControllerTransactionTest do
   use BankApiWeb.ConnCase, async: false
   use ExUnit.Case
-  alias BankApi.Schemas.{Account, TipoAccount, User, Account, Operation, Transaction}
+  alias BankApi.Schemas.{Account, AccountType, User, Account, Operation, Transaction}
   alias BankApi.Repo
   import BankApi.Factory
   alias BankApiWeb.Auth.Guardian
@@ -13,22 +13,22 @@ defmodule BankApiWeb.ControllerTransacaoTest do
 
     {:ok, token, _claims} = Guardian.encode_and_sign(admin)
 
-    %TipoAccount{id: id_account_type} = insert(:account_type, account_type_name: "Poupança")
+    %AccountType{id: id_account_type} = insert(:account_type, account_type_name: "Poupança")
 
-    %User{id: id_User1} = insert(:User)
-    %User{id: id_User2} = insert(:User)
-    %User{id: id_User3} = insert(:User)
+    %User{id: id_User1} = insert(:user)
+    %User{id: id_User2} = insert(:user)
+    %User{id: id_User3} = insert(:user)
 
     %Account{id: from_account_id} =
-      insert(:Account, user_id: id_User1, account_type_id: id_account_type)
+      insert(:account, user_id: id_User1, account_type_id: id_account_type)
 
     %Account{id: account_destino_id1} =
-      insert(:Account, user_id: id_User2, account_type_id: id_account_type)
+      insert(:account, user_id: id_User2, account_type_id: id_account_type)
 
     %Account{id: account_destino_id2} =
-      insert(:Account, user_id: id_User3, account_type_id: id_account_type)
+      insert(:account, user_id: id_User3, account_type_id: id_account_type)
 
-    %Operation{id: operation_id} = insert(:Operation)
+    %Operation{id: operation_id} = insert(:operation)
 
     {:ok,
      valores: %{
@@ -41,10 +41,10 @@ defmodule BankApiWeb.ControllerTransacaoTest do
   end
 
   test "assert get - Exibe os dados de payments.", state do
-    %Operation{id: id_operation} = insert(:Operation, operation_name: "Payment")
+    %Operation{id: id_operation} = insert(:operation, operation_name: "Payment")
 
     %Transaction{id: id} =
-      insert(:Transaction,
+      insert(:transaction,
         from_account_id: state[:valores].from_account_id,
         to_account_id: state[:valores].to_account_id,
         operation_id: id_operation,
@@ -68,8 +68,9 @@ defmodule BankApiWeb.ControllerTransacaoTest do
            } == response
   end
 
-  test "assert get - Exibe os dados de um saque quando é informado parametros validos", state do
-    %Operation{id: id_operation} = insert(:Operation, operation_name: "Withdraw")
+  test "assert get - Exibe os dados de um withdraw quando é informado parametros validos",
+       state do
+    %Operation{id: id_operation} = insert(:operation, operation_name: "Withdraw")
 
     %Transaction{id: id} =
       insert(:withdraw_transaction,
@@ -96,7 +97,7 @@ defmodule BankApiWeb.ControllerTransacaoTest do
 
   test "assert get - Retorna os dados de uma Transaction quando passado ID valido",
        state do
-    %Operation{id: id_operation} = insert(:Operation, operation_name: "Withdraw")
+    %Operation{id: id_operation} = insert(:operation, operation_name: "Withdraw")
 
     params = %{
       "from_account_id" => state[:valores].from_account_id,
@@ -125,7 +126,7 @@ defmodule BankApiWeb.ControllerTransacaoTest do
            } == response
   end
 
-  test "assert ok insert/4 - Todos parametros estão ok, cria Transaction entre duas accounts",
+  test "assert ok insert transaction/4 - All parameters ok, create a transaction between two Acccounts",
        state do
     params = %{
       "from_account_id" => state[:valores].from_account_id,
@@ -147,12 +148,12 @@ defmodule BankApiWeb.ControllerTransacaoTest do
                "operation_id" => state[:valores].operation_id,
                "value" => 600
              },
-             "mensagem" => "Transação Realizada com Sucesso"
+             "mensagem" => "Transaction finished successfully"
            } == response
   end
 
-  test "assert ok insert - Todos parametros estão ok, User faz um saque", state do
-    %Operation{id: operation_id} = insert(:Operation, operation_name: "Withdraw")
+  test "assert ok insert - Todos parametros estão ok, User faz um withdraw", state do
+    %Operation{id: operation_id} = insert(:operation, operation_name: "Withdraw")
 
     params = %{
       "from_account_id" => state[:valores].from_account_id,
@@ -172,13 +173,13 @@ defmodule BankApiWeb.ControllerTransacaoTest do
                "operation_id" => operation_id,
                "value" => 1000
              },
-             "mensagem" => "Transação Realizada com Sucesso"
+             "mensagem" => "Transaction finished successfully"
            } == response
   end
 
   describe "delete/1" do
-    test "delete ok - remove  transação de saque cadastrada na base de dados", state do
-      %Operation{id: operation_id} = insert(:Operation, operation_name: "Withdraw")
+    test "delete ok - remove withdraw transaction  recorded at database", state do
+      %Operation{id: operation_id} = insert(:operation, operation_name: "Withdraw")
 
       params = %{
         "from_account_id" => state[:valores].from_account_id,
@@ -208,14 +209,14 @@ defmodule BankApiWeb.ControllerTransacaoTest do
                  "operation_id" => operation_id,
                  "value" => 1000
                },
-               "mensagem" => "Transação Removida com Sucesso"
+               "mensagem" => "Transaction deleted successfully."
              } == response
 
       total_mais_a_frente = Repo.aggregate(Transaction, :count)
       assert total_antes == total_mais_a_frente
     end
 
-    test "delete error - tenta remover transação inexistente", state do
+    test "delete error - try remove inexistent transaction", state do
       response =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)

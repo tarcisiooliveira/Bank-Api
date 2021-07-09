@@ -19,19 +19,19 @@ defmodule BankApiWeb.Router do
     post "/sign_in", SignInController, :sign_in
   end
 
-  scope "/api/reports", BankApiWeb do
+  scope "/api/report", BankApiWeb do
     pipe_through([:api, :auth])
-    post "/payments", ReportController, :payment
-    post "/saques", ReportController, :withdraw
-    post "/transferencias", ReportController, :transfer
+    post "/payment", ReportController, :payment
+    post "/withdraw", ReportController, :withdraw
+    post "/transfer", ReportController, :transfer
   end
 
   scope "/api", BankApiWeb do
     pipe_through([:api, :auth])
 
-    resources("/admins", AdminController, only: [:new, :show, :delete, :update, :index, :create])
+    resources("/admin", AdminController, only: [:new, :show, :delete, :update, :index, :create])
 
-    resources("/Users", UserController,
+    resources("/user", UserController,
       only: [:new, :show, :delete, :update, :index, :create]
     )
 
@@ -39,13 +39,13 @@ defmodule BankApiWeb.Router do
       only: [:new, :show, :delete, :update, :index, :create]
     )
 
-    resources("/operations", OperationController,
+    resources("/operation", OperationController,
       only: [:new, :show, :delete, :update, :index, :create]
     )
 
-    resources("/accounts", AccountController, only: [:new, :show, :delete, :update, :index, :create])
+    resources("/account", AccountController, only: [:new, :show, :delete, :update, :index, :create])
 
-    resources("/transactions", TransacaoController, only: [:new, :show, :delete, :update, :create])
+    resources("/transaction", TransactionController, only: [:new, :show, :delete, :update, :create])
   end
 
   # Enables LiveDashboard only for development

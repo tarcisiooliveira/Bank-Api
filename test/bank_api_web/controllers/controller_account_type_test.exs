@@ -1,4 +1,4 @@
-defmodule BankApiWeb.TipoAccountTest do
+defmodule BankApiWeb.AccountTypeTest do
   use BankApiWeb.ConnCase, async: true
   alias BankApi.Schemas.AccountType
   import BankApi.Factory
@@ -17,7 +17,7 @@ defmodule BankApiWeb.TipoAccountTest do
      }}
   end
 
-  test "quando todos parametros estão ok, cria TipoAccount no banco", state do
+  test "quando todos parametros estão ok, cria AccountType no banco", state do
     params = %{"account_type_name" => "Corrente23"}
 
     response =
@@ -33,7 +33,7 @@ defmodule BankApiWeb.TipoAccountTest do
   end
 
   test "cadastra Tipo de Account corretamente e depois atualiza a informação", state do
-    %TipoAccount{id: id} = insert(:account_type)
+    %AccountType{id: id} = insert(:account_type)
 
     response =
       state[:conn]
@@ -50,7 +50,7 @@ defmodule BankApiWeb.TipoAccountTest do
   end
 
   test "User passa id válido e então o Tipo Account é apagado", state do
-    %TipoAccount{id: id} = insert(:account_type)
+    %AccountType{id: id} = insert(:account_type)
 
     response =
       state[:conn]
@@ -77,7 +77,7 @@ defmodule BankApiWeb.TipoAccountTest do
   end
 
   test "retorna informações de um Tipo Account presente no banco", state do
-    %TipoAccount{id: id} = insert(:account_type)
+    %AccountType{id: id} = insert(:account_type)
 
     response =
       state[:conn]

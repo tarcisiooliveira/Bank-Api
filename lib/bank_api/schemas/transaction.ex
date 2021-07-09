@@ -29,10 +29,10 @@ defmodule BankApi.Schemas.Transaction do
     |> validate_required(@required_params)
   end
 
-  @required_params_saque [:from_account_id, :operation_id, :value]
+  @required_params_withdraw [:from_account_id, :operation_id, :value]
   def changeset(params) do
     %__MODULE__{}
-    |> cast(params, @required_params_saque)
-    |> validate_required(@required_params_saque)
+    |> cast(params, @required_params_withdraw)
+    |> validate_required(@required_params_withdraw)
   end
 end

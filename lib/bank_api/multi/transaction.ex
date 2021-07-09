@@ -26,7 +26,7 @@ defmodule BankApi.Multi.Transaction do
         end
       end)
       |> Ecto.Multi.run(:from_account, fn _, _ -> buscar_account(%{id: from_account_id}) end)
-      |> Ecto.Multi.run(:Operation, fn _, _ -> buscar_operation(%{id: operation_id}) end)
+      |> Ecto.Multi.run(:operation, fn _, _ -> buscar_operation(%{id: operation_id}) end)
       |> Ecto.Multi.run(:balance_insuficiente, fn _, %{from_account: from_account} ->
         case is_balance_suficiente?(from_account.balance_account, value) do
           true -> {:ok, :balance_suficiente}
@@ -40,11 +40,11 @@ defmodule BankApi.Multi.Transaction do
       |> Ecto.Multi.update(:changeset_balance_account_destino, fn %{to_account: to_account} ->
         operation(to_account, value, :adicionar)
       end)
-      |> Ecto.Multi.insert(:cria_transacao, fn %{
+      |> Ecto.Multi.insert(:create_transaction, fn %{
                                                  from_account: from_account,
                                                  to_account: to_account
                                                } ->
-        cria_transacao(from_account.id, to_account.id, operation_id, value)
+        create_transaction(from_account.id, to_account.id, operation_id, value)
       end)
 
     case Repo.transaction(multi) do
@@ -70,7 +70,7 @@ defmodule BankApi.Multi.Transaction do
         end
       end)
       |> Ecto.Multi.run(:from_account, fn _, _ -> buscar_account(%{id: from_account_id}) end)
-      |> Ecto.Multi.run(:Operation, fn _, _ -> buscar_operation(%{id: operation_id}) end)
+      |> Ecto.Multi.run(:operation, fn _, _ -> buscar_operation(%{id: operation_id}) end)
       |> Ecto.Multi.run(:balance_transcao_insuficiente, fn _, %{from_account: from_account} ->
         case is_balance_suficiente?(from_account.balance_account, value) do
           true -> {:ok, :balance_suficiente}
@@ -80,8 +80,8 @@ defmodule BankApi.Multi.Transaction do
       |> Ecto.Multi.update(:changeset_balance_account_origem, fn %{from_account: from_account} ->
         operation(from_account, value, :subtrair)
       end)
-      |> Ecto.Multi.insert(:cria_transacao, fn %{from_account: from_account} ->
-        cria_transacao(from_account.id, operation_id, value)
+      |> Ecto.Multi.insert(:create_transaction, fn %{from_account: from_account} ->
+        create_transaction(from_account.id, operation_id, value)
       end)
 
     case Repo.transaction(multi) do
@@ -110,17 +110,17 @@ defmodule BankApi.Multi.Transaction do
     end
   end
 
-  defp cria_transacao(from_account_id, to_account_id, Operation, value) do
+  defp create_transaction(from_account_id, to_account_id, operation, value) do
     %{
       from_account_id: from_account_id,
       to_account_id: to_account_id,
-      operation_id: Operation,
+      operation_id: operation,
       value: value
     }
     |> Transaction.changeset()
   end
 
-  defp cria_transacao(from_account_id, operation_id, value) do
+  defp create_transaction(from_account_id, operation_id, value) do
     %{
       from_account_id: from_account_id,
       operation_id: String.to_integer(operation_id),
@@ -164,14 +164,14 @@ defmodule BankApi.Multi.Transaction do
   defp operation(account, value, :subtrair) do
     account
     |> Account.update_changeset(%{
-      balance_account: Account.balance_account() - String.to_integer(value)
+      balance_account: account.balance_account() - String.to_integer(value)
     })
   end
 
   defp operation(account, value, :adicionar) do
     account
     |> Account.update_changeset(%{
-      balance_account: Account.balance_account() + String.to_integer(value)
+      balance_account: account.balance_account() + String.to_integer(value)
     })
   end
 end
