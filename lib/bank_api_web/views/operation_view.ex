@@ -54,7 +54,7 @@ defmodule BankApiWeb.OperationView do
 
   def render("error.json", %{error: :operation_already_exists}) do
     %{
-      error: "Previously registered operation. "
+      error: "Previously registered operation."
     }
   end
 
@@ -63,7 +63,7 @@ defmodule BankApiWeb.OperationView do
         %{error: %Changeset{errors: [operation_name: {"has already been taken", _error}]}} =
           _params
       ) do
-    %{error: "Previously registered operation. "}
+    %{error: "Previously registered operation."}
   end
 
   def render("error.json", %{error: error} = _params) do

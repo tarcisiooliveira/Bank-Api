@@ -19,7 +19,7 @@ defmodule BankApiWeb.UserView do
         user: %{update_operation: %User{id: id, name: name, email: email}}
       }) do
     %{
-      mensagem: "Usuário atualizado com sucesso!",
+      mensagem: "User updated successfuly!",
       user: %{id: id, name: name, email: email}
     }
   end
@@ -46,7 +46,7 @@ defmodule BankApiWeb.UserView do
         error: %Ecto.Changeset{errors: [email: {"has already been taken", _}]}
       }) do
     %{
-      message: "Email já cadastrado."
+      message: "Email already in use."
     }
   end
 
@@ -55,7 +55,7 @@ defmodule BankApiWeb.UserView do
 
   def render("delete.json", %{user: %{delete_user: %User{id: id, name: name, email: email}}}) do
     %{
-      message: "User Removido",
+      message: "User deleted",
       # User:
       id: id,
       name: name,
@@ -63,12 +63,12 @@ defmodule BankApiWeb.UserView do
     }
   end
 
-  def render("error.json", %{error: :email_already_exist}), do: %{error: "Email já cadastrado."}
+  def render("error.json", %{error: :email_already_exist}), do: %{error: "Email already in use."}
 
   def render("error.json", %{
         error: %Ecto.Changeset{errors: [email: {"has already been taken", _}]}
       }),
-      do: %{error: "Email já cadastrado."}
+      do: %{error: "Email already in use."}
 
   def render("error.json", %{error: error}), do: %{error: "#{error}"}
 end

@@ -13,32 +13,32 @@ defmodule BankApi.Multi.Transaction do
       }) do
     multi =
       Ecto.Multi.new()
-      |> Ecto.Multi.run(:mesma_account, fn _, _ ->
-        case is_mesma_account?(from_account_id, to_account_id) do
+      |> Ecto.Multi.run(:same_account, fn _, _ ->
+        case is_same_account?(from_account_id, to_account_id) do
           true -> {:error, :transfer_para_account_origem}
           false -> {:ok, false}
         end
       end)
-      |> Ecto.Multi.run(:valor_negativo, fn _, _ ->
+      |> Ecto.Multi.run(:negative_value, fn _, _ ->
         case is_negative_value?(value) do
-          true -> {:error, :valor_zero_ou_negativo}
+          true -> {:error, :value_zero_or_negative}
           false -> {:ok, false}
         end
       end)
-      |> Ecto.Multi.run(:from_account, fn _, _ -> buscar_account(%{id: from_account_id}) end)
-      |> Ecto.Multi.run(:operation, fn _, _ -> buscar_operation(%{id: operation_id}) end)
-      |> Ecto.Multi.run(:balance_insuficiente, fn _, %{from_account: from_account} ->
-        case is_balance_suficiente?(from_account.balance_account, value) do
-          true -> {:ok, :balance_suficiente}
-          false -> {:error, :balance_insuficiente}
+      |> Ecto.Multi.run(:from_account, fn _, _ -> fetch_account(%{id: from_account_id}) end)
+      |> Ecto.Multi.run(:operation, fn _, _ -> fetch_operation(%{id: operation_id}) end)
+      |> Ecto.Multi.run(:balance_enough, fn _, %{from_account: from_account} ->
+        case is_balance_enough?(from_account.balance_account, value) do
+          true -> {:ok, :balance_enough}
+          false -> {:error, :balance_not_enough}
         end
       end)
-      |> Ecto.Multi.run(:to_account, fn _, _ -> buscar_account(%{id: to_account_id}) end)
-      |> Ecto.Multi.update(:changeset_balance_account_origem, fn %{from_account: from_account} ->
-        operation(from_account, value, :subtrair)
+      |> Ecto.Multi.run(:to_account, fn _, _ -> fetch_account(%{id: to_account_id}) end)
+      |> Ecto.Multi.update(:changeset_balance_account_from, fn %{from_account: from_account} ->
+        operation(from_account, value, :sub)
       end)
-      |> Ecto.Multi.update(:changeset_balance_account_destino, fn %{to_account: to_account} ->
-        operation(to_account, value, :adicionar)
+      |> Ecto.Multi.update(:changeset_balance_account_to, fn %{to_account: to_account} ->
+        operation(to_account, value, :add)
       end)
       |> Ecto.Multi.insert(:create_transaction, fn %{
                                                      from_account: from_account,
@@ -63,22 +63,22 @@ defmodule BankApi.Multi.Transaction do
       }) do
     multi =
       Ecto.Multi.new()
-      |> Ecto.Multi.run(:valor_negativo, fn _, _ ->
+      |> Ecto.Multi.run(:negative_value, fn _, _ ->
         case is_negative_value?(value) do
-          true -> {:error, :valor_zero_ou_negativo}
+          true -> {:error, :value_zero_or_negative}
           false -> {:ok, false}
         end
       end)
-      |> Ecto.Multi.run(:from_account, fn _, _ -> buscar_account(%{id: from_account_id}) end)
-      |> Ecto.Multi.run(:operation, fn _, _ -> buscar_operation(%{id: operation_id}) end)
+      |> Ecto.Multi.run(:from_account, fn _, _ -> fetch_account(%{id: from_account_id}) end)
+      |> Ecto.Multi.run(:operation, fn _, _ -> fetch_operation(%{id: operation_id}) end)
       |> Ecto.Multi.run(:balance_transcao_insuficiente, fn _, %{from_account: from_account} ->
-        case is_balance_suficiente?(from_account.balance_account, value) do
-          true -> {:ok, :balance_suficiente}
-          false -> {:error, :balance_insuficiente}
+        case is_balance_enough?(from_account.balance_account, value) do
+          true -> {:ok, :balance_enough}
+          false -> {:error, :balance_not_enough}
         end
       end)
-      |> Ecto.Multi.update(:changeset_balance_account_origem, fn %{from_account: from_account} ->
-        operation(from_account, value, :subtrair)
+      |> Ecto.Multi.update(:changeset_balance_account_from, fn %{from_account: from_account} ->
+        operation(from_account, value, :sub)
       end)
       |> Ecto.Multi.insert(:create_transaction, fn %{from_account: from_account} ->
         create_transaction(from_account.id, operation_id, value)
@@ -96,9 +96,11 @@ defmodule BankApi.Multi.Transaction do
   def delete(%{id: _id} = params) do
     multi =
       Ecto.Multi.new()
-      |> Ecto.Multi.run(:fetch_transaction, fn _, _ -> fetch_transaction(params) end)
-      |> Ecto.Multi.delete(:delete_account, fn %{fetch_transaction: Account} ->
-        Account
+      |> Ecto.Multi.run(:fetch_transaction, fn _, _ ->
+        fetch_transaction(params)
+      end)
+      |> Ecto.Multi.delete(:delete_account, fn %{fetch_transaction: fetch_transaction} ->
+        fetch_transaction
       end)
 
     case Repo.transaction(multi) do
@@ -129,7 +131,7 @@ defmodule BankApi.Multi.Transaction do
     |> Transaction.changeset()
   end
 
-  defp buscar_account(%{id: _id} = params) do
+  defp fetch_account(%{id: _id} = params) do
     case HandleAccountRepo.fetch_account(params) do
       nil -> {:error, :account_not_found}
       account -> {:ok, account}
@@ -138,19 +140,22 @@ defmodule BankApi.Multi.Transaction do
 
   defp fetch_transaction(%{id: _id} = params) do
     case HandleTransactionRepo.fetch_transaction(params) do
-      nil -> {:error, :transaction_not_found}
-      Transaction -> {:ok, Transaction}
+      nil ->
+        {:error, :transaction_not_found}
+
+      transaction ->
+        {:ok, transaction}
     end
   end
 
-  defp buscar_operation(%{id: _operation_id} = params) do
+  defp fetch_operation(%{id: _operation_id} = params) do
     case HandleOperationRepo.fetch_operation(params) do
       nil -> {:error, :operation_not_found}
       operation -> {:ok, operation}
     end
   end
 
-  defp is_mesma_account?(id_origem, id_destino) do
+  defp is_same_account?(id_origem, id_destino) do
     id_origem == id_destino
   end
 
@@ -158,17 +163,17 @@ defmodule BankApi.Multi.Transaction do
     if value == 0 or Decimal.new(value) |> Decimal.negative?(), do: true, else: false
   end
 
-  defp is_balance_suficiente?(balance_inicial, value),
+  defp is_balance_enough?(balance_inicial, value),
     do: if(balance_inicial - String.to_integer(value) >= 0, do: true, else: false)
 
-  defp operation(account, value, :subtrair) do
+  defp operation(account, value, :sub) do
     account
     |> Account.update_changeset(%{
       balance_account: account.balance_account() - String.to_integer(value)
     })
   end
 
-  defp operation(account, value, :adicionar) do
+  defp operation(account, value, :add) do
     account
     |> Account.update_changeset(%{
       balance_account: account.balance_account() + String.to_integer(value)

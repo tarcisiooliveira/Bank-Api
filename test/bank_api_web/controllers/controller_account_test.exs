@@ -5,7 +5,7 @@ defmodule BankApiWeb.ControllerAccountTest do
   alias BankApiWeb.Auth.Guardian
 
   @moduledoc """
-  Modulo de teste do Controlador de Account
+  Module test Account Controller
   """
 
   setup do
@@ -22,10 +22,13 @@ defmodule BankApiWeb.ControllerAccountTest do
   end
 
   describe "SHOW" do
-    test "assert get - Exibe os dados de uma Account quando informado ID correto + token", state do
+    test "assert get - Show Account when pass correct ID",
+         state do
       %User{id: user_id} = insert(:user)
       %AccountType{id: account_type_id} = insert(:account_type)
-      %Account{id: account_id} = insert(:account, user_id: user_id, account_type_id: account_type_id)
+
+      %Account{id: account_id} =
+        insert(:account, user_id: user_id, account_type_id: account_type_id)
 
       response =
         state[:conn]
@@ -34,7 +37,7 @@ defmodule BankApiWeb.ControllerAccountTest do
         |> json_response(:ok)
 
       assert %{
-               "Account" => %{
+               "account" => %{
                  "balance_account" => 100_000,
                  "account_type_id" => ^account_type_id,
                  "user_id" => ^user_id
@@ -43,10 +46,12 @@ defmodule BankApiWeb.ControllerAccountTest do
              } = response
     end
 
-    test "error show - exibe mensagem de erro quando não tem token de acesso", state do
+    test "error show - Sow erro message when don't have token access.", state do
       %User{id: user_id} = insert(:user)
       %AccountType{id: account_type_id} = insert(:account_type)
-      %Account{id: account_id} = insert(:account, user_id: user_id, account_type_id: account_type_id)
+
+      %Account{id: account_id} =
+        insert(:account, user_id: user_id, account_type_id: account_type_id)
 
       response =
         state[:conn]
@@ -55,7 +60,7 @@ defmodule BankApiWeb.ControllerAccountTest do
       assert %{resp_body: "{\"messagem\":\"Authorization Denied\"}", status: 401} = response
     end
 
-    test "error get - Exibe os dados de uma Account quando informado ID errado", state do
+    test "error get - Show Account data when get correct ID", state do
       response =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
@@ -67,7 +72,7 @@ defmodule BankApiWeb.ControllerAccountTest do
   end
 
   describe "CREATE" do
-    test "insert Account - Cadastra Account quando alls parametros estão OK", state do
+    test "insert Account - Record Account when all parameters are OK", state do
       %User{id: user_id} = insert(:user)
       %AccountType{id: account_type_id} = insert(:account_type)
 
@@ -93,7 +98,7 @@ defmodule BankApiWeb.ControllerAccountTest do
              } = response
     end
 
-    test "assert ok insert Account - Cadastra Account faltando balance, default 100_000", state do
+    test "assert ok insert Account - Record Account without balance, default 100_000", state do
       %User{id: user_id} = insert(:user)
       %AccountType{id: account_type_id} = insert(:account_type)
 
@@ -109,7 +114,7 @@ defmodule BankApiWeb.ControllerAccountTest do
         |> json_response(:created)
 
       assert %{
-               "Account" => %{
+               "account" => %{
                  "balance_account" => 100_000,
                  "account_type_id" => _83,
                  "user_id" => _147
@@ -118,7 +123,7 @@ defmodule BankApiWeb.ControllerAccountTest do
              } = response
     end
 
-    test "erro insert Account - Exibe mensagem de erro quando passa balance negativo.", state do
+    test "erro insert Account - Show error message when send negative balance.", state do
       %User{id: user_id} = insert(:user)
       %AccountType{id: account_type_id} = insert(:account_type)
 
@@ -136,27 +141,10 @@ defmodule BankApiWeb.ControllerAccountTest do
 
       assert %{"error" => "Balance Account should be higher or equal zero."} = response
     end
-
-    test "erro insert Account - tenta inserir User sem token de acesso.", state do
-      %User{id: user_id} = insert(:user)
-      %AccountType{id: account_type_id} = insert(:account_type)
-
-      params = %{
-        "balance_account" => -10_000,
-        "user_id" => user_id,
-        "account_type_id" => account_type_id
-      }
-
-      response =
-        state[:conn]
-        |> post(Routes.account_path(state[:conn], :create, params))
-
-      assert %{resp_body: "{\"messagem\":\"Authorization Denied\"}", status: 401} = response
-    end
   end
 
   describe "UPDATE" do
-    test "assert update - atualiza balance para value válido maior que zero.", state do
+    test "assert update - update balance to value higher than zero.", state do
       %User{id: user_id} = insert(:user)
       %AccountType{id: account_type_id} = insert(:account_type)
 
@@ -169,30 +157,32 @@ defmodule BankApiWeb.ControllerAccountTest do
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Account Atualizada.",
-               "Account" => %{"account_ID" => _id_User, "balance_account" => 5000}
+               "mensagem" => "Account updated.",
+               "account" => %{"account_id" => _user_id, "balance_account" => 5000}
              } = response
     end
 
-    test "assert update - atualiza balance para value válido igual a zero.", state do
+    test "assert update - update balance to value iqual zero.",
+         state do
       %User{id: user_id} = insert(:user)
       %AccountType{id: account_type_id} = insert(:account_type)
 
       %Account{id: id} = insert(:account, user_id: user_id, account_type_id: account_type_id)
+      params = %{"balance_account" => 0}
 
       response =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> patch(Routes.account_path(state[:conn], :update, id, %{"balance_account" => 0}))
+        |> patch(Routes.account_path(state[:conn], :update, id, params))
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Account Atualizada.",
-               "Account" => %{"account_ID" => _id_User, "balance_account" => 0}
+               "mensagem" => "Account updated.",
+               "account" => %{"account_id" => _user_id, "balance_account" => 0}
              } = response
     end
 
-    test "error update - tenta atualizar balance para value menor que zero", state do
+    test "error update - try update balance to value lower than zero", state do
       %User{id: user_id} = insert(:user)
       %AccountType{id: account_type_id} = insert(:account_type)
 
@@ -207,7 +197,7 @@ defmodule BankApiWeb.ControllerAccountTest do
       assert %{"error" => "Balance Account should be higher or equal zero."} = response
     end
 
-    test "error update - Tenta atualizar balance sem token de acesso", state do
+    test "error update - try update balance without access token", state do
       %User{id: user_id} = insert(:user)
       %AccountType{id: account_type_id} = insert(:account_type)
 
@@ -222,7 +212,7 @@ defmodule BankApiWeb.ControllerAccountTest do
   end
 
   describe "DELETE" do
-    test "assert delete - Deleta Account quando ID é passado corretamente", state do
+    test "assert delete - Delete account when correct ID is sent", state do
       %User{id: user_id} = insert(:user)
       %AccountType{id: account_type_id} = insert(:account_type)
 
@@ -235,12 +225,12 @@ defmodule BankApiWeb.ControllerAccountTest do
         |> json_response(:ok)
 
       assert %{
-               "Account" => %{"ID_User" => ^user_id, "account_type" => ^account_type_id},
+               "account" => %{"user_id" => ^user_id, "account_type" => ^account_type_id},
                "mensagem" => "Account deleted."
              } = response
     end
 
-    test "error delete - Tenta deletar Account com id inexistente", state do
+    test "error delete - try delete Account with invalid ID", state do
       response =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
@@ -250,7 +240,7 @@ defmodule BankApiWeb.ControllerAccountTest do
       assert %{"error" => "Invalid ID or inexistent."} = response
     end
 
-    test "error delete - Tenta deletar Account sem token de acesso", state do
+    test "error delete - Try delete Accutn without access token", state do
       response =
         state[:conn]
         |> delete(Routes.account_path(state[:conn], :delete, 951_951_951))

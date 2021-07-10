@@ -135,8 +135,8 @@ defmodule BankApi.Multi.User do
     |> HandleUserRepo.fetch_user()
   end
 
-  defp update_changeset(User, params) do
-    User
+  defp update_changeset(user, params) do
+    user
     |> User.update_changeset(params)
   end
 end

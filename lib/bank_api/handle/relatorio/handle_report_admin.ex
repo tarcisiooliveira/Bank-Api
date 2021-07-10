@@ -26,7 +26,7 @@ defmodule BankApi.Handle.Report.HandleReportAdmin do
       true ->
         query =
           from t in Transaction,
-            join: o in Operacao,
+            join: o in Operation,
             on: o.id == t.operation_id,
             where:
               o.operation_name == ^operation and
@@ -45,7 +45,7 @@ defmodule BankApi.Handle.Report.HandleReportAdmin do
             return = %{
               from_account_id: from_account_id,
               to_account_id: to_account_id,
-              mensagem: "Total for determineted period for determineted between tow Accounts.",
+              mensagem: "Total in determineted period for determineted between tow Accounts.",
               operation: operation,
               result: 0
             }
@@ -58,7 +58,7 @@ defmodule BankApi.Handle.Report.HandleReportAdmin do
             return = %{
               from_account_id: from_account_id,
               to_account_id: to_account_id,
-              mensagem: "Total for determineted period for determineted between tow Accounts.",
+              mensagem: "Total in determineted period for determineted between tow Accounts.",
               operation: operation,
               result: result
             }
@@ -103,7 +103,7 @@ defmodule BankApi.Handle.Report.HandleReportAdmin do
           0 ->
             return = %{
               from_account_id: from_account_id,
-              mensagem: "Total for determineted period for determineted Account.",
+              mensagem: "Total in determineted period for determineted Account.",
               operation: operation,
               result: 0
             }
@@ -115,7 +115,7 @@ defmodule BankApi.Handle.Report.HandleReportAdmin do
 
             return = %{
               from_account_id: from_account_id,
-              mensagem: "Total for determineted period for determineted Account.",
+              mensagem: "Total in determineted period for determineted Account.",
               operation: operation,
               result: result
             }
@@ -156,7 +156,7 @@ defmodule BankApi.Handle.Report.HandleReportAdmin do
         case quantity do
           0 ->
             return = %{
-              mensagem: "Total for determineted period between all Accounts.",
+              mensagem: "Total in determineted period between all Accounts.",
               operation: operation,
               result: 0
             }
@@ -167,7 +167,7 @@ defmodule BankApi.Handle.Report.HandleReportAdmin do
             result = Repo.aggregate(query, :sum, :value)
 
             return = %{
-              mensagem: "Total for determineted period between all Accounts.",
+              mensagem: "Total in determineted period between all Accounts.",
               operation: operation,
               result: result
             }
@@ -218,7 +218,7 @@ defmodule BankApi.Handle.Report.HandleReportAdmin do
   def report(%{"period" => "all", "operation" => operation}) do
     query =
       from t in Transaction,
-        join: o in Operations,
+        join: o in Operation,
         on: t.operation_id == o.id,
         where: o.operation_name == ^operation,
         select: [t.value]
@@ -230,7 +230,7 @@ defmodule BankApi.Handle.Report.HandleReportAdmin do
     case quantity do
       0 ->
         return = %{
-          mensagem: "Total for the entire period ",
+          mensagem: "Total for the entire period.",
           operation: operation,
           result: 0
         }
@@ -241,7 +241,7 @@ defmodule BankApi.Handle.Report.HandleReportAdmin do
         result = Repo.aggregate(query, :sum, :value)
 
         return = %{
-          mensagem: "Total for the entire period ",
+          mensagem: "Total for the entire period.",
           operation: operation,
           result: result
         }

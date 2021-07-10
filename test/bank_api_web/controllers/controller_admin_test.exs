@@ -4,7 +4,7 @@ defmodule BankApiWeb.ControllerAdminTest do
   import BankApi.Factory
 
   @moduledoc """
-  Modulo de teste do Controlador de Admin
+  Module test Admin Controller
   """
 
   setup do
@@ -20,7 +20,7 @@ defmodule BankApiWeb.ControllerAdminTest do
   end
 
   describe "CREATE" do
-    test "assert create admin - Cria admin passando token", state do
+    test "assert create admin - create admin when token access is sent", state do
       params2 = %{
         "email" => "test2@admin.com",
         "password" => "123456",
@@ -39,7 +39,7 @@ defmodule BankApiWeb.ControllerAdminTest do
              } = response
     end
 
-    test "error create admin - tenta criar admin faltando password_confirmation", state do
+    test "error create admin - try create admin without required parameter assword_confirmation", state do
       params2 = %{
         "email" => "test2@admin.com",
         "password" => "123456"
@@ -57,7 +57,7 @@ defmodule BankApiWeb.ControllerAdminTest do
              } = response
     end
 
-    test "error create admin - tenta criar admin sem token ", state do
+    test "error create admin - try create admin without access token ", state do
       params2 = %{
         "email" => "test2@admin.com",
         "password" => "123456",
@@ -115,7 +115,7 @@ defmodule BankApiWeb.ControllerAdminTest do
   end
 
   describe "UPDATE" do
-    test "assert update admin - admin atualiza email", state do
+    test "assert update admin - admin update email", state do
       params = %{email: "updated-email@email.com"}
 
       response =
@@ -128,7 +128,7 @@ defmodule BankApiWeb.ControllerAdminTest do
                response
     end
 
-    test "error update - tenta atualizar admin sem token de acesso", state do
+    test "error update - try update admin without access token", state do
       response =
         state[:conn]
         |> patch(
@@ -140,7 +140,7 @@ defmodule BankApiWeb.ControllerAdminTest do
       assert %{resp_body: "{\"messagem\":\"Authorization Denied\"}", status: 401} = response
     end
 
-    test "error update - tenta alterar endereço de email para um já cadastrado", state do
+    test "error update - try update email when thres email alread exist", state do
       params = %{email: "tarcisio@admin.com"}
 
       response =

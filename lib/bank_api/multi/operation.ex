@@ -89,8 +89,8 @@ defmodule BankApi.Multi.Operation do
     HandleOperationRepo.fetch_operation(params)
   end
 
-  defp update_changest(Operation, %{operation_name: _name_operation} = params) do
-    Operation
+  defp update_changest(operation, %{operation_name: _name_operation} = params) do
+    operation
     |> Operation.update_changeset(params)
   end
 

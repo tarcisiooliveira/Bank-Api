@@ -4,20 +4,29 @@ defmodule BankApiWeb.ControllerReportAdminTest do
   alias BankApiWeb.Auth.Guardian
   alias BankApi.Schemas.{Operation, AccountType, Account, User}
 
+  @moduledoc """
+  Module test Report Controller
+  """
   setup do
     [conn: "Phoenix.ConnTest.build_conn()"]
     admin = insert(:admin)
     {:ok, token, _claims} = Guardian.encode_and_sign(admin)
-    %AccountType{id: id_account_type} = insert(:account_type, account_type_name: "Poupança")
 
-    %User{id: id_User1, email: email1} = insert(:user)
-    %User{id: id_User2, email: email2} = insert(:user)
-    %User{id: id_User3, email: _email3} = insert(:user)
+    %AccountType{id: id_account_type} =
+      insert(:account_type, account_type_name: "Savings Account")
 
-    %Account{id: account_id_1} = insert(:account, user_id: id_User1, account_type_id: id_account_type)
+    %User{id: user_id1, email: email1} = insert(:user)
+    %User{id: user_id2, email: email2} = insert(:user)
+    %User{id: user_id3, email: _email3} = insert(:user)
 
-    %Account{id: account_id_2} = insert(:account, user_id: id_User2, account_type_id: id_account_type)
-    %Account{id: account_id_3} = insert(:account, user_id: id_User3, account_type_id: id_account_type)
+    %Account{id: account_id_1} =
+      insert(:account, user_id: user_id1, account_type_id: id_account_type)
+
+    %Account{id: account_id_2} =
+      insert(:account, user_id: user_id2, account_type_id: id_account_type)
+
+    %Account{id: account_id_3} =
+      insert(:account, user_id: user_id3, account_type_id: id_account_type)
 
     %Operation{id: operation_id_withdraw} = insert(:operation, operation_name: "Withdraw")
     %Operation{id: operation_id_payment} = insert(:operation, operation_name: "Payment")
@@ -166,7 +175,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total durante all o período",
+               "mensagem" => "Total for the entire period.",
                "result" => 2100,
                "operation" => "Payment"
              } = result
@@ -217,7 +226,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total for determineted period for determineted Account.",
+               "mensagem" => "Total in determineted period for determineted Account.",
                "operation" => "Payment",
                "result" => 300
              } = result
@@ -239,7 +248,8 @@ defmodule BankApiWeb.ControllerReportAdminTest do
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total durante determinado período entre duas accounts.",
+               "mensagem" =>
+                 "Total in determineted period for determineted between tow Accounts.",
                "operation" => "Payment",
                "result" => 200
              } = result
@@ -293,7 +303,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total for determineted period between all Accounts.",
+               "mensagem" => "Total in determineted period between all Accounts.",
                "operation" => "Payment",
                "result" => 1800
              } = result
@@ -311,7 +321,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total durante all o período",
+               "mensagem" => "Total for the entire period.",
                "result" => 18250,
                "operation" => "Transfer"
              } = result
@@ -362,7 +372,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total for determineted period for determineted Account.",
+               "mensagem" => "Total in determineted period for determineted Account.",
                "operation" => "Transfer",
                "result" => 4250
              } = result
@@ -384,7 +394,8 @@ defmodule BankApiWeb.ControllerReportAdminTest do
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total durante determinado período entre duas accounts.",
+               "mensagem" =>
+                 "Total in determineted period for determineted between tow Accounts.",
                "operation" => "Transfer",
                "result" => 7500
              } = result
@@ -438,7 +449,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total for determineted period between all Accounts.",
+               "mensagem" => "Total in determineted period between all Accounts.",
                "operation" => "Transfer",
                "result" => 15000
              } = result
@@ -456,7 +467,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total durante all o período",
+               "mensagem" => "Total for the entire period.",
                "result" => 4350,
                "operation" => "Withdraw"
              } = result
@@ -507,7 +518,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total for determineted period for determineted Account.",
+               "mensagem" => "Total in determineted period for determineted Account.",
                "result" => 3850
              } = result
     end
@@ -560,7 +571,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total for determineted period between all Accounts.",
+               "mensagem" => "Total in determineted period between all Accounts.",
                "result" => 1250
              } = result
     end

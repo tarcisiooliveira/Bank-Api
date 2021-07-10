@@ -3,7 +3,7 @@ defmodule BankApi.Handle.HandleAccountType do
   alias BankApi.Multi.AccountType, as: MultiAccountType
 
   @moduledoc """
-  Modulo de manipulação de dados Tipo Account através do Repo
+  Modulo de manipulação de dados Account Type através do Repo
   """
   def get(%{id: id}) do
     case Repo.get_by(AccountType, id: id) do

@@ -6,13 +6,19 @@ defmodule BankApi.Multi.Admin do
 
   alias BankApi.Handle.Repo.Admin, as: HandleRepoAdmin
 
+  @spec create(%{
+          :email => any,
+          :password => any,
+          :password_confirmation => any,
+          optional(any) => any
+        }) :: {:error, any} | {:ok, any}
   def create(
         %{email: _email, password: _password, password_confirmation: _password_confirmation} =
           params
       ) do
     multi =
       Ecto.Multi.new()
-      |> Ecto.Multi.run(:changeset_valido, fn _, _ ->
+      |> Ecto.Multi.run(:valid_changeset, fn _, _ ->
         case Admin.changeset(params) do
           %Changeset{errors: [password_confirmation: {"Differents password.", _}]} ->
             {:error, :senhas_diferentes}
@@ -36,8 +42,8 @@ defmodule BankApi.Multi.Admin do
             {:ok, changeset}
         end
       end)
-      |> Ecto.Multi.insert(:insert_admin, fn %{changeset_valido: changeset_valido} ->
-        changeset_valido
+      |> Ecto.Multi.insert(:insert_admin, fn %{valid_changeset: valid_changeset} ->
+        valid_changeset
       end)
 
     case Repo.transaction(multi) do
@@ -71,13 +77,14 @@ defmodule BankApi.Multi.Admin do
     end
   end
 
+  @spec update(%{:email => any, :id => any, optional(any) => any}) :: {:error, any} | {:ok, any}
   def update(%{id: id, email: email}) do
     multi =
       Ecto.Multi.new()
       |> Ecto.Multi.run(:try_admin_by_email, fn _, _ ->
         case fetch_admin(%{email: email}) do
           nil ->
-            {:ok, "Email válido."}
+            {:ok, "Invalid email."}
 
           _ ->
             {:error, "Email already in use."}

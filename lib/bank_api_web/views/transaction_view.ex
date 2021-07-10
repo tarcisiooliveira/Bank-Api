@@ -13,11 +13,15 @@ defmodule BankApiWeb.TransactionView do
                operation_id: operation_id,
                value: value
              }}
-        } = _params
+        }
       ) do
     %{
       mensagem: "Transaction founded",
-      Transaction: %{from_account_id: from_account_id, operation_id: operation_id, value: value}
+      Transaction: %{
+        from_account_id: from_account_id,
+        operation_id: operation_id,
+        value: value
+      }
     }
   end
 
@@ -58,7 +62,7 @@ defmodule BankApiWeb.TransactionView do
                  value: value
                }
              }}
-        } = _params
+        }
       ) do
     %{
       mensagem: "Transaction finished successfully",
@@ -73,7 +77,7 @@ defmodule BankApiWeb.TransactionView do
   def render(
         "create.json",
         %{
-          Transaction:
+          transaction:
             {:ok,
              %{
                create_transaction: %Transaction{

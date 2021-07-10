@@ -16,7 +16,7 @@ defmodule BankApiWeb.AdminView do
   def render(
         "create.json",
         %{
-          admin: %{changeset_valido: %Changeset{changes: %{email: email}}}
+          admin: %{valid_changeset: %Changeset{changes: %{email: email}}}
         }
       ) do
     %{

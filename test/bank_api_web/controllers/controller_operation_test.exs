@@ -3,7 +3,9 @@ defmodule BankApiWeb.ControllerOperationTest do
   import BankApi.Factory
   alias BankApi.Schemas.Operation
   alias BankApiWeb.Auth.Guardian
-
+@moduledoc """
+  Module test Operation Controller
+  """
   setup do
     [conn: "Phoenix.ConnTest.build_conn()"]
 
@@ -17,9 +19,9 @@ defmodule BankApiWeb.ControllerOperationTest do
      }}
   end
 
-  test "socesso insert - insere Operacão no banco e retorna confirmação e os dados inseridos",
+  test "socesso insert - insert Operation, return values inserted",
        state do
-    params = %{"operation_name" => "Poupança"}
+    params = %{"operation_name" => "Savings Account"}
 
     response =
       state[:conn]
@@ -28,12 +30,12 @@ defmodule BankApiWeb.ControllerOperationTest do
       |> json_response(:created)
 
     assert %{
-             "Operação" => %{"operation_name" => "Poupança"},
+             "Operação" => %{"operation_name" => "Savings Account"},
              "mensagem" => "Operation Recorded"
            } = response
   end
 
-  test "erro insert - tenta cadastrar Operação com tipo já existente", state do
+  test "erro insert - try record operation when its already exist", state do
     insert(:operation)
     params = %{"operation_name" => "Transfer"}
 
@@ -44,11 +46,11 @@ defmodule BankApiWeb.ControllerOperationTest do
       |> json_response(404)
 
     assert %{
-             "error" => "Previously registered operation. "
+             "error" => "Previously registered operation."
            } = response
   end
 
-  test "sucesso delete - retorna mensagem de sucesso quando remove operação já cadastrado.",
+  test "sucesso delete - return success message when Operation is deleted.",
        state do
     %Operation{id: id} = insert(:operation)
 
@@ -61,7 +63,7 @@ defmodule BankApiWeb.ControllerOperationTest do
     assert %{"mensagem" => "Operation Transfer deleted successfully."} = response
   end
 
-  test "error delete - retorna mensagem de erro quando tenta remover operação inexistente.",
+  test "error delete - return error message when try remove inexistente Operation",
        state do
     insert(:operation)
 
@@ -75,19 +77,19 @@ defmodule BankApiWeb.ControllerOperationTest do
              response
   end
 
-  test "sucesso update - atualiza Operation previamente cadastrada", state do
+  test "sucesso update - Update Opertion", state do
     %Operation{id: id} = insert(:operation)
 
     response =
       state[:conn]
       |> put_req_header("authorization", "Bearer " <> state[:valores].token)
       |> patch(
-        Routes.operation_path(state[:conn], :update, id, %{operation_name: "Nova Transfer"})
+        Routes.operation_path(state[:conn], :update, id, %{operation_name: "New Transfer"})
       )
       |> json_response(:created)
 
     assert %{
-             "Operação" => %{"operation_name" => "Nova Transfer"},
+             "Operação" => %{"operation_name" => "New Transfer"},
              "mensagem" => "Operation Updated"
            } = response
   end

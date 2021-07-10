@@ -1,8 +1,6 @@
 defmodule BankApi.Handle.HandleUser do
-  alias BankApi.{Repo, Schemas.User}
   alias BankApi.Handle.Repo.User, as: HandleUserRepo
   alias BankApi.Multi.User, as: MultiUser
-  alias BankApi.Handle.Repo.User, as: HandleRepoUser
 
   @moduledoc """
   Modulo de manipulação de dados User através do Repo

@@ -33,15 +33,15 @@ defmodule BankApi.Schemas.User do
     |> put_pass_hash
   end
 
-  def update_changeset(User, %{email: _email} = params) do
-    User
+  def update_changeset(user, %{email: _email} = params) do
+    user
     |> cast(params, [:email])
     |> validate_required([:email])
     |> unique_constraint(:email, message: "Email already in use.")
   end
 
-  def update_changeset(User, %{name: _name} = params) do
-    User
+  def update_changeset(user, %{name: _name} = params) do
+    user
     |> cast(params, [:name])
     |> validate_required([:name])
   end

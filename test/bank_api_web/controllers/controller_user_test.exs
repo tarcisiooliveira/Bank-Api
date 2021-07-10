@@ -5,7 +5,7 @@ defmodule BankApiWeb.ControllerUserTest do
   alias BankApiWeb.Auth.Guardian
 
   @moduledoc """
-  Modulo de teste do Controlador de Usuário
+  Module test User Controller
   """
   setup do
     [conn: "Phoenix.ConnTest.build_conn()"]
@@ -41,7 +41,7 @@ defmodule BankApiWeb.ControllerUserTest do
 
       assert %{
                "mensagem" => "Show",
-               "User" => %{"email" => _email, "id" => _id, "name" => "Tarcisio"}
+               "user" => %{"email" => _email, "id" => _id, "name" => "Tarcisio"}
              } = response
     end
 
@@ -67,7 +67,7 @@ defmodule BankApiWeb.ControllerUserTest do
   end
 
   describe "CREATE" do
-    test "assert create - cria User quando os dados são passados corretamente", state do
+    test "assert create - create User", state do
       params = %{
         "name" => "Tarcisio",
         "email" => "tarcisiooliveira@protonmail.com",
@@ -83,7 +83,7 @@ defmodule BankApiWeb.ControllerUserTest do
 
       assert %{
                "mensagem" => "Usuário criado com sucesso!",
-               "User" => %{
+               "user" => %{
                  "email" => "tarcisiooliveira@protonmail.com",
                  "id" => _id,
                  "name" => "Tarcisio"
@@ -91,7 +91,7 @@ defmodule BankApiWeb.ControllerUserTest do
              } = response
     end
 
-    test "error assert - tenta criar User sem token de acessor ", state do
+    test "error assert - try create user without access token", state do
       params = %{
         "name" => "Tarcisio",
         "email" => "tarcisiooliveira@protonmail.com",
@@ -105,7 +105,7 @@ defmodule BankApiWeb.ControllerUserTest do
       assert %{resp_body: "{\"messagem\":\"Authorization Denied\"}", status: 401} = response
     end
 
-    test "error insert - quando já existe User com aquele email, retorna erro informando",
+    test "error insert - try creat user with email already in use",
          state do
       %User{email: email} = insert(:user)
 
@@ -123,13 +123,13 @@ defmodule BankApiWeb.ControllerUserTest do
         |> json_response(:unprocessable_entity)
 
       assert %{
-               "message" => "Email já cadastrado."
+               "message" => "Email already in use."
              } = response
     end
   end
 
   describe "UPDATE" do
-    test "cadastra User corretamente e depois altera email para outro email valido", state do
+    test "update email to valid email not in use", state do
       %User{id: id} = insert(:user)
       params = %{email: "tarcisiooliveira@protonmail.com"}
 
@@ -140,8 +140,8 @@ defmodule BankApiWeb.ControllerUserTest do
         |> json_response(:ok)
 
       assert %{
-               "mensagem" => "Usuário atualizado com sucesso!",
-               "User" => %{
+               "mensagem" => "User updated successfuly!",
+               "user" => %{
                  "email" => "tarcisiooliveira@protonmail.com",
                  "id" => _id,
                  "name" => "Tarcisio"
@@ -149,7 +149,7 @@ defmodule BankApiWeb.ControllerUserTest do
              } = response
     end
 
-    test "error update - tenta remover User sem token de acesso", state do
+    test "error update - try remove User without accest token", state do
       %User{id: id} = insert(:user)
 
       params = %{
@@ -165,7 +165,7 @@ defmodule BankApiWeb.ControllerUserTest do
       assert %{resp_body: "{\"messagem\":\"Authorization Denied\"}", status: 401} = response
     end
 
-    test "error update - cadastra User corretamente e depois tenta altera email para outro email já cadastrado",
+    test "error update - try update to email already in use",
          state do
       %User{id: id} = insert(:user)
       insert(:user, email: "tarcisiooliveira@protonmail.com")
@@ -177,10 +177,10 @@ defmodule BankApiWeb.ControllerUserTest do
         |> patch(Routes.user_path(state[:conn], :update, id, params))
         |> json_response(:not_found)
 
-      assert %{"error" => "Email já cadastrado."} = response
+      assert %{"error" => "Email already in use."} = response
     end
 
-    test "assert update - Cadastra User corretamente e depois altera name", state do
+    test "assert update - Update name", state do
       %User{id: id} = insert(:user, email: "tarcisiooliveira@protonmail.com")
       params = %{name: "oisicraT"}
 
@@ -191,8 +191,8 @@ defmodule BankApiWeb.ControllerUserTest do
         |> json_response(:ok)
 
       assert %{
-               "mensagem" => "Usuário atualizado com sucesso!",
-               "User" => %{
+               "mensagem" => "User updated successfuly!",
+               "user" => %{
                  "email" => "tarcisiooliveira@protonmail.com",
                  "id" => ^id,
                  "name" => "oisicraT"
@@ -202,7 +202,7 @@ defmodule BankApiWeb.ControllerUserTest do
   end
 
   describe "DELETE" do
-    test "assert delete - Retorna os dados do User excluido do banco e mensagem confirmando",
+    test "assert delete - return User data recent deleted and confirmation message",
          state do
       %User{id: id} = insert(:user)
 
@@ -215,12 +215,12 @@ defmodule BankApiWeb.ControllerUserTest do
       assert %{
                "email" => _email,
                "id" => _id,
-               "message" => "User Removido",
+               "message" => "User deleted",
                "name" => "Tarcisio"
              } = response
     end
 
-    test "error delete - tenta remover User sem token de acesso", state do
+    test "error delete - try dele User without access token", state do
       %User{id: id = insert(:user)}
 
       response =
@@ -230,7 +230,7 @@ defmodule BankApiWeb.ControllerUserTest do
       assert %{resp_body: "{\"messagem\":\"Authorization Denied\"}", status: 401} = response
     end
 
-    test "error delete - tenta apagar User passando id que não existe ou já foi deletado previamente",
+    test "error delete - try delete User with invalid ID",
          state do
       response =
         state[:conn]

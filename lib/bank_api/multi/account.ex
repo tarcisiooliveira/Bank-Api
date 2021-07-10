@@ -92,7 +92,7 @@ defmodule BankApi.Multi.Account do
           account -> {:ok, account}
         end
       end)
-      |> Ecto.Multi.update(:update_account, fn %{fetch_account: account} ->
+      |> Ecto.Multi.update(:updated_account, fn %{fetch_account: account} ->
         Account.update_changeset(account, %{balance_account: ammount})
       end)
 

@@ -3,7 +3,9 @@ defmodule BankApiWeb.AccountTypeTest do
   alias BankApi.Schemas.AccountType
   import BankApi.Factory
   alias BankApiWeb.Auth.Guardian
-
+@moduledoc """
+  Module test Account Type Controller
+  """
   setup do
     [conn: "Phoenix.ConnTest.build_conn()"]
 
@@ -17,7 +19,7 @@ defmodule BankApiWeb.AccountTypeTest do
      }}
   end
 
-  test "quando alls parametros estão ok, cria AccountType no banco", state do
+  test "all parametes are ok, create AccountType", state do
     params = %{"account_type_name" => "Corrente23"}
 
     response =
@@ -28,11 +30,11 @@ defmodule BankApiWeb.AccountTypeTest do
 
     assert %{
              "mensagem" => "Account Type created successfully!",
-             "Tipo Account" => %{"account_type_name" => "Corrente23"}
+             "Account Type" => %{"account_type_name" => "Corrente23"}
            } = response
   end
 
-  test "cadastra Tipo de Account corretamente e depois atualiza a informação", state do
+  test "Record Account Type, then update some data", state do
     %AccountType{id: id} = insert(:account_type)
 
     response =
@@ -45,11 +47,11 @@ defmodule BankApiWeb.AccountTypeTest do
 
     assert %{
              "mensagem" => "Account Type updated successfully!",
-             "Tipo Account" => %{"account_type_name" => "Savings Account"}
+             "Account Type" => %{"account_type_name" => "Savings Account"}
            } = response
   end
 
-  test "User passa id válido e então o Tipo Account é apagado", state do
+  test "When valid ID is sent, Account Type is deleted", state do
     %AccountType{id: id} = insert(:account_type)
 
     response =
@@ -59,12 +61,12 @@ defmodule BankApiWeb.AccountTypeTest do
       |> json_response(:ok)
 
     assert %{
-             "Nome" => "Savings Account",
+             "Name" => "Savings Account",
              "mensagem" => "Account Type deleted successfully!"
            } = response
   end
 
-  test "retorna erro quando não consegue apagar User do banco com ID invalido", state do
+  test "return error when sent invalid ID", state do
     response =
       state[:conn]
       |> put_req_header("authorization", "Bearer " <> state[:valores].token)
@@ -76,7 +78,7 @@ defmodule BankApiWeb.AccountTypeTest do
            } = response
   end
 
-  test "retorna informações de um Tipo Account presente no banco", state do
+  test "return account info when sent currect ID", state do
     %AccountType{id: id} = insert(:account_type)
 
     response =
@@ -87,11 +89,11 @@ defmodule BankApiWeb.AccountTypeTest do
 
     assert %{
              "mensagem" => "Account Type found.",
-             "Tipo Account" => %{"account_type_name" => "Savings Account"}
+             "Account Type" => %{"account_type_name" => "Savings Account"}
            } = response
   end
 
-  test "retorna informações de erro quando não encontra Tipo Account presente no banco", state do
+  test "return error info when theres sent invalid ID", state do
     response =
       state[:conn]
       |> put_req_header("authorization", "Bearer " <> state[:valores].token)
