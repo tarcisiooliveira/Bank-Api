@@ -15,7 +15,9 @@ defmodule BankApiWeb.AccountTypeView do
     }
   end
 
-  def render("create.json", %{account_type: %{create_account_type: %AccountType{account_type_name: account_type_name}}}) do
+  def render("create.json", %{
+        account_type: %{create_account_type: %AccountType{account_type_name: account_type_name}}
+      }) do
     %{
       mensagem: "Account Type created successfully!",
       "Account Type": %{account_type_name: account_type_name}

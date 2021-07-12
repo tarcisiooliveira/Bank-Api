@@ -4,6 +4,9 @@ defmodule BankApi.Multi.User do
   alias BankApi.Handle.Repo.User, as: HandleUserRepo
   alias Ecto.Changeset
 
+  @moduledoc """
+    This Module valid manipulations of Users and the persist in DataBase or RollBack if something is worng.
+  """
   def create(
         %{
           email: _email,
@@ -84,12 +87,6 @@ defmodule BankApi.Multi.User do
         {:ok,
          fetch_user
          |> update_changeset(%{name: name})}
-
-        # |> case do
-        #   %Changeset{valid?: true} = changeset ->
-        #     IO.inspect(changeset)
-
-        # end
       end)
       |> Ecto.Multi.update(:update_operation, fn %{user_changeset: user_changeset} ->
         user_changeset

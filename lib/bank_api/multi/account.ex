@@ -5,6 +5,9 @@ defmodule BankApi.Multi.Account do
   alias BankApi.Handle.Repo.User, as: HandleUserRepo
   alias BankApi.Handle.Repo.AccountType, as: HandleAccountTypeRepo
 
+  @moduledoc """
+    This Module valid manipulations of Account and the persist in DataBase or RollBack if something is worng.
+  """
   def create(
         %{balance_account: ammount, user_id: user_id, account_type_id: account_type_id} = params
       ) do

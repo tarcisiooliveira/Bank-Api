@@ -3,7 +3,8 @@ defmodule BankApiWeb.AccountTypeTest do
   alias BankApi.Schemas.AccountType
   import BankApi.Factory
   alias BankApiWeb.Auth.Guardian
-@moduledoc """
+
+  @moduledoc """
   Module test Account Type Controller
   """
   setup do
@@ -41,7 +42,9 @@ defmodule BankApiWeb.AccountTypeTest do
       state[:conn]
       |> put_req_header("authorization", "Bearer " <> state[:valores].token)
       |> patch(
-        Routes.account_type_path(state[:conn], :update, id, %{account_type_name: "Savings Account"})
+        Routes.account_type_path(state[:conn], :update, id, %{
+          account_type_name: "Savings Account"
+        })
       )
       |> json_response(:ok)
 

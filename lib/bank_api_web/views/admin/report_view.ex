@@ -1,4 +1,4 @@
-defmodule BankApiWeb.ReportView do
+defmodule BankApiWeb.Admin.ReportView do
   use BankApiWeb, :view
 
   def render("report.json", %{

@@ -38,7 +38,9 @@ defmodule BankApiWeb.AccountView do
     }
   end
 
-  def render("update.json", %{account: %{updated_account: %Account{id: id, balance_account: balance_account}}}) do
+  def render("update.json", %{
+        account: %{updated_account: %Account{id: id, balance_account: balance_account}}
+      }) do
     %{
       mensagem: "Account updated.",
       account: %{account_id: id, balance_account: balance_account}

@@ -1,4 +1,4 @@
-defmodule BankApiWeb.ReportController do
+defmodule BankApiWeb.Admin.ReportController do
   use BankApiWeb, :controller
   alias BankApi.Handle.Report.HandleReportAdmin
 

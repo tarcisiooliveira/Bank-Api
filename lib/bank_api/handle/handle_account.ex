@@ -5,7 +5,7 @@ defmodule BankApi.Handle.HandleAccount do
   @moduledoc """
   Modulo de manipulação de dados Account
   """
-  def get(%{id: _id}=params) do
+  def get(%{id: _id} = params) do
     case HandleRepoAccount.fetch_account(params) do
       nil -> {:error, "Invalid ID or inexistent."}
       account -> {:ok, account}

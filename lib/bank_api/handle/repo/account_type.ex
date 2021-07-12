@@ -2,6 +2,9 @@ defmodule BankApi.Handle.Repo.AccountType do
   alias BankApi.Repo
   alias BankApi.Schemas.AccountType
 
+  @moduledoc """
+    This Module is responsable to fetch Account Type informations on DataBase.
+  """
   def fetch_account_type(%{id: id}) do
     Repo.get_by(AccountType, id: id)
   end

@@ -12,7 +12,14 @@ defmodule BankApi.Handle.HandleUser do
     end
   end
 
-  def create(%{name: _name, email: _email, password: _password, password_validation: _password_validation} = params) do
+  def create(
+        %{
+          name: _name,
+          email: _email,
+          password: _password,
+          password_validation: _password_validation
+        } = params
+      ) do
     params
     |> MultiUser.create()
   end

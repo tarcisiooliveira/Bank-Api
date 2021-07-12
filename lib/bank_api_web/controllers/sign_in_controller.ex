@@ -5,7 +5,7 @@ defmodule BankApiWeb.SignInController do
   alias BankApiWeb.FallbackController
 
   def sign_in(conn, params) do
-    return = Guardian.authenticate (params)
+    return = Guardian.authenticate(params)
 
     case return do
       {:ok, token} ->

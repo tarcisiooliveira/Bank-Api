@@ -1,10 +1,14 @@
 defmodule BankApi.Multi.Transaction do
-  alias BankApi.Schemas.{Transaction, Account}
+  alias BankApi.Schemas.{Transaction, Account, Operation}
   alias BankApi.Repo
   alias BankApi.Handle.Repo.Account, as: HandleAccountRepo
   alias BankApi.Handle.Repo.Operation, as: HandleOperationRepo
   alias BankApi.Handle.Repo.Transaction, as: HandleTransactionRepo
+  alias BankApi.SendEmail.SendEmail
 
+  @moduledoc """
+    This Module valid manipulations of Transactions and the persist in DataBase or RollBack if something is worng.
+  """
   def create(%{
         from_account_id: from_account_id,
         to_account_id: to_account_id,
@@ -49,6 +53,16 @@ defmodule BankApi.Multi.Transaction do
 
     case Repo.transaction(multi) do
       {:ok, params} ->
+        %{
+          create_transaction: %Transaction{
+            from_account_id: from_account_id,
+            to_account_id: to_account_id
+          },
+          operation: %Operation{operation_name: operation_name}
+        } = params
+
+        send_email(from_account_id, to_account_id, operation_name)
+
         {:ok, params}
 
       {:error, _, changeset, _} ->
@@ -86,6 +100,14 @@ defmodule BankApi.Multi.Transaction do
 
     case Repo.transaction(multi) do
       {:ok, params} ->
+        %{
+          create_transaction: %Transaction{
+            from_account_id: from_account_id
+          },
+          operation: %Operation{operation_name: operation_name}
+        } = params
+
+        send_email(from_account_id, operation_name)
         {:ok, params}
 
       {:error, _, changeset, _} ->
@@ -178,5 +200,20 @@ defmodule BankApi.Multi.Transaction do
     |> Account.update_changeset(%{
       balance_account: account.balance_account() + String.to_integer(value)
     })
+  end
+
+  defp send_email(
+         from_account_id,
+         to_account_id,
+         operation_name
+       ) do
+    SendEmail.send(from_account_id, to_account_id, operation_name)
+  end
+
+  defp send_email(
+         from_account_id,
+         operation_name
+       ) do
+    SendEmail.send(from_account_id, operation_name)
   end
 end

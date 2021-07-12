@@ -7,9 +7,9 @@ defmodule BankApi.Handle.HandleAdmin do
   """
   def get(id) do
     id
-    |>String.to_integer()
-    |>HandleRepoAdmin.fetch_admin()
-    |> case  do
+    |> String.to_integer()
+    |> HandleRepoAdmin.fetch_admin()
+    |> case do
       nil -> {:error, "Invalid ID or inexistent."}
       admin -> {:ok, admin}
     end

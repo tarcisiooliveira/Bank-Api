@@ -2,7 +2,6 @@ defmodule BankApiWeb.AccountTypeController do
   use BankApiWeb, :controller
   alias BankApi.Handle.HandleAccountType
 
-
   def show(conn, %{"id" => id}) do
     %{id: String.to_integer(id)}
     |> HandleAccountType.get()

@@ -1,5 +1,5 @@
 defmodule BankApiWeb.ControllerAdminTest do
-  use BankApiWeb.ConnCase, async: false
+  use BankApiWeb.ConnCase, async: true
   alias BankApiWeb.Auth.Guardian
   import BankApi.Factory
 
@@ -39,7 +39,8 @@ defmodule BankApiWeb.ControllerAdminTest do
              } = response
     end
 
-    test "error create admin - try create admin without required parameter assword_confirmation", state do
+    test "error create admin - try create admin without required parameter assword_confirmation",
+         state do
       params2 = %{
         "email" => "test2@admin.com",
         "password" => "123456"
@@ -124,8 +125,7 @@ defmodule BankApiWeb.ControllerAdminTest do
         |> patch(Routes.admin_path(state[:conn], :update, state[:valores].admin.id, params))
         |> json_response(:ok)
 
-      assert %{"mensagem" => "Admin updated.", "email" => "updated-email@email.com"} =
-               response
+      assert %{"mensagem" => "Admin updated.", "email" => "updated-email@email.com"} = response
     end
 
     test "error update - try update admin without access token", state do

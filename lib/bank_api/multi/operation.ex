@@ -4,6 +4,9 @@ defmodule BankApi.Multi.Operation do
   alias BankApi.Handle.Repo.Operation, as: HandleOperationRepo
   alias Ecto.Changeset
 
+  @moduledoc """
+    This Module valid manipulations of Operations and the persist in DataBase or RollBack if something is worng.
+  """
   def create(
         %{
           operation_name: _name_operation
@@ -48,15 +51,15 @@ defmodule BankApi.Multi.Operation do
       |> Ecto.Multi.run(:create_operation_changeset, fn _, %{fetch_operation: fetch_operation} ->
         fetch_operation
         |> update_changest(%{operation_name: operation_name})
-        |> case  do
+        |> case do
           nil -> {:error, :error_update_changeset}
           operation -> {:ok, operation}
         end
       end)
       |> Ecto.Multi.update(:update_operation, fn %{
-                                                  create_operation_changeset:
-                                                    create_operation_changeset
-                                                } ->
+                                                   create_operation_changeset:
+                                                     create_operation_changeset
+                                                 } ->
         create_operation_changeset
       end)
 

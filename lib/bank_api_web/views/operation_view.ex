@@ -3,27 +3,32 @@ defmodule BankApiWeb.OperationView do
   alias BankApi.Schemas.Operation
   alias Ecto.Changeset
 
-  def render("show.json", %{operation:  %Operation{operation_name: operation_name}}) do
+  def render("show.json", %{operation: %Operation{operation_name: operation_name}}) do
     %{
       mensagem: "Operation Type found.",
-      operation:  operation_name
+      operation: operation_name
     }
   end
 
-  def render("create.json", %{operation:  %{create_transaction: %Operation{operation_name: operation_name}}}) do
-    %{
-      mensagem: "Operation Recorded",
-      Operação: %{operation_name: operation_name}
-    }
-  end
-  def render("create.json", %{operation:  %Operation{operation_name: operation_name}}) do
+  def render("create.json", %{
+        operation: %{create_transaction: %Operation{operation_name: operation_name}}
+      }) do
     %{
       mensagem: "Operation Recorded",
       Operação: %{operation_name: operation_name}
     }
   end
 
-  def render("update.json", %{operation:  %{update_operation: %Operation{operation_name: operation_name}}}) do
+  def render("create.json", %{operation: %Operation{operation_name: operation_name}}) do
+    %{
+      mensagem: "Operation Recorded",
+      Operação: %{operation_name: operation_name}
+    }
+  end
+
+  def render("update.json", %{
+        operation: %{update_operation: %Operation{operation_name: operation_name}}
+      }) do
     %{
       mensagem: "Operation Updated",
       Operação: %{operation_name: operation_name}
@@ -31,7 +36,7 @@ defmodule BankApiWeb.OperationView do
   end
 
   def render("delete.json", %{
-        operation:  %{fetch_operation: %Operation{operation_name: operation_name}}
+        operation: %{fetch_operation: %Operation{operation_name: operation_name}}
       }) do
     %{
       mensagem: "Operation #{operation_name} deleted successfully."

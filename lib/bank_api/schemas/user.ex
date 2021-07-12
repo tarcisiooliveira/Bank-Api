@@ -46,8 +46,6 @@ defmodule BankApi.Schemas.User do
     |> validate_required([:name])
   end
 
-
-
   defp put_pass_hash(%Ecto.Changeset{valid?: true, changes: %{password: password}} = changeset) do
     change(changeset, Bcrypt.add_hash(password))
   end

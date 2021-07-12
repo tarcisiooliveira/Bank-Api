@@ -1,11 +1,12 @@
 defmodule BankApiWeb.ControllerTransactionTest do
-  use BankApiWeb.ConnCase, async: false
+  use BankApiWeb.ConnCase, async: true
   use ExUnit.Case
   alias BankApi.Schemas.{Account, AccountType, User, Account, Operation, Transaction}
   alias BankApi.Repo
   import BankApi.Factory
   alias BankApiWeb.Auth.Guardian
- @moduledoc """
+
+  @moduledoc """
   Module test Transaction Controller
   """
   setup do
@@ -15,7 +16,8 @@ defmodule BankApiWeb.ControllerTransactionTest do
 
     {:ok, token, _claims} = Guardian.encode_and_sign(admin)
 
-    %AccountType{id: id_account_type} = insert(:account_type, account_type_name: "Savings Account")
+    %AccountType{id: id_account_type} =
+      insert(:account_type, account_type_name: "Savings Account")
 
     %User{id: user_id1} = insert(:user)
     %User{id: user_id2} = insert(:user)

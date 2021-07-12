@@ -1,5 +1,5 @@
 defmodule BankApiWeb.ControllerReportAdminTest do
-  use BankApiWeb.ConnCase, async: false
+  use BankApiWeb.ConnCase, async: true
   import BankApi.Factory
   alias BankApiWeb.Auth.Guardian
   alias BankApi.Schemas.{Operation, AccountType, Account, User}
@@ -322,7 +322,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
 
       assert %{
                "mensagem" => "Total for the entire period.",
-               "result" => 18250,
+               "result" => 18_250,
                "operation" => "Transfer"
              } = result
     end
@@ -339,7 +339,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       assert %{
                "mensagem" => "Total trasfered by determineted Account.",
                "operation" => "Transfer",
-               "result" => 11000
+               "result" => 11_000
              } = result
 
       params2 = %{"from_account_id" => state[:valores].account_id_2}
@@ -451,7 +451,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       assert %{
                "mensagem" => "Total in determineted period between all Accounts.",
                "operation" => "Transfer",
-               "result" => 15000
+               "result" => 15_000
              } = result
     end
   end

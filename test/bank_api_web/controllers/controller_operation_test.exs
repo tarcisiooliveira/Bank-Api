@@ -3,7 +3,8 @@ defmodule BankApiWeb.ControllerOperationTest do
   import BankApi.Factory
   alias BankApi.Schemas.Operation
   alias BankApiWeb.Auth.Guardian
-@moduledoc """
+
+  @moduledoc """
   Module test Operation Controller
   """
   setup do
