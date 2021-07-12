@@ -1,14 +1,13 @@
 defmodule BankApi.Multi.Admin do
+  @moduledoc """
+    This Module valid manipulations of Admin and the persist in DataBase or RollBack if something is worng.
+  """
+
   alias BankApi.Schemas.Admin
   alias BankApi.Repo
   alias BankApi.Handle.Repo.Admin, as: HandleRepoAdmin
   alias Ecto.Changeset
 
-  alias BankApi.Handle.Repo.Admin, as: HandleRepoAdmin
-
-  @moduledoc """
-    This Module valid manipulations of Admin and the persist in DataBase or RollBack if something is worng.
-  """
   @spec create(%{
           :email => any,
           :password => any,

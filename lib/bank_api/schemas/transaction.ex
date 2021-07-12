@@ -1,11 +1,14 @@
 defmodule BankApi.Schemas.Transaction do
-  use Ecto.Schema
-  import Ecto.Changeset
-  alias BankApi.Schemas.{Account, Operation}
-
   @moduledoc """
   Modulo de schema de Transaction
   """
+
+  use Ecto.Schema
+
+  import Ecto.Changeset
+
+  alias BankApi.Schemas.{Account, Operation}
+
   schema "transactions" do
     field :value, :integer, null: false
     belongs_to(:from_account, Account)

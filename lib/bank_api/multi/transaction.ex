@@ -1,4 +1,8 @@
 defmodule BankApi.Multi.Transaction do
+  @moduledoc """
+    This Module valid manipulations of Transactions and the persist in DataBase or RollBack if something is worng.
+  """
+
   alias BankApi.Schemas.{Transaction, Account, Operation}
   alias BankApi.Repo
   alias BankApi.Handle.Repo.Account, as: HandleAccountRepo
@@ -6,9 +10,6 @@ defmodule BankApi.Multi.Transaction do
   alias BankApi.Handle.Repo.Transaction, as: HandleTransactionRepo
   alias BankApi.SendEmail.SendEmail
 
-  @moduledoc """
-    This Module valid manipulations of Transactions and the persist in DataBase or RollBack if something is worng.
-  """
   def create(%{
         from_account_id: from_account_id,
         to_account_id: to_account_id,

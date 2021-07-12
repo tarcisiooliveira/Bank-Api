@@ -1,11 +1,12 @@
 defmodule BankApi.Handle.Report.HandleReportAdmin do
+  @moduledoc """
+    This Module generate manipulate all Report request than return result.
+  """
+
   alias BankApi.Schemas.{Transaction, Account, Operation}
   alias BankApi.Repo
   import Ecto.Query
 
-  @moduledoc """
-    This Module generate manipulate all Report request than return result.
-  """
   def repot(%{"operation" => operation, "period" => "month", "month" => month}) do
   end
 

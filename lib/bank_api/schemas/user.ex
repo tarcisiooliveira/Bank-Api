@@ -1,11 +1,14 @@
 defmodule BankApi.Schemas.User do
-  use Ecto.Schema
-  import Ecto.Changeset
-  alias BankApi.Schemas.Account
-
   @moduledoc """
   Modulo de schema de User
   """
+
+  use Ecto.Schema
+
+  import Ecto.Changeset
+
+  alias BankApi.Schemas.Account
+
   # Schema com o mesmo name da tabela
   schema "users" do
     field :email, :string, null: false

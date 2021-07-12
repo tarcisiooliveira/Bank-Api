@@ -1,12 +1,13 @@
 defmodule BankApi.Multi.User do
+  @moduledoc """
+    This Module valid manipulations of Users and the persist in DataBase or RollBack if something is worng.
+  """
+
   alias BankApi.Schemas.User
   alias BankApi.Repo
   alias BankApi.Handle.Repo.User, as: HandleUserRepo
   alias Ecto.Changeset
 
-  @moduledoc """
-    This Module valid manipulations of Users and the persist in DataBase or RollBack if something is worng.
-  """
   def create(
         %{
           email: _email,

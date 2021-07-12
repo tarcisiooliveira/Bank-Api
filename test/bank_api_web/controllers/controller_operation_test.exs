@@ -1,12 +1,15 @@
 defmodule BankApiWeb.ControllerOperationTest do
-  use BankApiWeb.ConnCase, async: true
-  import BankApi.Factory
-  alias BankApi.Schemas.Operation
-  alias BankApiWeb.Auth.Guardian
-
   @moduledoc """
   Module test Operation Controller
   """
+
+  use BankApiWeb.ConnCase, async: true
+
+  import BankApi.Factory
+
+  alias BankApi.Schemas.Operation
+  alias BankApiWeb.Auth.Guardian
+
   setup do
     [conn: "Phoenix.ConnTest.build_conn()"]
 

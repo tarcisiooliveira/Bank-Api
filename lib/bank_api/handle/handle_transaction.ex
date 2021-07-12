@@ -1,10 +1,11 @@
 defmodule BankApi.Handle.HandleTransaction do
-  alias BankApi.Multi.Transaction, as: MultiTransaction
-  alias BankApi.Handle.Repo.Transaction, as: HandleTransactionRepo
-
   @moduledoc """
   Modulo to manipulate Transaction by Repo
   """
+
+  alias BankApi.Multi.Transaction, as: MultiTransaction
+  alias BankApi.Handle.Repo.Transaction, as: HandleTransactionRepo
+
   def get(%{id: _id} = params) do
     case HandleTransactionRepo.fetch_transaction(params) do
       nil -> {:error, "ID inválido."}

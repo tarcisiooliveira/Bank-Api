@@ -1,8 +1,10 @@
 defmodule BankApiWeb.Auth.Guardian do
   @moduledoc """
-  Biblioteca de Autenticação
+  Auth library
   """
+
   alias BankApi.{Repo, Schemas.Admin}
+
   use Guardian, otp_app: :bank_api
 
   def subject_for_token(admin, _claims) do

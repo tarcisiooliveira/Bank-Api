@@ -1,10 +1,12 @@
 defmodule BankApi.Schemas.Admin do
-  use Ecto.Schema
-  import Ecto.Changeset
-
   @moduledoc """
   Modulo de schema do Admin
   """
+
+  use Ecto.Schema
+
+  import Ecto.Changeset
+
 
   schema "admins" do
     field :email, :string

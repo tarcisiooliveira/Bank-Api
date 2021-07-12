@@ -1,12 +1,13 @@
 defmodule BankApi.Multi.AccountType do
+  @moduledoc """
+    This Module valid manipulations of Account Type and the persist in DataBase or RollBack if something is worng.
+  """
+
   alias BankApi.Schemas.AccountType
   alias BankApi.Repo
   alias BankApi.Handle.Repo.AccountType, as: HandleAccountTypeRepo
   alias Ecto.Changeset
 
-  @moduledoc """
-    This Module valid manipulations of Account Type and the persist in DataBase or RollBack if something is worng.
-  """
   def create(
         %{
           account_type_name: _name_account_type

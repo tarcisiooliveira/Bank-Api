@@ -1,11 +1,14 @@
 defmodule BankApi.Schemas.AccountType do
-  use Ecto.Schema
-  import Ecto.Changeset
-  alias BankApi.Schemas.Account
-
   @moduledoc """
   Modulo de schema de Account Type
   """
+
+  use Ecto.Schema
+
+  import Ecto.Changeset
+
+  alias BankApi.Schemas.Account
+
   schema "account_types" do
     field :account_type_name, :string, null: false
     has_many(:account, Account)

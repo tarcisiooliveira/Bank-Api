@@ -1,10 +1,12 @@
 defmodule BankApiWeb.Auth.ErrorHandler do
-  import Plug.Conn
-
   @moduledoc """
   Handle de error do Plug de acesso. Retorna erro customizado para o usuário,
   não chega a entrar na aplicação.
   """
+
+  import Plug.Conn
+
+
   @behaviour Guardian.Plug.ErrorHandler
 
   @impl Guardian.Plug.ErrorHandler

@@ -1,10 +1,11 @@
 defmodule BankApi.Handle.HandleAdmin do
-  alias BankApi.Multi.Admin, as: MultiAdmin
-  alias BankApi.Handle.Repo.Admin, as: HandleRepoAdmin
-
   @moduledoc """
   Modulo de manipulação de dados Admin
   """
+
+  alias BankApi.Multi.Admin, as: MultiAdmin
+  alias BankApi.Handle.Repo.Admin, as: HandleRepoAdmin
+
   def get(id) do
     id
     |> String.to_integer()

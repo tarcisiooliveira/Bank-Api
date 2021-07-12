@@ -1,11 +1,14 @@
 defmodule BankApi.Schemas.Operation do
-  use Ecto.Schema
-  import Ecto.Changeset
-  alias BankApi.Schemas.Transaction
-
   @moduledoc """
   Modulo de schema de Operation
   """
+
+  use Ecto.Schema
+
+  import Ecto.Changeset
+
+  alias BankApi.Schemas.Transaction
+
   schema "operations" do
     field :operation_name, :string, null: false
     has_many(:transaction, Transaction)

@@ -1,11 +1,14 @@
 defmodule BankApi.Schemas.Account do
-  use Ecto.Schema
-  alias BankApi.Schemas.{User, AccountType}
-  import Ecto.Changeset
-
   @moduledoc """
   Modulo de schema de Accounts
   """
+
+  use Ecto.Schema
+
+  alias BankApi.Schemas.{User, AccountType}
+
+  import Ecto.Changeset
+
   schema "accounts" do
     field(:balance_account, :integer, default: 100_000)
     belongs_to(:user, User)

@@ -1,10 +1,11 @@
 defmodule BankApi.Handle.HandleAccountType do
-  alias BankApi.{Repo, Schemas.AccountType}
-  alias BankApi.Multi.AccountType, as: MultiAccountType
-
   @moduledoc """
   Modulo de manipulação de dados Account Type através do Repo
   """
+
+  alias BankApi.{Repo, Schemas.AccountType}
+  alias BankApi.Multi.AccountType, as: MultiAccountType
+
   def get(%{id: id}) do
     case Repo.get_by(AccountType, id: id) do
       nil -> {:error, "Invalid ID or inexistent."}

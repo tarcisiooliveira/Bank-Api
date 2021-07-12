@@ -1,14 +1,17 @@
 defmodule BankApiWeb.ControllerTransactionTest do
-  use BankApiWeb.ConnCase, async: true
-  use ExUnit.Case
-  alias BankApi.Schemas.{Account, AccountType, User, Account, Operation, Transaction}
-  alias BankApi.Repo
-  import BankApi.Factory
-  alias BankApiWeb.Auth.Guardian
-
   @moduledoc """
   Module test Transaction Controller
   """
+
+  use BankApiWeb.ConnCase, async: true
+  use ExUnit.Case
+
+  import BankApi.Factory
+
+  alias BankApi.Schemas.{Account, AccountType, User, Account, Operation, Transaction}
+  alias BankApi.Repo
+  alias BankApiWeb.Auth.Guardian
+
   setup do
     [conn: "Phoenix.ConnTest.build_conn()"]
 

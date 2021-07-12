@@ -1,10 +1,11 @@
 defmodule BankApi.Handle.HandleAccount do
-  alias BankApi.Multi.Account, as: MultiAccount
-  alias BankApi.Handle.Repo.Account, as: HandleRepoAccount
-
   @moduledoc """
   Modulo de manipulação de dados Account
   """
+
+  alias BankApi.Multi.Account, as: MultiAccount
+  alias BankApi.Handle.Repo.Account, as: HandleRepoAccount
+
   def get(%{id: _id} = params) do
     case HandleRepoAccount.fetch_account(params) do
       nil -> {:error, "Invalid ID or inexistent."}

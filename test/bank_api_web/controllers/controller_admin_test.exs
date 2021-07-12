@@ -1,11 +1,14 @@
 defmodule BankApiWeb.ControllerAdminTest do
-  use BankApiWeb.ConnCase, async: true
-  alias BankApiWeb.Auth.Guardian
-  import BankApi.Factory
-
   @moduledoc """
   Module test Admin Controller
   """
+
+  use BankApiWeb.ConnCase, async: true
+
+  alias BankApiWeb.Auth.Guardian
+
+  import BankApi.Factory
+
 
   setup do
     [conn: "Phoenix.ConnTest.build_conn()"]

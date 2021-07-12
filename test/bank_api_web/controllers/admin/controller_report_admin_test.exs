@@ -1,12 +1,15 @@
 defmodule BankApiWeb.ControllerReportAdminTest do
-  use BankApiWeb.ConnCase, async: true
-  import BankApi.Factory
-  alias BankApiWeb.Auth.Guardian
-  alias BankApi.Schemas.{Operation, AccountType, Account, User}
-
   @moduledoc """
   Module test Report Controller
   """
+
+  use BankApiWeb.ConnCase, async: true
+
+  import BankApi.Factory
+
+  alias BankApiWeb.Auth.Guardian
+  alias BankApi.Schemas.{Operation, AccountType, Account, User}
+
   setup do
     [conn: "Phoenix.ConnTest.build_conn()"]
     admin = insert(:admin)

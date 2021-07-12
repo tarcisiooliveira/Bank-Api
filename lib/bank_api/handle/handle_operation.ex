@@ -1,11 +1,12 @@
 defmodule BankApi.Handle.HandleOperation do
+  @moduledoc """
+  Modulo de manipulação de dados Operação através do Repo
+  """
+
   alias BankApi.Schemas.Operation
   alias BankApi.Repo
   alias BankApi.Multi.Operation, as: MultiOperation
 
-  @moduledoc """
-  Modulo de manipulação de dados Operação através do Repo
-  """
   def get(%{id: id}) do
     case Repo.get_by(Operation, id: id) do
       nil -> {:error, "Invalid ID or inexistent."}

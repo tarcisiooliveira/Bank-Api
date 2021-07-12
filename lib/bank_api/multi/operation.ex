@@ -1,12 +1,13 @@
 defmodule BankApi.Multi.Operation do
+  @moduledoc """
+    This Module valid manipulations of Operations and the persist in DataBase or RollBack if something is worng.
+  """
+
   alias BankApi.Schemas.Operation
   alias BankApi.Repo
   alias BankApi.Handle.Repo.Operation, as: HandleOperationRepo
   alias Ecto.Changeset
 
-  @moduledoc """
-    This Module valid manipulations of Operations and the persist in DataBase or RollBack if something is worng.
-  """
   def create(
         %{
           operation_name: _name_operation
