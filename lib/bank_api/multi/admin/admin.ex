@@ -8,9 +8,8 @@ defmodule BankApi.Multi.Admin do
   alias BankApi.Handle.Repo.Admin, as: HandleRepoAdmin
   alias Ecto.Changeset
 
-
   def create(
-        %{email: _email, password: _password, password_confirmation: _password_confirmation} =
+        %{email: _email, password: _password, password_validation: _password_validation} =
           params
       ) do
     multi =
@@ -96,25 +95,25 @@ defmodule BankApi.Multi.Admin do
 
   defp changeset(params) do
     case Admin.changeset(params) do
-      %Changeset{errors: [password_confirmation: {"Differents password.", _}]} ->
-        {:error, :senhas_diferentes}
+      %Changeset{errors: [password_validation: {"Differents password.", _}]} ->
+        {:error, :differents_passwords}
 
       %Changeset{errors: [email: {"Email already in use.", _}]} ->
-        {:error, :email_ja_cadastrado}
+        {:error, :email_already_in_use}
 
       %Changeset{errors: [email: {"Invalid format email.", _}]} ->
-        {:error, :email_formato_invalido}
+        {:error, :email_format_invalid}
 
       %Changeset{
         errors: [password: {"Password must accountin between 4 and 10 characters.", _}]
       } ->
-        {:error, :password_entre_4_e_10_caracteres}
+        {:error, :password_must_contain_between_4_e_10_characters}
 
-      %Changeset{errors: [password_confirmation: {"can't be blank", [validation: :required]}]} ->
-        {:error, :confirmacao_senha_necessario}
+      %Changeset{errors: [password_validation: {"can't be blank", [validation: :required]}]} ->
+        {:error, :password_validation_necessery}
 
-      %Changeset{errors: [password_confirmation: _, password: _]} ->
-        {:error, :senhas_diferentes}
+      %Changeset{errors: [password_validation: _, password: _]} ->
+        {:error, :differents_passwords}
 
       changeset ->
         {:ok, changeset}

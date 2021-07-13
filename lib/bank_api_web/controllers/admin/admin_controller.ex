@@ -19,10 +19,10 @@ defmodule BankApiWeb.Admin.AdminController do
         %{
           "email" => email,
           "password" => password,
-          "password_confirmation" => password_confirmation
+          "password_validation" => password_validation
         }
       ) do
-    %{email: email, password: password, password_confirmation: password_confirmation}
+    %{email: email, password: password, password_validation: password_validation}
     |> HandleAdmin.create()
     |> handle_create_response(conn, "create.json")
   end
@@ -34,7 +34,7 @@ defmodule BankApiWeb.Admin.AdminController do
     {
       :error,
       "Invalid parameters.
-        Required: \"email\" => email, \"password\" => password, \"password_confirmation\" => password_confirmation"
+        Required: \"email\" => email, \"password\" => password, \"password_validation\" => password_validation"
     }
     |> handle_create_response(conn, "create.json")
   end

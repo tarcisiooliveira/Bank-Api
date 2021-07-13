@@ -6,7 +6,6 @@ defmodule BankApiWeb.Auth.ErrorHandler do
 
   import Plug.Conn
 
-
   @behaviour Guardian.Plug.ErrorHandler
 
   @impl Guardian.Plug.ErrorHandler

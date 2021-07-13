@@ -9,7 +9,6 @@ defmodule BankApiWeb.ControllerAdminTest do
 
   import BankApi.Factory
 
-
   setup do
     [conn: "Phoenix.ConnTest.build_conn()"]
     admin = insert(:admin)
@@ -27,7 +26,7 @@ defmodule BankApiWeb.ControllerAdminTest do
       params2 = %{
         "email" => "test2@admin.com",
         "password" => "123456",
-        "password_confirmation" => "123456"
+        "password_validation" => "123456"
       }
 
       response =
@@ -42,7 +41,7 @@ defmodule BankApiWeb.ControllerAdminTest do
              } = response
     end
 
-    test "error create admin - try create admin without required parameter password_confirmation",
+    test "error create admin - try create admin without required parameter password_validation",
          state do
       params2 = %{
         "email" => "test2@admin.com",
@@ -57,7 +56,7 @@ defmodule BankApiWeb.ControllerAdminTest do
 
       assert %{
                "error" =>
-                 "Invalid parameters.\n        Required: \"email\" => email, \"password\" => password, \"password_confirmation\" => password_confirmation"
+                 "Invalid parameters.\n        Required: \"email\" => email, \"password\" => password, \"password_validation\" => password_validation"
              } = response
     end
 
@@ -65,7 +64,7 @@ defmodule BankApiWeb.ControllerAdminTest do
       params2 = %{
         "email" => "test2@admin.com",
         "password" => "123456",
-        "password_confirmation" => "123456"
+        "password_validation" => "123456"
       }
 
       response =

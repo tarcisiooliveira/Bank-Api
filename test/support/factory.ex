@@ -19,7 +19,7 @@ defmodule BankApi.Factory do
     %Admin{
       email: "tarcisio@admin.com",
       password: "123456",
-      password_confirmation: "123456",
+      password_validation: "123456",
       password_hash: Bcrypt.hash_pwd_salt("123456")
     }
   end

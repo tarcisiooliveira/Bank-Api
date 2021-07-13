@@ -16,7 +16,7 @@ defmodule BankApiWeb.ControllerUserTest do
     params = %{
       "email" => "test@admin.com",
       "password" => "123456",
-      "password_confirmation" => "123456"
+      "password_validation" => "123456"
     }
 
     {:ok, admin} =

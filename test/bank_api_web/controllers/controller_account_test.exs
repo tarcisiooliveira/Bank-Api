@@ -10,7 +10,6 @@ defmodule BankApiWeb.ControllerAccountTest do
 
   import BankApi.Factory
 
-
   setup do
     [conn: "Phoenix.ConnTest.build_conn()"]
 

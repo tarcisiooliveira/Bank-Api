@@ -25,12 +25,13 @@ defmodule BankApiWeb.TransactionController do
         }
       ) do
     %{
-      from_account_id: String.to_integer(from_account_id),
+      from_account_id: from_account_id,
       to_account_id: to_account_id,
       operation_id: operation_id,
       value: value
     }
     |> HandleTransaction.create()
+    |> IO.inspect()
     |> handle_response(conn, "create.json", :created)
   end
 
@@ -49,6 +50,14 @@ defmodule BankApiWeb.TransactionController do
     }
     |> HandleTransaction.create()
     |> handle_response(conn, "create.json", :created)
+  end
+
+  defp handle_response({:error, :balance_not_enough}, conn, _view, status) do
+    IO.inspect("Entrou Correto")
+    IO.inspect("balance_not_enough")
+    conn
+    |> put_status(status)
+    |> render("error.json", error: :balance_not_enough)
   end
 
   defp handle_response(transaction, conn, view, status) do

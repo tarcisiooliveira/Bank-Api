@@ -3,7 +3,8 @@ defmodule BankApiWeb.Auth.Guardian do
   Auth library
   """
 
-  alias BankApi.{Repo, Schemas.Admin}
+  alias BankApi.Repo
+  alias BankApi.Schemas.{Admin, User}
 
   use Guardian, otp_app: :bank_api
 
@@ -25,16 +26,30 @@ defmodule BankApiWeb.Auth.Guardian do
     # {:ok, resource}
   end
 
-  def authenticate(%{"email" => email, "password" => password}) do
+  def authenticate(:admin, %{"email" => email, "password" => password}) do
     case Repo.get_by(Admin, email: email) do
       nil -> {:error, "Admin theres no exists."}
       admin -> validate_password(admin, password)
     end
   end
 
+  def authenticate(:user, %{"email" => email, "password" => password}) do
+    case Repo.get_by(User, email: email) do
+      nil -> {:error, "Theres no exist this User."}
+      user -> validate_password(user, password)
+    end
+  end
+
   def validate_password(%Admin{password_hash: hash} = admin, password) do
     case Bcrypt.verify_pass(password, hash) do
       true -> create_token(admin)
+      false -> {:error, :unauthorized}
+    end
+  end
+
+  def validate_password(%User{password_hash: hash} = user, password) do
+    case Bcrypt.verify_pass(password, hash) do
+      true -> create_token(user)
       false -> {:error, :unauthorized}
     end
   end

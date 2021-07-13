@@ -181,7 +181,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> get(Routes.report_path(state[:conn], :report, params))
+        |> post(Routes.report_path(state[:conn], :report, params))
         |> json_response(:created)
 
       assert %{
@@ -196,7 +196,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> get(Routes.report_path(state[:conn], :report, params))
+        |> post(Routes.report_path(state[:conn], :report, params))
         |> json_response(:created)
 
       assert %{
@@ -206,13 +206,28 @@ defmodule BankApiWeb.ControllerReportAdminTest do
              } = result
     end
 
+    test "result sum value in all opertions in determineted day", state do
+      params = %{"period" => "day", "day" => "2021-06-14"}
+
+      result =
+        state[:conn]
+        |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+        |> post(Routes.report_path(state[:conn], :report, params))
+        |> json_response(:created)
+
+      assert %{
+               "message" => "Total in determineted day by all operations.",
+               "result" => 3_100
+             } = result
+    end
+
     test "return result of all value transferred in curent day by all operation", state do
       params = %{"period" => "today"}
 
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> get(Routes.report_path(state[:conn], :report, params))
+        |> post(Routes.report_path(state[:conn], :report, params))
         |> json_response(:created)
 
       assert %{
@@ -227,7 +242,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> get(Routes.report_path(state[:conn], :report, params))
+        |> post(Routes.report_path(state[:conn], :report, params))
         |> json_response(:created)
 
       assert %{
@@ -238,12 +253,12 @@ defmodule BankApiWeb.ControllerReportAdminTest do
     end
 
     test "return result of all value transferred in curent year by all operation", state do
-      params = %{"period" => "year", "year" => 2021}
+      params = %{"period" => "year"}
 
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> get(Routes.report_path(state[:conn], :report, params))
+        |> post(Routes.report_path(state[:conn], :report, params))
         |> json_response(:created)
 
       assert %{
@@ -258,7 +273,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> get(Routes.report_path(state[:conn], :report, params))
+        |> post(Routes.report_path(state[:conn], :report, params))
         |> json_response(:created)
 
       assert %{
@@ -274,7 +289,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> get(Routes.report_path(state[:conn], :report, params))
+        |> post(Routes.report_path(state[:conn], :report, params))
         |> json_response(:created)
 
       assert %{
@@ -291,7 +306,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> get(Routes.report_path(state[:conn], :payment, params))
+        |> post(Routes.report_path(state[:conn], :payment, params))
         |> json_response(:created)
 
       assert %{
@@ -307,7 +322,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> get(Routes.report_path(state[:conn], :payment, params))
+        |> post(Routes.report_path(state[:conn], :payment, params))
         |> json_response(:created)
 
       assert %{
@@ -321,7 +336,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       resultado2 =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> get(Routes.report_path(state[:conn], :payment, params2))
+        |> post(Routes.report_path(state[:conn], :payment, params2))
         |> json_response(:created)
 
       assert %{
@@ -342,7 +357,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> get(Routes.report_path(state[:conn], :payment, params))
+        |> post(Routes.report_path(state[:conn], :payment, params))
         |> json_response(:created)
 
       assert %{
@@ -364,7 +379,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> get(Routes.report_path(state[:conn], :payment, params))
+        |> post(Routes.report_path(state[:conn], :payment, params))
         |> json_response(:created)
 
       assert %{
@@ -385,7 +400,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> get(Routes.report_path(state[:conn], :payment, params))
+        |> post(Routes.report_path(state[:conn], :payment, params))
         |> json_response(:bad_request)
 
       assert %{
@@ -400,7 +415,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       resultado2 =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> get(Routes.report_path(state[:conn], :payment, params2))
+        |> post(Routes.report_path(state[:conn], :payment, params2))
         |> json_response(:bad_request)
 
       assert %{
@@ -418,7 +433,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> get(Routes.report_path(state[:conn], :payment, params))
+        |> post(Routes.report_path(state[:conn], :payment, params))
         |> json_response(:created)
 
       assert %{
@@ -436,7 +451,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> get(Routes.report_path(state[:conn], :transfer, params))
+        |> post(Routes.report_path(state[:conn], :transfer, params))
         |> json_response(:created)
 
       assert %{
@@ -452,7 +467,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> get(Routes.report_path(state[:conn], :transfer, params))
+        |> post(Routes.report_path(state[:conn], :transfer, params))
         |> json_response(:created)
 
       assert %{
@@ -466,7 +481,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       resultado2 =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> get(Routes.report_path(state[:conn], :transfer, params2))
+        |> post(Routes.report_path(state[:conn], :transfer, params2))
         |> json_response(:created)
 
       assert %{
@@ -487,7 +502,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> get(Routes.report_path(state[:conn], :transfer, params))
+        |> post(Routes.report_path(state[:conn], :transfer, params))
         |> json_response(:created)
 
       assert %{
@@ -509,7 +524,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> get(Routes.report_path(state[:conn], :transfer, params))
+        |> post(Routes.report_path(state[:conn], :transfer, params))
         |> json_response(:created)
 
       assert %{
@@ -530,7 +545,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> get(Routes.report_path(state[:conn], :transfer, params))
+        |> post(Routes.report_path(state[:conn], :transfer, params))
         |> json_response(:bad_request)
 
       assert %{
@@ -545,7 +560,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       resultado2 =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> get(Routes.report_path(state[:conn], :transfer, params2))
+        |> post(Routes.report_path(state[:conn], :transfer, params2))
         |> json_response(:bad_request)
 
       assert %{
@@ -563,7 +578,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> get(Routes.report_path(state[:conn], :transfer, params))
+        |> post(Routes.report_path(state[:conn], :transfer, params))
         |> json_response(:created)
 
       assert %{
@@ -581,7 +596,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> get(Routes.report_path(state[:conn], :withdraw, params))
+        |> post(Routes.report_path(state[:conn], :withdraw, params))
         |> json_response(:created)
 
       assert %{
@@ -597,7 +612,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> get(Routes.report_path(state[:conn], :withdraw, params))
+        |> post(Routes.report_path(state[:conn], :withdraw, params))
         |> json_response(:created)
 
       assert %{
@@ -611,7 +626,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       resultado2 =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> get(Routes.report_path(state[:conn], :withdraw, params2))
+        |> post(Routes.report_path(state[:conn], :withdraw, params2))
         |> json_response(:created)
 
       assert %{
@@ -632,7 +647,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> get(Routes.report_path(state[:conn], :withdraw, params))
+        |> post(Routes.report_path(state[:conn], :withdraw, params))
         |> json_response(:created)
 
       assert %{
@@ -652,7 +667,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> get(Routes.report_path(state[:conn], :withdraw, params))
+        |> post(Routes.report_path(state[:conn], :withdraw, params))
         |> json_response(:bad_request)
 
       assert %{
@@ -667,7 +682,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       resultado2 =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> get(Routes.report_path(state[:conn], :withdraw, params2))
+        |> post(Routes.report_path(state[:conn], :withdraw, params2))
         |> json_response(:bad_request)
 
       assert %{
@@ -685,7 +700,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> get(Routes.report_path(state[:conn], :withdraw, params))
+        |> post(Routes.report_path(state[:conn], :withdraw, params))
         |> json_response(:created)
 
       assert %{

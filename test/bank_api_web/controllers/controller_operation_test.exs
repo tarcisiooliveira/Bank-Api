@@ -23,9 +23,9 @@ defmodule BankApiWeb.ControllerOperationTest do
      }}
   end
 
-  test "socesso insert - insert Operation, return values inserted",
+  test "sucess insert - insert Operation, return values inserted",
        state do
-    params = %{"operation_name" => "Savings Account"}
+    params = %{"operation_name" => "Deposit"}
 
     response =
       state[:conn]
@@ -34,7 +34,7 @@ defmodule BankApiWeb.ControllerOperationTest do
       |> json_response(:created)
 
     assert %{
-             "Operação" => %{"operation_name" => "Savings Account"},
+             "Operação" => %{"operation_name" => "Deposit"},
              "message" => "Operation Recorded"
            } = response
   end

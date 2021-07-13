@@ -7,11 +7,10 @@ defmodule BankApi.Schemas.Admin do
 
   import Ecto.Changeset
 
-
   schema "admins" do
     field :email, :string
     field :password, :string, virtual: true
-    field :password_confirmation, :string, virtual: true
+    field :password_validation, :string, virtual: true
     field :password_hash, :string
 
     timestamps()
@@ -19,11 +18,11 @@ defmodule BankApi.Schemas.Admin do
 
   def changeset(params) do
     %__MODULE__{}
-    |> cast(params, [:email, :password, :password_confirmation])
-    |> validate_required([:email, :password, :password_confirmation])
+    |> cast(params, [:email, :password, :password_validation])
+    |> validate_required([:email, :password, :password_validation])
     |> validate_format(:email, ~r/@/, message: "Invalid format email.")
     |> validate_length(:password,
-      min: 4,
+      min: 6,
       max: 10,
       message: "Password must accountin between 4 and 10 characters."
     )

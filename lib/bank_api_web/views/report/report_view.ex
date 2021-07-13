@@ -32,4 +32,9 @@ defmodule BankApiWeb.Report.ReportView do
       message: error
     }
   end
+  def render("report.json", %{error: error}) do
+    %{
+      message: error
+    }
+  end
 end

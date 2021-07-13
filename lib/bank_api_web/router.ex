@@ -13,24 +13,31 @@ defmodule BankApiWeb.Router do
     pipe_through(:api)
   end
 
-  scope "/api", BankApiWeb do
+  scope "/api/admin", BankApiWeb do
     pipe_through(:api)
-    post "/sign_in", SignController, :sign_in
-    post "/sign_up", SignController, :sign_up
+    post "/sign_in", SignController, :sign_in_admin
+    post "/sign_up", SignController, :sign_up_admin
+  end
+
+  scope "/api/user", BankApiWeb do
+    pipe_through(:api)
+    post "/sign_in", SignController, :sign_in_user
   end
 
   scope "/api/report", BankApiWeb do
     pipe_through([:api, :auth])
-    get "/payment", Report.ReportController, :payment
-    get "/withdraw", Report.ReportController, :withdraw
-    get "/transfer", Report.ReportController, :transfer
-    get "/report", Report.ReportController, :report
+    post "/report", Report.ReportController, :report
+    post "/payment", Report.ReportController, :payment
+    post "/withdraw", Report.ReportController, :withdraw
+    post "/transfer", Report.ReportController, :transfer
   end
 
   scope "/api", BankApiWeb do
     pipe_through([:api, :auth])
 
-    resources("/admin", Admin.AdminController, only: [:new, :show, :delete, :update, :index, :create])
+    resources("/admin", Admin.AdminController,
+      only: [:new, :show, :delete, :update, :index, :create]
+    )
 
     resources("/user", UserController, only: [:new, :show, :delete, :update, :index, :create])
 

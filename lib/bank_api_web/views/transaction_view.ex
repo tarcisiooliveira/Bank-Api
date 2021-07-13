@@ -161,6 +161,11 @@ defmodule BankApiWeb.TransactionView do
     %{error: "Invalid ID or inexistent."}
   end
 
+  def render("error.json", %{error: :balance_not_enough}) do
+    # IO.inspect(error)
+    %{error: "Balance not enough."}
+  end
+
   def render("error.json", %{error: error}) do
     %{error: error}
   end

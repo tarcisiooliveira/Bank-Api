@@ -126,6 +126,63 @@ defmodule BankApi.Handle.Report.HandleReportAdmin do
     end
   end
 
+  def report(%{"period" => "month"}) do
+    date_time = DateTime.utc_now()
+
+    start_day =
+      Calendar.ISO.naive_datetime_to_string(
+        date_time.year,
+        date_time.month,
+        1,
+        0,
+        0,
+        0,
+        {0, 0}
+      )
+
+    end_day =
+      Calendar.ISO.naive_datetime_to_string(
+        date_time.year,
+        date_time.month,
+        Calendar.ISO.days_in_month(date_time.year, date_time.month),
+        23,
+        59,
+        59,
+        {99999, 6}
+      )
+
+    query =
+      from t in Transaction,
+        where:
+          t.inserted_at >= ^start_day and
+            t.inserted_at <= ^end_day,
+        select: t.value
+
+    quantity =
+      Repo.all(query)
+      |> Enum.count()
+
+    case quantity do
+      0 ->
+        return = %{
+          message: "Total in current month by all operations.",
+          result: 0
+        }
+
+        {:ok, return}
+
+      _ ->
+        result = Repo.aggregate(query, :sum, :value)
+
+        return = %{
+          message: "Total in current month by all operations.",
+          result: result
+        }
+
+        {:ok, return}
+    end
+  end
+
   def report(%{"operation" => operation, "period" => "year", "year" => year}) do
     start_day =
       Calendar.ISO.naive_datetime_to_string(
@@ -186,10 +243,12 @@ defmodule BankApi.Handle.Report.HandleReportAdmin do
     end
   end
 
-  def report(%{"period" => "year", "year" => year}) do
+  def report(%{"period" => "year"}) do
+    date_time = DateTime.utc_now()
+
     start_day =
       Calendar.ISO.naive_datetime_to_string(
-        String.to_integer(year),
+        date_time.year,
         1,
         1,
         0,
@@ -200,7 +259,7 @@ defmodule BankApi.Handle.Report.HandleReportAdmin do
 
     end_day =
       Calendar.ISO.naive_datetime_to_string(
-        String.to_integer(year),
+        date_time.year,
         12,
         31,
         23,
@@ -238,6 +297,76 @@ defmodule BankApi.Handle.Report.HandleReportAdmin do
         }
 
         {:ok, return}
+    end
+  end
+
+  def report(%{"operation" => operation, "period" => "day", "day" => day}) do
+    date = day |> String.replace("-", "")
+    year = date |> String.slice(0..3) |> String.to_integer()
+    month = date |> String.slice(4..5) |> String.to_integer()
+    day = date |> String.slice(6..7) |> String.to_integer()
+
+    start_day =
+      Calendar.ISO.naive_datetime_to_string(
+        year,
+        month,
+        day,
+        0,
+        0,
+        0,
+        {0, 0}
+      )
+
+    end_day =
+      Calendar.ISO.naive_datetime_to_string(
+        year,
+        month,
+        day,
+        23,
+        59,
+        59,
+        {99999, 6}
+      )
+
+    validate_dates(start_day, end_day)
+    |> case do
+      true ->
+        query =
+          from t in Transaction,
+            join: o in Operation,
+            on: o.id == t.operation_id,
+            where:
+              t.inserted_at >= ^start_day and
+                t.inserted_at <= ^end_day and
+                ^operation == o.operation_name,
+            select: t.value
+
+        quantity =
+          Repo.all(query)
+          |> Enum.count()
+
+        case quantity do
+          0 ->
+            return = %{
+              message: "Total in current month by all operations.",
+              result: 0
+            }
+
+            {:ok, return}
+
+          _ ->
+            result = Repo.aggregate(query, :sum, :value)
+
+            return = %{
+              message: "Total in current month by all operations.",
+              result: result
+            }
+
+            {:ok, return}
+        end
+
+      _ ->
+        {:error, "invalid_date"}
     end
   end
 
@@ -301,7 +430,74 @@ defmodule BankApi.Handle.Report.HandleReportAdmin do
         {:ok, return}
     end
   end
-  def report(%{ "period" => "today"}) do
+
+  def report(%{"period" => "day", "day" => day}) do
+    date = day |> String.replace("-", "")
+    year = date |> String.slice(0..3) |> String.to_integer()
+    month = date |> String.slice(4..5) |> String.to_integer()
+    day = date |> String.slice(6..7) |> String.to_integer()
+
+    start_day =
+      Calendar.ISO.naive_datetime_to_string(
+        year,
+        month,
+        day,
+        0,
+        0,
+        0,
+        {0, 0}
+      )
+
+    end_day =
+      Calendar.ISO.naive_datetime_to_string(
+        year,
+        month,
+        day,
+        23,
+        59,
+        59,
+        {99999, 6}
+      )
+    validate_dates(start_day, end_day)
+    |> case do
+      true ->
+        query =
+          from t in Transaction,
+            where:
+              t.inserted_at >= ^start_day and
+                t.inserted_at <= ^end_day,
+            select: t.value
+
+        quantity =
+          Repo.all(query)
+          |> Enum.count()
+
+        case quantity do
+          0 ->
+            return = %{
+              message: "Total in determineted day by all operations.",
+              result: 0
+            }
+
+            {:ok, return}
+
+          _ ->
+            result = Repo.aggregate(query, :sum, :value)
+
+            return = %{
+              message: "Total in determineted day by all operations.",
+              result: result
+            }
+
+            {:ok, return}
+        end
+
+      _ ->
+        {:error, "invalid_date"}
+    end
+  end
+
+  def report(%{"period" => "today"}) do
     date_time = DateTime.utc_now()
 
     start_day =
@@ -432,7 +628,6 @@ defmodule BankApi.Handle.Report.HandleReportAdmin do
           "operation" => operation
         } = _params
       ) do
-
     case valid_accounts?(from_account_id, to_account_id) &&
            validate_dates(initial_date, final_date) do
       true ->
