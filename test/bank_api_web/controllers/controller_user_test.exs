@@ -43,7 +43,7 @@ defmodule BankApiWeb.ControllerUserTest do
         |> json_response(:ok)
 
       assert %{
-               "mensagem" => "Show",
+               "message" => "Show",
                "user" => %{"email" => _email, "id" => _id, "name" => "Tarcisio"}
              } = response
     end
@@ -85,7 +85,7 @@ defmodule BankApiWeb.ControllerUserTest do
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Usuário criado com sucesso!",
+               "message" => "User created sucessfuly!",
                "user" => %{
                  "email" => "tarcisiooliveira@protonmail.com",
                  "id" => _id,
@@ -143,7 +143,7 @@ defmodule BankApiWeb.ControllerUserTest do
         |> json_response(:ok)
 
       assert %{
-               "mensagem" => "User updated successfuly!",
+               "message" => "User updated successfuly!",
                "user" => %{
                  "email" => "tarcisiooliveira@protonmail.com",
                  "id" => _id,
@@ -194,7 +194,7 @@ defmodule BankApiWeb.ControllerUserTest do
         |> json_response(:ok)
 
       assert %{
-               "mensagem" => "User updated successfuly!",
+               "message" => "User updated successfuly!",
                "user" => %{
                  "email" => "tarcisiooliveira@protonmail.com",
                  "id" => ^id,

@@ -38,11 +38,11 @@ defmodule BankApiWeb.ControllerAdminTest do
 
       assert %{
                "email" => "test2@admin.com",
-               "mensagem" => "Admin recorded."
+               "message" => "Admin recorded."
              } = response
     end
 
-    test "error create admin - try create admin without required parameter assword_confirmation",
+    test "error create admin - try create admin without required parameter password_confirmation",
          state do
       params2 = %{
         "email" => "test2@admin.com",
@@ -84,7 +84,7 @@ defmodule BankApiWeb.ControllerAdminTest do
         |> delete(Routes.admin_path(state[:conn], :delete, state[:valores].admin.id))
         |> json_response(:ok)
 
-      assert %{"email" => "tarcisio@admin.com", "mensagem" => "Admin deleted."} = response
+      assert %{"email" => "tarcisio@admin.com", "message" => "Admin deleted."} = response
     end
 
     test "error delete - try remove inexistent admin", state do
@@ -128,7 +128,7 @@ defmodule BankApiWeb.ControllerAdminTest do
         |> patch(Routes.admin_path(state[:conn], :update, state[:valores].admin.id, params))
         |> json_response(:ok)
 
-      assert %{"mensagem" => "Admin updated.", "email" => "updated-email@email.com"} = response
+      assert %{"message" => "Admin updated.", "email" => "updated-email@email.com"} = response
     end
 
     test "error update - try update admin without access token", state do

@@ -8,7 +8,7 @@ defmodule BankApi.Handle.HandleTransaction do
 
   def get(%{id: _id} = params) do
     case HandleTransactionRepo.fetch_transaction(params) do
-      nil -> {:error, "ID inválido."}
+      nil -> {:error, "nvalid ID or inexistent."}
       transaction -> {:ok, transaction}
     end
   end

@@ -1,4 +1,4 @@
-defmodule BankApiWeb.AdminController do
+defmodule BankApiWeb.Admin.AdminController do
   use BankApiWeb, :controller
   alias BankApi.Handle.HandleAdmin
 
@@ -69,10 +69,10 @@ defmodule BankApiWeb.AdminController do
     |> render("delete.json", admin: admin)
   end
 
-  defp handle_delete({:error, mensagem}, conn) do
+  defp handle_delete({:error, message}, conn) do
     conn
     |> put_status(:not_found)
-    |> render("delete.json", error: mensagem)
+    |> render("delete.json", error: message)
   end
 
   defp handle_response({:ok, admin}, conn, view, status) do

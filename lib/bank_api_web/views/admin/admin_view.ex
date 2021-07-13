@@ -1,16 +1,16 @@
-defmodule BankApiWeb.AdminView do
+defmodule BankApiWeb.Admin.AdminView do
   use BankApiWeb, :view
   alias BankApi.Schemas.Admin
   alias Ecto.Changeset
 
   def render("show.json", %{admin: %Admin{email: email}}) do
     %{
-      mensagem: email
+      message: email
     }
   end
 
   def render("sing_in.json", _params) do
-    %{mensagem: "mensagem"}
+    %{message: "message"}
   end
 
   def render(
@@ -20,14 +20,14 @@ defmodule BankApiWeb.AdminView do
         }
       ) do
     %{
-      mensagem: "Admin recorded.",
+      message: "Admin recorded.",
       email: email
     }
   end
 
   def render("create.json", %{error: error}) do
     %{
-      mensagem: "Admin not recorded.",
+      message: "Admin not recorded.",
       error: error
     }
   end
@@ -43,7 +43,7 @@ defmodule BankApiWeb.AdminView do
         }
       ) do
     %{
-      mensagem: "Admin updated.",
+      message: "Admin updated.",
       email: email
     }
   end
@@ -59,7 +59,7 @@ defmodule BankApiWeb.AdminView do
         }
       ) do
     %{
-      mensagem: "Admin deleted.",
+      message: "Admin deleted.",
       email: email
     }
   end

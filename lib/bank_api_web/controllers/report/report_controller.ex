@@ -1,4 +1,4 @@
-defmodule BankApiWeb.Admin.ReportController do
+defmodule BankApiWeb.Report.ReportController do
   use BankApiWeb, :controller
   alias BankApi.Handle.Report.HandleReportAdmin
 
@@ -16,6 +16,12 @@ defmodule BankApiWeb.Admin.ReportController do
 
   def payment(conn, params) do
     Map.merge(params, %{"operation" => "Payment"})
+    |> HandleReportAdmin.report()
+    |> handle_response(conn, "report.json", :created)
+  end
+
+  def report(conn, params) do
+    params
     |> HandleReportAdmin.report()
     |> handle_response(conn, "report.json", :created)
   end

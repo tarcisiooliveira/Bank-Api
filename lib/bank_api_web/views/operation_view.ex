@@ -5,7 +5,7 @@ defmodule BankApiWeb.OperationView do
 
   def render("show.json", %{operation: %Operation{operation_name: operation_name}}) do
     %{
-      mensagem: "Operation Type found.",
+      message: "Operation Type found.",
       operation: operation_name
     }
   end
@@ -14,14 +14,14 @@ defmodule BankApiWeb.OperationView do
         operation: %{create_transaction: %Operation{operation_name: operation_name}}
       }) do
     %{
-      mensagem: "Operation Recorded",
+      message: "Operation Recorded",
       Operação: %{operation_name: operation_name}
     }
   end
 
   def render("create.json", %{operation: %Operation{operation_name: operation_name}}) do
     %{
-      mensagem: "Operation Recorded",
+      message: "Operation Recorded",
       Operação: %{operation_name: operation_name}
     }
   end
@@ -30,7 +30,7 @@ defmodule BankApiWeb.OperationView do
         operation: %{update_operation: %Operation{operation_name: operation_name}}
       }) do
     %{
-      mensagem: "Operation Updated",
+      message: "Operation Updated",
       Operação: %{operation_name: operation_name}
     }
   end
@@ -39,21 +39,21 @@ defmodule BankApiWeb.OperationView do
         operation: %{fetch_operation: %Operation{operation_name: operation_name}}
       }) do
     %{
-      mensagem: "Operation #{operation_name} deleted successfully."
+      message: "Operation #{operation_name} deleted successfully."
     }
   end
 
   def render("delete.json", %{error: :operation_not_exists}) do
     %{
       Result: "Non-existent operation.",
-      Mensagem: "Invalid ID or inexistent."
+      message: "Invalid ID or inexistent."
     }
   end
 
   def render("delete.json", %{error: error}) do
     %{
       Result: "Non-existent operation.",
-      Mensagem: error
+      message: error
     }
   end
 

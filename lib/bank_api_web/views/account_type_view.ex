@@ -4,7 +4,7 @@ defmodule BankApiWeb.AccountTypeView do
 
   def render("show.json", %{account_type: %AccountType{account_type_name: account_type_name}}) do
     %{
-      mensagem: "Account Type found.",
+      message: "Account Type found.",
       "Account Type": %{account_type_name: account_type_name}
     }
   end
@@ -19,7 +19,7 @@ defmodule BankApiWeb.AccountTypeView do
         account_type: %{create_account_type: %AccountType{account_type_name: account_type_name}}
       }) do
     %{
-      mensagem: "Account Type created successfully!",
+      message: "Account Type created successfully!",
       "Account Type": %{account_type_name: account_type_name}
     }
   end
@@ -28,14 +28,14 @@ defmodule BankApiWeb.AccountTypeView do
         account_type: %{update_account_type: %AccountType{account_type_name: account_type_name}}
       }) do
     %{
-      mensagem: "Account Type updated successfully!",
+      message: "Account Type updated successfully!",
       "Account Type": %{account_type_name: account_type_name}
     }
   end
 
   def render("update.json", %{account_type: %AccountType{account_type_name: account_type_name}}) do
     %{
-      mensagem: "Account Type updated successfully!",
+      message: "Account Type updated successfully!",
       "Account Type": %{account_type_name: account_type_name}
     }
   end
@@ -44,14 +44,14 @@ defmodule BankApiWeb.AccountTypeView do
         account_type: %{delete_operation: %AccountType{account_type_name: account_type_name}}
       }) do
     %{
-      mensagem: "Account Type deleted successfully!",
+      message: "Account Type deleted successfully!",
       Name: account_type_name
     }
   end
 
   def render("delete.json", %{account_type: %AccountType{account_type_name: account_type_name}}) do
     %{
-      mensagem: "Account Type deleted successfully!",
+      message: "Account Type deleted successfully!",
       Name: account_type_name
     }
   end

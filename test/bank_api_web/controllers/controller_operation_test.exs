@@ -35,7 +35,7 @@ defmodule BankApiWeb.ControllerOperationTest do
 
     assert %{
              "Operação" => %{"operation_name" => "Savings Account"},
-             "mensagem" => "Operation Recorded"
+             "message" => "Operation Recorded"
            } = response
   end
 
@@ -54,7 +54,7 @@ defmodule BankApiWeb.ControllerOperationTest do
            } = response
   end
 
-  test "sucesso delete - return success message when Operation is deleted.",
+  test "sucess delete - return success message when Operation is deleted.",
        state do
     %Operation{id: id} = insert(:operation)
 
@@ -64,7 +64,7 @@ defmodule BankApiWeb.ControllerOperationTest do
       |> delete(Routes.operation_path(state[:conn], :delete, id))
       |> json_response(:ok)
 
-    assert %{"mensagem" => "Operation Transfer deleted successfully."} = response
+    assert %{"message" => "Operation Transfer deleted successfully."} = response
   end
 
   test "error delete - return error message when try remove inexistente Operation",
@@ -77,11 +77,11 @@ defmodule BankApiWeb.ControllerOperationTest do
       |> delete(Routes.operation_path(state[:conn], :delete, 901_000_000))
       |> json_response(404)
 
-    assert %{"Mensagem" => "Invalid ID or inexistent.", "Result" => "Non-existent operation."} =
+    assert %{"message" => "Invalid ID or inexistent.", "Result" => "Non-existent operation."} =
              response
   end
 
-  test "sucesso update - Update Opertion", state do
+  test "sucess update - Update Opertion", state do
     %Operation{id: id} = insert(:operation)
 
     response =
@@ -94,7 +94,7 @@ defmodule BankApiWeb.ControllerOperationTest do
 
     assert %{
              "Operação" => %{"operation_name" => "New Transfer"},
-             "mensagem" => "Operation Updated"
+             "message" => "Operation Updated"
            } = response
   end
 end

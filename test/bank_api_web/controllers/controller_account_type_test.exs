@@ -33,7 +33,7 @@ defmodule BankApiWeb.AccountTypeTest do
       |> json_response(:created)
 
     assert %{
-             "mensagem" => "Account Type created successfully!",
+             "message" => "Account Type created successfully!",
              "Account Type" => %{"account_type_name" => "Corrente23"}
            } = response
   end
@@ -52,7 +52,7 @@ defmodule BankApiWeb.AccountTypeTest do
       |> json_response(:ok)
 
     assert %{
-             "mensagem" => "Account Type updated successfully!",
+             "message" => "Account Type updated successfully!",
              "Account Type" => %{"account_type_name" => "Savings Account"}
            } = response
   end
@@ -68,7 +68,7 @@ defmodule BankApiWeb.AccountTypeTest do
 
     assert %{
              "Name" => "Savings Account",
-             "mensagem" => "Account Type deleted successfully!"
+             "message" => "Account Type deleted successfully!"
            } = response
   end
 
@@ -94,7 +94,7 @@ defmodule BankApiWeb.AccountTypeTest do
       |> json_response(:ok)
 
     assert %{
-             "mensagem" => "Account Type found.",
+             "message" => "Account Type found.",
              "Account Type" => %{"account_type_name" => "Savings Account"}
            } = response
   end

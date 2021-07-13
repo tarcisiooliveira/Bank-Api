@@ -55,10 +55,10 @@ defmodule BankApiWeb.UserController do
     |> render("delete.json", user: user)
   end
 
-  defp handle_delete({:error, mensagem}, conn) do
+  defp handle_delete({:error, message}, conn) do
     conn
     |> put_status(:not_found)
-    |> render("delete.json", error: mensagem)
+    |> render("delete.json", error: message)
   end
 
   defp handle_response({:ok, user}, conn, view, status) do

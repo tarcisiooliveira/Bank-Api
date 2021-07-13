@@ -3,7 +3,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
   Module test Report Controller
   """
 
-  use BankApiWeb.ConnCase, async: true
+  use BankApiWeb.ConnCase, async: false
 
   import BankApi.Factory
 
@@ -40,6 +40,13 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       from_account_id: account_id_1,
       operation_id: operation_id_withdraw,
       value: 2_000,
+      inserted_at: NaiveDateTime.utc_now()
+    )
+
+    insert(:withdraw_transaction,
+      from_account_id: account_id_1,
+      operation_id: operation_id_withdraw,
+      value: 2_000,
       inserted_at: ~N[2021-06-14 16:50:03]
     )
 
@@ -70,7 +77,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       from_account_id: account_id_1,
       to_account_id: account_id_2,
       operation_id: operation_id_transfer,
-      value: 4250,
+      value: 4_250,
       inserted_at: ~N[2021-06-15 02:17:10]
     )
 
@@ -167,19 +174,129 @@ defmodule BankApiWeb.ControllerReportAdminTest do
      }}
   end
 
-  describe "PAGAMENTO" do
-    test "assert payments - alls os valores pagos durante all o período", state do
+  describe "all" do
+    test "return result of all value transferred", state do
       params = %{"period" => "all"}
 
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.report_path(state[:conn], :payment, params))
+        |> get(Routes.report_path(state[:conn], :report, params))
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total for the entire period.",
-               "result" => 2100,
+               "message" => "Total moved for the entire period.",
+               "result" => 26_700
+             } = result
+    end
+
+    test "return result of all value transferred in curent day seted operation", state do
+      params = %{"operation" => "Withdraw", "period" => "today"}
+
+      result =
+        state[:conn]
+        |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+        |> get(Routes.report_path(state[:conn], :report, params))
+        |> json_response(:created)
+
+      assert %{
+               "message" => "Total in current day by operation.",
+               "operation" => "Withdraw",
+               "result" => 2_000
+             } = result
+    end
+
+    test "return result of all value transferred in curent day by all operation", state do
+      params = %{"period" => "today"}
+
+      result =
+        state[:conn]
+        |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+        |> get(Routes.report_path(state[:conn], :report, params))
+        |> json_response(:created)
+
+      assert %{
+               "message" => "Total in current day by all operation.",
+               "result" => 2_000
+             } = result
+    end
+
+    test "return result of all value transferred in curent year by operation", state do
+      params = %{"operation" => "Withdraw", "period" => "year", "year" => 2021}
+
+      result =
+        state[:conn]
+        |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+        |> get(Routes.report_path(state[:conn], :report, params))
+        |> json_response(:created)
+
+      assert %{
+               "message" => "Total in current year by operations.",
+               "operation" => "Withdraw",
+               "result" => 6_350
+             } = result
+    end
+
+    test "return result of all value transferred in curent year by all operation", state do
+      params = %{"period" => "year", "year" => 2021}
+
+      result =
+        state[:conn]
+        |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+        |> get(Routes.report_path(state[:conn], :report, params))
+        |> json_response(:created)
+
+      assert %{
+               "message" => "Total in current year by all operations.",
+               "result" => 26_700
+             } = result
+    end
+
+    test "return result of all value transferred in curent month by operation", state do
+      params = %{"operation" => "Withdraw", "period" => "month", "month" => 7}
+
+      result =
+        state[:conn]
+        |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+        |> get(Routes.report_path(state[:conn], :report, params))
+        |> json_response(:created)
+
+      assert %{
+               "message" => "Total in current month by operation.",
+               "operation" => "Withdraw",
+               "result" => _2_000
+             } = result
+    end
+
+    test "return result of all value transferred in curent month by all operation", state do
+      params = %{"period" => "month", "month" => 7}
+
+      result =
+        state[:conn]
+        |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+        |> get(Routes.report_path(state[:conn], :report, params))
+        |> json_response(:created)
+
+      assert %{
+               "message" => "Total in current month by all operations.",
+               "result" => 2_300
+             } = result
+    end
+  end
+
+  describe "Payment" do
+    test "assert payments - return result of all value trasactioneted", state do
+      params = %{"period" => "all"}
+
+      result =
+        state[:conn]
+        |> put_req_header("authorization", "Bearer " <> state[:valores].token)
+        |> get(Routes.report_path(state[:conn], :payment, params))
+        |> json_response(:created)
+
+      assert %{
+               "message" => "Total for the entire period.",
+               "result" => 2_100,
                "operation" => "Payment"
              } = result
     end
@@ -190,11 +307,11 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.report_path(state[:conn], :payment, params))
+        |> get(Routes.report_path(state[:conn], :payment, params))
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total trasfered by determineted Account.",
+               "message" => "Total trasfered by determineted Account.",
                "operation" => "Payment",
                "result" => 900
              } = result
@@ -204,11 +321,11 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       resultado2 =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.report_path(state[:conn], :payment, params2))
+        |> get(Routes.report_path(state[:conn], :payment, params2))
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total trasfered by determineted Account.",
+               "message" => "Total trasfered by determineted Account.",
                "operation" => "Payment",
                "result" => 600
              } = resultado2
@@ -225,11 +342,11 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.report_path(state[:conn], :payment, params))
+        |> get(Routes.report_path(state[:conn], :payment, params))
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total in determineted period for determineted Account.",
+               "message" => "Total in determineted period for determineted Account.",
                "operation" => "Payment",
                "result" => 300
              } = result
@@ -247,12 +364,11 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.report_path(state[:conn], :payment, params))
+        |> get(Routes.report_path(state[:conn], :payment, params))
         |> json_response(:created)
 
       assert %{
-               "mensagem" =>
-                 "Total in determineted period for determineted between tow Accounts.",
+               "message" => "Total in determineted period for determineted between tow Accounts.",
                "operation" => "Payment",
                "result" => 200
              } = result
@@ -269,11 +385,11 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.report_path(state[:conn], :payment, params))
+        |> get(Routes.report_path(state[:conn], :payment, params))
         |> json_response(:bad_request)
 
       assert %{
-               "mensagem" => "Invalid data. Verify Account ID, Date or Operation."
+               "message" => "Invalid data. Verify Account ID, Date or Operation."
              } = result
 
       params2 = %{
@@ -284,11 +400,11 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       resultado2 =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.report_path(state[:conn], :payment, params2))
+        |> get(Routes.report_path(state[:conn], :payment, params2))
         |> json_response(:bad_request)
 
       assert %{
-               "mensagem" => "Invalid data. Verify Date or Operation."
+               "message" => "Invalid data. Verify Date or Operation."
              } = resultado2
     end
 
@@ -302,29 +418,29 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.report_path(state[:conn], :payment, params))
+        |> get(Routes.report_path(state[:conn], :payment, params))
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total in determineted period between all Accounts.",
+               "message" => "Total in determineted period between all Accounts.",
                "operation" => "Payment",
                "result" => 1800
              } = result
     end
   end
 
-  describe "TRASNFERSS" do
-    test "assert transfer - alls os valores transferidos durante all o período", state do
+  describe "TRASNFERS" do
+    test "assert transfer - all values transfered in all peiord", state do
       params = %{"period" => "all"}
 
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.report_path(state[:conn], :transfer, params))
+        |> get(Routes.report_path(state[:conn], :transfer, params))
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total for the entire period.",
+               "message" => "Total for the entire period.",
                "result" => 18_250,
                "operation" => "Transfer"
              } = result
@@ -336,11 +452,11 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.report_path(state[:conn], :transfer, params))
+        |> get(Routes.report_path(state[:conn], :transfer, params))
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total trasfered by determineted Account.",
+               "message" => "Total trasfered by determineted Account.",
                "operation" => "Transfer",
                "result" => 11_000
              } = result
@@ -350,17 +466,17 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       resultado2 =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.report_path(state[:conn], :transfer, params2))
+        |> get(Routes.report_path(state[:conn], :transfer, params2))
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total trasfered by determineted Account.",
+               "message" => "Total trasfered by determineted Account.",
                "operation" => "Transfer",
                "result" => 7250
              } = resultado2
     end
 
-    test "assert transfer efetuada entre contras e entre datas",
+    test "assert transfer between account and dates",
          state do
       params = %{
         "initial_date" => "2021-06-13 00:00:01",
@@ -371,17 +487,17 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.report_path(state[:conn], :transfer, params))
+        |> get(Routes.report_path(state[:conn], :transfer, params))
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total in determineted period for determineted Account.",
+               "message" => "Total in determineted period for determineted Account.",
                "operation" => "Transfer",
                "result" => 4250
              } = result
     end
 
-    test "assert transfer -> alls os valores transferidos entre Account x -> y entre datas",
+    test "assert transfer -> alls values transfereds form X TO Y between dates",
          state do
       params = %{
         "initial_date" => "2021-06-13 00:00:01",
@@ -393,18 +509,17 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.report_path(state[:conn], :transfer, params))
+        |> get(Routes.report_path(state[:conn], :transfer, params))
         |> json_response(:created)
 
       assert %{
-               "mensagem" =>
-                 "Total in determineted period for determineted between tow Accounts.",
+               "message" => "Total in determineted period for determineted between tow Accounts.",
                "operation" => "Transfer",
                "result" => 7500
              } = result
     end
 
-    test "error quando passa paramentros errados",
+    test "error when sent invalid parameters",
          state do
       params = %{
         "initial_date" => "2021-06-13 00:00:01",
@@ -415,11 +530,11 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.report_path(state[:conn], :transfer, params))
+        |> get(Routes.report_path(state[:conn], :transfer, params))
         |> json_response(:bad_request)
 
       assert %{
-               "mensagem" => "Invalid data. Verify Account ID, Date or Operation."
+               "message" => "Invalid data. Verify Account ID, Date or Operation."
              } = result
 
       params2 = %{
@@ -430,15 +545,15 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       resultado2 =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.report_path(state[:conn], :transfer, params2))
+        |> get(Routes.report_path(state[:conn], :transfer, params2))
         |> json_response(:bad_request)
 
       assert %{
-               "mensagem" => "Invalid data. Verify Date or Operation."
+               "message" => "Invalid data. Verify Date or Operation."
              } = resultado2
     end
 
-    test "assert transfer de entre datas - alls os valores transferidos durante determinado período por alls",
+    test "assert transfer between dates- all values transfered for all accounts all the time",
          state do
       params = %{
         "initial_date" => "2021-06-15 00:00:01",
@@ -448,11 +563,11 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.report_path(state[:conn], :transfer, params))
+        |> get(Routes.report_path(state[:conn], :transfer, params))
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total in determineted period between all Accounts.",
+               "message" => "Total in determineted period between all Accounts.",
                "operation" => "Transfer",
                "result" => 15_000
              } = result
@@ -460,35 +575,35 @@ defmodule BankApiWeb.ControllerReportAdminTest do
   end
 
   describe "Withdraw" do
-    test "assert withdraw - alls os valores sacados durante all o período", state do
+    test "assert withdraw - all values withdraw in all period", state do
       params = %{"period" => "all"}
 
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.report_path(state[:conn], :withdraw, params))
+        |> get(Routes.report_path(state[:conn], :withdraw, params))
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total for the entire period.",
-               "result" => 4350,
+               "message" => "Total for the entire period.",
+               "result" => 6_350,
                "operation" => "Withdraw"
              } = result
     end
 
-    test "assert withdraw - alls os valores sacados por determinado email", state do
+    test "assert withdraw - all values withdraw in determineted period", state do
       params = %{"from_account_id" => state[:valores].account_id_1}
 
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.report_path(state[:conn], :withdraw, params))
+        |> get(Routes.report_path(state[:conn], :withdraw, params))
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total trasfered by determineted Account.",
+               "message" => "Total trasfered by determineted Account.",
                "operation" => "Withdraw",
-               "result" => 3850
+               "result" => 5850
              } = result
 
       params2 = %{"from_account_id" => state[:valores].account_id_2}
@@ -496,17 +611,17 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       resultado2 =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.report_path(state[:conn], :withdraw, params2))
+        |> get(Routes.report_path(state[:conn], :withdraw, params2))
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total trasfered by determineted Account.",
+               "message" => "Total trasfered by determineted Account.",
                "operation" => "Withdraw",
                "result" => 500
              } = resultado2
     end
 
-    test "assert withdraw de Account entre datas - alls os valores sacados durante determinado período por Account",
+    test "assert withdraw from Account between dates - alls values withdraw in determineted period for Account",
          state do
       params = %{
         "initial_date" => "2021-06-13 00:00:01",
@@ -517,16 +632,16 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.report_path(state[:conn], :withdraw, params))
+        |> get(Routes.report_path(state[:conn], :withdraw, params))
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total in determineted period for determineted Account.",
+               "message" => "Total in determineted period for determineted Account.",
                "result" => 3850
              } = result
     end
 
-    test "error quando passa paramentros errados",
+    test "error when send invalid parameters",
          state do
       params = %{
         "initial_date" => "2021-06-13 00:00:01",
@@ -537,11 +652,11 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.report_path(state[:conn], :withdraw, params))
+        |> get(Routes.report_path(state[:conn], :withdraw, params))
         |> json_response(:bad_request)
 
       assert %{
-               "mensagem" => "Invalid data. Verify Account ID, Date or Operation."
+               "message" => "Invalid data. Verify Account ID, Date or Operation."
              } = result
 
       params2 = %{
@@ -552,15 +667,15 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       resultado2 =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.report_path(state[:conn], :withdraw, params2))
+        |> get(Routes.report_path(state[:conn], :withdraw, params2))
         |> json_response(:bad_request)
 
       assert %{
-               "mensagem" => "Invalid data. Verify Date or Operation."
+               "message" => "Invalid data. Verify Date or Operation."
              } = resultado2
     end
 
-    test "assert withdraw de entre datas - alls os valores sacados durante determinado período por alls",
+    test "assert withdraw between dates - all values withdraw in all period",
          state do
       params = %{
         "initial_date" => "2021-06-15 00:00:01",
@@ -570,11 +685,11 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.report_path(state[:conn], :withdraw, params))
+        |> get(Routes.report_path(state[:conn], :withdraw, params))
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Total in determineted period between all Accounts.",
+               "message" => "Total in determineted period between all Accounts.",
                "result" => 1250
              } = result
     end

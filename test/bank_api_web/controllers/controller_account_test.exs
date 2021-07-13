@@ -45,7 +45,7 @@ defmodule BankApiWeb.ControllerAccountTest do
                  "account_type_id" => ^account_type_id,
                  "user_id" => ^user_id
                },
-               "mensagem" => "Account Type found."
+               "message" => "Account Type found."
              } = response
     end
 
@@ -97,7 +97,7 @@ defmodule BankApiWeb.ControllerAccountTest do
                  "account_type_id" => _83,
                  "user_id" => _147
                },
-               "mensagem" => "Account recorded."
+               "message" => "Account recorded."
              } = response
     end
 
@@ -122,7 +122,7 @@ defmodule BankApiWeb.ControllerAccountTest do
                  "account_type_id" => _83,
                  "user_id" => _147
                },
-               "mensagem" => "Account recorded."
+               "message" => "Account recorded."
              } = response
     end
 
@@ -160,12 +160,12 @@ defmodule BankApiWeb.ControllerAccountTest do
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Account updated.",
+               "message" => "Account updated.",
                "account" => %{"account_id" => _user_id, "balance_account" => 5000}
              } = response
     end
 
-    test "assert update - update balance to value iqual zero.",
+    test "assert update - update balance to value equal zero.",
          state do
       %User{id: user_id} = insert(:user)
       %AccountType{id: account_type_id} = insert(:account_type)
@@ -180,7 +180,7 @@ defmodule BankApiWeb.ControllerAccountTest do
         |> json_response(:created)
 
       assert %{
-               "mensagem" => "Account updated.",
+               "message" => "Account updated.",
                "account" => %{"account_id" => _user_id, "balance_account" => 0}
              } = response
     end
@@ -229,7 +229,7 @@ defmodule BankApiWeb.ControllerAccountTest do
 
       assert %{
                "account" => %{"user_id" => ^user_id, "account_type" => ^account_type_id},
-               "mensagem" => "Account deleted."
+               "message" => "Account deleted."
              } = response
     end
 

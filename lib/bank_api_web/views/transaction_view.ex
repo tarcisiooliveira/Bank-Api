@@ -16,7 +16,7 @@ defmodule BankApiWeb.TransactionView do
         }
       ) do
     %{
-      mensagem: "Transaction founded",
+      message: "Transaction founded",
       Transaction: %{
         from_account_id: from_account_id,
         operation_id: operation_id,
@@ -39,7 +39,7 @@ defmodule BankApiWeb.TransactionView do
         }
       ) do
     %{
-      mensagem: "Transaction founded",
+      message: "Transaction founded",
       Transaction: %{
         from_account_id: from_account_id,
         to_account_id: to_account_id,
@@ -65,7 +65,7 @@ defmodule BankApiWeb.TransactionView do
         }
       ) do
     %{
-      mensagem: "Transaction finished successfully",
+      message: "Transaction finished successfully",
       Transaction: %{
         from_account_id: from_account_id,
         operation_id: operation_id,
@@ -90,7 +90,7 @@ defmodule BankApiWeb.TransactionView do
         } = _params
       ) do
     %{
-      mensagem: "Transaction finished successfully",
+      message: "Transaction finished successfully",
       Transaction: %{
         from_account_id: from_account_id,
         to_account_id: to_account_id,
@@ -102,7 +102,7 @@ defmodule BankApiWeb.TransactionView do
 
   def render("update.json", %{Transaction: %Transaction{value: value}}) do
     %{
-      mensagem: "Operation Updated",
+      message: "Operation Updated",
       Operação: %{value: value}
     }
   end
@@ -119,7 +119,7 @@ defmodule BankApiWeb.TransactionView do
         }
       ) do
     %{
-      mensagem: "Transaction deleted successfully.",
+      message: "Transaction deleted successfully.",
       Transaction: %{
         from_account_id: from_account_id,
         operation_id: operation_id,
@@ -140,7 +140,7 @@ defmodule BankApiWeb.TransactionView do
         }
       ) do
     %{
-      mensagem: "Transaction deleted successfully.2",
+      message: "Transaction deleted successfully.2",
       Transaction: %{
         from_account_id: from_account_id,
         to_account_id: to_account_id,
@@ -153,7 +153,7 @@ defmodule BankApiWeb.TransactionView do
   def render("delete.json", %{error: error}) do
     %{
       Result: "Non-existent operation.",
-      Mensagem: "#{error}"
+      message: "#{error}"
     }
   end
 

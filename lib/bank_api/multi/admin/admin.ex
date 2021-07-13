@@ -8,12 +8,7 @@ defmodule BankApi.Multi.Admin do
   alias BankApi.Handle.Repo.Admin, as: HandleRepoAdmin
   alias Ecto.Changeset
 
-  @spec create(%{
-          :email => any,
-          :password => any,
-          :password_confirmation => any,
-          optional(any) => any
-        }) :: {:error, any} | {:ok, any}
+
   def create(
         %{email: _email, password: _password, password_confirmation: _password_confirmation} =
           params
@@ -33,33 +28,6 @@ defmodule BankApi.Multi.Admin do
 
       {:error, _, changeset, _} ->
         {:error, changeset}
-    end
-  end
-
-  defp changeset(params) do
-    case Admin.changeset(params) do
-      %Changeset{errors: [password_confirmation: {"Differents password.", _}]} ->
-        {:error, :senhas_diferentes}
-
-      %Changeset{errors: [email: {"Email already in use.", _}]} ->
-        {:error, :email_ja_cadastrado}
-
-      %Changeset{errors: [email: {"Invalid format email.", _}]} ->
-        {:error, :email_formato_invalido}
-
-      %Changeset{
-        errors: [password: {"Password must accountin between 4 and 10 characters.", _}]
-      } ->
-        {:error, :password_entre_4_e_10_caracteres}
-
-      %Changeset{errors: [password_confirmation: {"can't be blank", [validation: :required]}]} ->
-        {:error, :confirmacao_senha_necessario}
-
-      %Changeset{errors: [password_confirmation: _, password: _]} ->
-        {:error, :senhas_diferentes}
-
-      changeset ->
-        {:ok, changeset}
     end
   end
 
@@ -124,5 +92,32 @@ defmodule BankApi.Multi.Admin do
   defp fetch_admin(params) do
     params
     |> HandleRepoAdmin.fetch_admin_by()
+  end
+
+  defp changeset(params) do
+    case Admin.changeset(params) do
+      %Changeset{errors: [password_confirmation: {"Differents password.", _}]} ->
+        {:error, :senhas_diferentes}
+
+      %Changeset{errors: [email: {"Email already in use.", _}]} ->
+        {:error, :email_ja_cadastrado}
+
+      %Changeset{errors: [email: {"Invalid format email.", _}]} ->
+        {:error, :email_formato_invalido}
+
+      %Changeset{
+        errors: [password: {"Password must accountin between 4 and 10 characters.", _}]
+      } ->
+        {:error, :password_entre_4_e_10_caracteres}
+
+      %Changeset{errors: [password_confirmation: {"can't be blank", [validation: :required]}]} ->
+        {:error, :confirmacao_senha_necessario}
+
+      %Changeset{errors: [password_confirmation: _, password: _]} ->
+        {:error, :senhas_diferentes}
+
+      changeset ->
+        {:ok, changeset}
+    end
   end
 end

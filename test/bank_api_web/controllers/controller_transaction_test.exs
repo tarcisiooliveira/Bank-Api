@@ -65,7 +65,7 @@ defmodule BankApiWeb.ControllerTransactionTest do
       |> json_response(:ok)
 
     assert %{
-             "mensagem" => "Transaction founded",
+             "message" => "Transaction founded",
              "Transaction" => %{
                "from_account_id" => state[:valores].from_account_id,
                "to_account_id" => state[:valores].to_account_id,
@@ -93,7 +93,7 @@ defmodule BankApiWeb.ControllerTransactionTest do
       |> json_response(:ok)
 
     assert %{
-             "mensagem" => "Transaction founded",
+             "message" => "Transaction founded",
              "Transaction" => %{
                "from_account_id" => state[:valores].from_account_id,
                "operation_id" => id_operation,
@@ -124,7 +124,7 @@ defmodule BankApiWeb.ControllerTransactionTest do
       |> json_response(:ok)
 
     assert %{
-             "mensagem" => "Transaction founded",
+             "message" => "Transaction founded",
              "Transaction" => %{
                "from_account_id" => state[:valores].from_account_id,
                "operation_id" => id_operation,
@@ -155,7 +155,7 @@ defmodule BankApiWeb.ControllerTransactionTest do
                "operation_id" => state[:valores].operation_id,
                "value" => 600
              },
-             "mensagem" => "Transaction finished successfully"
+             "message" => "Transaction finished successfully"
            } == response
   end
 
@@ -180,7 +180,7 @@ defmodule BankApiWeb.ControllerTransactionTest do
                "operation_id" => operation_id,
                "value" => 1000
              },
-             "mensagem" => "Transaction finished successfully"
+             "message" => "Transaction finished successfully"
            } == response
   end
 
@@ -216,7 +216,7 @@ defmodule BankApiWeb.ControllerTransactionTest do
                  "operation_id" => operation_id,
                  "value" => 1000
                },
-               "mensagem" => "Transaction deleted successfully."
+               "message" => "Transaction deleted successfully."
              } == response
 
       total_mais_a_frente = Repo.aggregate(Transaction, :count)
