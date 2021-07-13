@@ -11,41 +11,51 @@ defmodule BankApiWeb.Router do
 
   scope "/", BankApiWeb do
     pipe_through(:api)
-    post "/sign_in", SignInController, :sign_in
   end
 
-  scope "/api", BankApiWeb do
+  scope "/api/admin", BankApiWeb do
     pipe_through(:api)
-    post "/sign_in", SignInController, :sign_in
+    post "/sign_in", SignController, :sign_in_admin
+    post "/sign_up", SignController, :sign_up_admin
   end
 
-  scope "/api/relatorios", BankApiWeb do
+  scope "/api/user", BankApiWeb do
+    pipe_through(:api)
+    post "/sign_in", SignController, :sign_in_user
+  end
+
+  scope "/api/report", BankApiWeb do
     pipe_through([:api, :auth])
-    post "/pagamentos", RelatorioController, :pagamento
-    post "/saques", RelatorioController, :saque
-    post "/transferencias", RelatorioController, :transferencia
+    post "/report", Report.ReportController, :report
+    post "/payment", Report.ReportController, :payment
+    post "/withdraw", Report.ReportController, :withdraw
+    post "/transfer", Report.ReportController, :transfer
   end
 
   scope "/api", BankApiWeb do
     pipe_through([:api, :auth])
 
-    resources("/admins", AdminController, only: [:new, :show, :delete, :update, :index, :create])
-
-    resources("/usuarios", UsuarioController,
+    resources("/admin", Admin.AdminController,
       only: [:new, :show, :delete, :update, :index, :create]
     )
 
-    resources("/tipocontas", TipoContaController,
+    resources("/user", UserController, only: [:new, :show, :delete, :update, :index, :create])
+
+    resources("/accounttype", AccountTypeController,
       only: [:new, :show, :delete, :update, :index, :create]
     )
 
-    resources("/operacoes", OperacaoController,
+    resources("/operation", OperationController,
       only: [:new, :show, :delete, :update, :index, :create]
     )
 
-    resources("/contas", ContaController, only: [:new, :show, :delete, :update, :index, :create])
+    resources("/account", AccountController,
+      only: [:new, :show, :delete, :update, :index, :create]
+    )
 
-    resources("/transacoes", TransacaoController, only: [:new, :show, :delete, :update, :create])
+    resources("/transaction", TransactionController,
+      only: [:new, :show, :delete, :update, :create]
+    )
   end
 
   # Enables LiveDashboard only for development

@@ -1,11 +1,13 @@
-defmodule BankApi.ControllerAdminTest do
-  use BankApiWeb.ConnCase, async: false
-  alias BankApiWeb.Auth.Guardian
-  import BankApi.Factory
-
+defmodule BankApiWeb.ControllerAdminTest do
   @moduledoc """
-  Modulo de teste do Controlador de Admin
+  Module test Admin Controller
   """
+
+  use BankApiWeb.ConnCase, async: true
+
+  alias BankApiWeb.Auth.Guardian
+
+  import BankApi.Factory
 
   setup do
     [conn: "Phoenix.ConnTest.build_conn()"]
@@ -20,11 +22,11 @@ defmodule BankApi.ControllerAdminTest do
   end
 
   describe "CREATE" do
-    test "assert create admin - Cria admin passando token", state do
+    test "assert create admin - create admin when token access is sent", state do
       params2 = %{
         "email" => "test2@admin.com",
         "password" => "123456",
-        "password_confirmation" => "123456"
+        "password_validation" => "123456"
       }
 
       response =
@@ -35,11 +37,12 @@ defmodule BankApi.ControllerAdminTest do
 
       assert %{
                "email" => "test2@admin.com",
-               "mensagem" => "Administrador Cadastrado"
+               "message" => "Admin recorded."
              } = response
     end
 
-    test "error create admin - tenta criar admin faltando password_confirmation", state do
+    test "error create admin - try create admin without required parameter password_validation",
+         state do
       params2 = %{
         "email" => "test2@admin.com",
         "password" => "123456"
@@ -53,37 +56,37 @@ defmodule BankApi.ControllerAdminTest do
 
       assert %{
                "error" =>
-                 "Invalid parameters.\n        Required: \"email\" => email, \"password\" => password, \"password_confirmation\" => password_confirmation"
+                 "Invalid parameters.\n        Required: \"email\" => email, \"password\" => password, \"password_validation\" => password_validation"
              } = response
     end
 
-    test "error create admin - tenta criar admin sem token ", state do
+    test "error create admin - try create admin without access token ", state do
       params2 = %{
         "email" => "test2@admin.com",
         "password" => "123456",
-        "password_confirmation" => "123456"
+        "password_validation" => "123456"
       }
 
       response =
         state[:conn]
         |> post(Routes.admin_path(state[:conn], :create, params2))
 
-      assert %{resp_body: "{\"messagem\":\"Autorização Negada\"}", status: 401} = response
+      assert %{resp_body: "{\"messagem\":\"Authorization Denied\"}", status: 401} = response
     end
   end
 
   describe "DELETE" do
-    test "assert delete ok- remove administrador", state do
+    test "assert delete ok- remove admin", state do
       response =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
         |> delete(Routes.admin_path(state[:conn], :delete, state[:valores].admin.id))
         |> json_response(:ok)
 
-      assert %{"email" => "tarcisio@admin.com", "mensagem" => "Administrador removido"} = response
+      assert %{"email" => "tarcisio@admin.com", "message" => "Admin deleted."} = response
     end
 
-    test "error delete - tenta remover administrador inexistente", state do
+    test "error delete - try remove inexistent admin", state do
       response =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
@@ -91,12 +94,12 @@ defmodule BankApi.ControllerAdminTest do
         |> json_response(404)
 
       assert %{
-               "Erro" => "Administrador não removido.",
-               "Resultado" => "ID Inválido ou inexistente"
+               "Erro" => "Admin not deleted.",
+               "Result" => "Invalid ID or inexistent."
              } = response
     end
 
-    test "error delete - tenta remover administrador com token invalido", state do
+    test "error delete - try remove admin with invalid token", state do
       response =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token <> ".")
@@ -105,17 +108,17 @@ defmodule BankApi.ControllerAdminTest do
       assert %{resp_body: "{\"messagem\":\"invalid_token\"}", status: 401} = response
     end
 
-    test "error delete - tenta remover administrador sem token de acesso", state do
+    test "error delete - try remove admin without access token", state do
       response =
         state[:conn]
         |> delete(Routes.admin_path(state[:conn], :delete, 789_456_123))
 
-      assert %{resp_body: "{\"messagem\":\"Autorização Negada\"}", status: 401} = response
+      assert %{resp_body: "{\"messagem\":\"Authorization Denied\"}", status: 401} = response
     end
   end
 
   describe "UPDATE" do
-    test "assert update admin - admin atualiza email", state do
+    test "assert update admin - admin update email", state do
       params = %{email: "updated-email@email.com"}
 
       response =
@@ -124,11 +127,10 @@ defmodule BankApi.ControllerAdminTest do
         |> patch(Routes.admin_path(state[:conn], :update, state[:valores].admin.id, params))
         |> json_response(:ok)
 
-      assert %{"mensagem" => "Admininstrador Atualizado", "email" => "updated-email@email.com"} =
-               response
+      assert %{"message" => "Admin updated.", "email" => "updated-email@email.com"} = response
     end
 
-    test "error update - tenta atualizar admin sem token de acesso", state do
+    test "error update - try update admin without access token", state do
       response =
         state[:conn]
         |> patch(
@@ -137,10 +139,10 @@ defmodule BankApi.ControllerAdminTest do
           })
         )
 
-      assert %{resp_body: "{\"messagem\":\"Autorização Negada\"}", status: 401} = response
+      assert %{resp_body: "{\"messagem\":\"Authorization Denied\"}", status: 401} = response
     end
 
-    test "error update - tenta alterar endereço de email para um já cadastrado", state do
+    test "error update - try update email when thres email alread exist", state do
       params = %{email: "tarcisio@admin.com"}
 
       response =
@@ -149,7 +151,7 @@ defmodule BankApi.ControllerAdminTest do
         |> patch(Routes.admin_path(state[:conn], :update, state[:valores].admin.id, params))
         |> json_response(:not_found)
 
-      assert %{"error" => "Email já em uso."} = response
+      assert %{"error" => "Email already in use."} = response
     end
   end
 end

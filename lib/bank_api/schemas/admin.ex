@@ -1,15 +1,16 @@
 defmodule BankApi.Schemas.Admin do
-  use Ecto.Schema
-  import Ecto.Changeset
-
   @moduledoc """
   Modulo de schema do Admin
   """
 
+  use Ecto.Schema
+
+  import Ecto.Changeset
+
   schema "admins" do
     field :email, :string
     field :password, :string, virtual: true
-    field :password_confirmation, :string, virtual: true
+    field :password_validation, :string, virtual: true
     field :password_hash, :string
 
     timestamps()
@@ -17,16 +18,16 @@ defmodule BankApi.Schemas.Admin do
 
   def changeset(params) do
     %__MODULE__{}
-    |> cast(params, [:email, :password, :password_confirmation])
-    |> validate_required([:email, :password, :password_confirmation])
-    |> validate_format(:email, ~r/@/, message: "Email formato inválido")
+    |> cast(params, [:email, :password, :password_validation])
+    |> validate_required([:email, :password, :password_validation])
+    |> validate_format(:email, ~r/@/, message: "Invalid format email.")
     |> validate_length(:password,
-      min: 4,
+      min: 6,
       max: 10,
-      message: "Password deve conter entre 4 e 10 caracteres."
+      message: "Password must accountin between 4 and 10 characters."
     )
-    |> validate_confirmation(:password, message: "Senhas diferentes.")
-    |> unique_constraint(:email, message: "Email já em uso.")
+    |> validate_confirmation(:password, message: "Differents password.")
+    |> unique_constraint(:email, message: "Email already in use.")
     |> put_password()
   end
 
@@ -34,8 +35,8 @@ defmodule BankApi.Schemas.Admin do
     admin
     |> cast(params, [:email])
     |> validate_required([:email])
-    |> validate_format(:email, ~r/@/, message: "Email formato inválido")
-    |> unique_constraint(:email, message: "Email já em uso.")
+    |> validate_format(:email, ~r/@/, message: "Invalid format email.")
+    |> unique_constraint(:email, message: "Email already in use.")
     |> unique_constraint(:email)
   end
 

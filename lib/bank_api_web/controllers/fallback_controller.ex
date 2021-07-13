@@ -5,7 +5,7 @@ defmodule BankApiWeb.FallbackController do
     conn
     |> put_status(:unauthorized)
     |> put_view(BankApiWeb.ErrorView)
-    |> render("401.json", error: "Administrador não cadastrado.")
+    |> render("401.json", error: "Admin is not stored.")
   end
 
   def error(conn, %{error: error}) do
