@@ -5,9 +5,19 @@ defmodule BankApi.Multi.AccountType do
 
   alias BankApi.Schemas.AccountType
   alias BankApi.Repo
-  alias BankApi.Handle.Repo.AccountType, as: HandleAccountTypeRepo
   alias Ecto.Changeset
 
+  @doc """
+  Validate and persist a new Account Type
+
+  ## Parameters
+    * `account_type_name` - String Account Type Name
+
+  ## Examples
+
+      iex> create(%{account_type_name: name_account_type})
+      {:ok, %{create_account_type: AccountType{}}}
+  """
   def create(
         %{
           account_type_name: _name_account_type
@@ -43,13 +53,28 @@ defmodule BankApi.Multi.AccountType do
     end
   end
 
+  @doc """
+  Updating an Account Type
+
+  ## Parameters
+    * `id` - Account Type id
+    * `account_type_name` - String Account Type Name
+
+  ## Examples
+
+      iex> update(%{id: id, account_type_name: name_account_type})
+      {:ok, %{update_account_type: AccountType{}}}
+
+      iex> update(%{id: invalid_id, account_type_name: name_account_type})
+      {:error, :account_type_not_exists}}
+  """
   def update(%{id: id, account_type_name: account_type_name}) do
     multi =
       Ecto.Multi.new()
       |> Ecto.Multi.run(:fetch_account_type, fn _, _ ->
         case fetch_account_type(%{id: id}) do
-          nil -> {:error, :operation_not_exists}
-          operation -> {:ok, operation}
+          nil -> {:error, :account_type_not_exists}
+          account_type -> {:ok, account_type}
         end
       end)
       |> Ecto.Multi.run(:create_account_type_changeset, fn _,
@@ -77,16 +102,30 @@ defmodule BankApi.Multi.AccountType do
     end
   end
 
+  @doc """
+  Deleting an Account Type
+
+  ## Parameters
+    * `id` - Account Type id
+
+  ## Examples
+
+      iex> delete(%{id: id})
+      {:ok, %{delete_account_type: %AccountType{}}}
+
+      iex> delete(%{id: invalid_id})
+      {:error, :account_type_not_exists}}
+  """
   def delete(%{id: id}) do
     multi =
       Ecto.Multi.new()
       |> Ecto.Multi.run(:fetch_account_type, fn _, _ ->
         case fetch_account_type(%{id: id}) do
-          nil -> {:error, :operation_not_exists}
-          operation -> {:ok, operation}
+          nil -> {:error, :account_type_not_exists}
+          account_type -> {:ok, account_type}
         end
       end)
-      |> Ecto.Multi.delete(:delete_operation, fn %{fetch_account_type: fetch_account_type} ->
+      |> Ecto.Multi.delete(:delete_account_type, fn %{fetch_account_type: fetch_account_type} ->
         fetch_account_type
       end)
 
@@ -97,7 +136,7 @@ defmodule BankApi.Multi.AccountType do
   end
 
   defp fetch_account_type(params) do
-    HandleAccountTypeRepo.fetch_account_type(params)
+    Repo.get_by(AccountType, params)
   end
 
   defp create_changest(params) do

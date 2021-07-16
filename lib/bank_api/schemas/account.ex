@@ -19,6 +19,7 @@ defmodule BankApi.Schemas.Account do
   @request_params [:balance_account, :user_id, :account_type_id]
   @balance_account 0..10_000_000
 
+  @doc false
   def changeset(params) do
     %__MODULE__{}
     |> cast(params, @request_params)
@@ -26,6 +27,7 @@ defmodule BankApi.Schemas.Account do
     |> validate_inclusion(:balance_account, @balance_account)
   end
 
+  @doc false
   def update_changeset(%__MODULE__{} = account, %{balance_account: _balance} = params) do
     account
     |> cast(params, [:balance_account])

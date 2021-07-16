@@ -162,7 +162,6 @@ defmodule BankApiWeb.TransactionView do
   end
 
   def render("error.json", %{error: :balance_not_enough}) do
-    # IO.inspect(error)
     %{error: "Balance not enough."}
   end
 

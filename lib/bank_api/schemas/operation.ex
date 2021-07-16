@@ -16,6 +16,8 @@ defmodule BankApi.Schemas.Operation do
   end
 
   @required_params [:operation_name]
+
+  @doc false
   def update_changeset(%__MODULE__{} = operation, %{operation_name: _operation_name} = params) do
     operation
     |> cast(params, @required_params)
@@ -23,6 +25,7 @@ defmodule BankApi.Schemas.Operation do
     |> unique_constraint(@required_params)
   end
 
+  @doc false
   def changeset(params) do
     %__MODULE__{}
     |> cast(params, @required_params)

@@ -1,11 +1,20 @@
 defmodule BankApiWeb.UserController do
   use BankApiWeb, :controller
   alias BankApi.Handle.HandleUser
+  alias BankApi.Schemas.User
+  alias BankApi.Repo
 
   def show(conn, %{"id" => id}) do
     %{id: String.to_integer(id)}
-    |> HandleUser.get()
+    |> fetch_user()
     |> handle_response(conn, "show.json", :ok)
+  end
+
+  defp fetch_user(%{id: id}) do
+    case Repo.get_by(User, id: id) do
+      nil -> {:error, "Invalid ID or inexistent."}
+      user -> {:ok, user}
+    end
   end
 
   def create(conn, %{

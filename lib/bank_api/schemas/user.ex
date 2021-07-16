@@ -21,12 +21,14 @@ defmodule BankApi.Schemas.User do
 
   @request_params [:email, :name, :password]
 
+  @doc false
   def build(params) do
     params
     |> changeset()
     |> apply_action!(:insert)
   end
 
+  @doc false
   def changeset(params) do
     %__MODULE__{}
     |> cast(params, @request_params)
@@ -40,6 +42,7 @@ defmodule BankApi.Schemas.User do
     user
     |> cast(params, [:email])
     |> validate_required([:email])
+    |> validate_format(:email, ~r/@/, message: "Invalid format email.")
     |> unique_constraint(:email, message: "Email already in use.")
   end
 

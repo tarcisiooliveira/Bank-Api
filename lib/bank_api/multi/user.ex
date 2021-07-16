@@ -5,9 +5,21 @@ defmodule BankApi.Multi.User do
 
   alias BankApi.Schemas.User
   alias BankApi.Repo
-  alias BankApi.Handle.Repo.User, as: HandleUserRepo
+
   alias Ecto.Changeset
 
+  @doc """
+  Validate and persist a new User
+
+  ## Parameters
+    * `email` - String User email
+    * `password` - String user password
+    * `password_validation` - String user password validation
+
+  ## Examples
+      iex> create(%{email: email, name: name, password: password, password_validation: password_validation})
+      {:ok, %{create_user: %User{}}}
+  """
   def create(
         %{
           email: _email,
@@ -39,33 +51,47 @@ defmodule BankApi.Multi.User do
     end
   end
 
+  @doc """
+  Update an User
+
+  ## Parameters
+    `id` - Set the user ID
+    `email` - String User email
+
+
+  ## Examples
+      iex> update(%{id: id, email: email})
+      {:ok, %{updated_user: %User{}}}
+
+      iex> update(%{id: id, name: name})
+      {:ok, %{updated_user: %User{}}}
+
+      iex> update(%{id: invalid_id, email: email})
+      {:error, :user_not_exists}
+
+      iex> update(%{id: id, email: invalid_email})
+      {:error, :invalid_format_email}
+  """
   def update(%{id: id, email: email}) do
     multi =
       Ecto.Multi.new()
       |> Ecto.Multi.run(:fetch_user_by_id, fn _, _ ->
-        case fetch_user(%{id: id}) do
+        case Repo.get_by(User, id: id) do
           nil -> {:error, :user_not_exists}
           user -> {:ok, user}
         end
       end)
       |> Ecto.Multi.run(:fetch_user_by_email, fn _, _ ->
-        case fetch_user(%{email: email}) do
+        case Repo.get_by(User, email: email) do
           nil -> {:ok, :theres_no_email}
           _ -> {:error, :email_already_exist}
         end
       end)
       |> Ecto.Multi.run(:user_changeset, fn _, %{fetch_user_by_id: fetch_user_by_id} ->
         fetch_user_by_id
-        |> update_changeset(%{email: email})
-        |> case do
-          %Changeset{valid?: true} = changeset ->
-            {:ok, changeset}
-
-          _ ->
-            {:error, "Error changeset"}
-        end
+        |> create_changeset(%{email: email})
       end)
-      |> Ecto.Multi.update(:update_operation, fn %{user_changeset: user_changeset} ->
+      |> Ecto.Multi.update(:updated_user, fn %{user_changeset: user_changeset} ->
         user_changeset
       end)
 
@@ -79,7 +105,7 @@ defmodule BankApi.Multi.User do
     multi =
       Ecto.Multi.new()
       |> Ecto.Multi.run(:fetch_user, fn _, _ ->
-        case fetch_user(%{id: id}) do
+        case Repo.get_by(User, id: id) do
           nil -> {:error, :user_not_exists}
           user -> {:ok, user}
         end
@@ -89,7 +115,7 @@ defmodule BankApi.Multi.User do
          fetch_user
          |> update_changeset(%{name: name})}
       end)
-      |> Ecto.Multi.update(:update_operation, fn %{user_changeset: user_changeset} ->
+      |> Ecto.Multi.update(:updated_user, fn %{user_changeset: user_changeset} ->
         user_changeset
       end)
 
@@ -99,11 +125,25 @@ defmodule BankApi.Multi.User do
     end
   end
 
+  @doc """
+  Deleting an User
+
+  ## Parameters
+    `id` - Set a valid User id.
+
+  ## Examples
+
+      iex> delete(%{id: id})
+      {:ok, %{deleted_user: %User{}}}
+
+      iex> delete(%{id: invalid_id})
+      {:error, :user_not_found}
+  """
   def delete(%{id: id}) do
     multi =
       Ecto.Multi.new()
       |> Ecto.Multi.run(:fetch_user, fn _, _ ->
-        case fetch_user(%{id: id}) do
+        case Repo.get_by(User, id: id) do
           nil -> {:error, :user_not_found}
           user -> {:ok, user}
         end
@@ -123,18 +163,20 @@ defmodule BankApi.Multi.User do
     |> User.changeset()
   end
 
-  defp fetch_user(%{id: _id} = params) do
-    params
-    |> HandleUserRepo.fetch_user()
-  end
-
-  defp fetch_user(%{email: _email} = params) do
-    params
-    |> HandleUserRepo.fetch_user()
-  end
-
   defp update_changeset(user, params) do
     user
     |> User.update_changeset(params)
+  end
+
+  defp create_changeset(params, %{email: _email} = email) do
+    params
+    |> User.update_changeset(email)
+    |> case do
+      %Changeset{valid?: true} = changeset ->
+        {:ok, changeset}
+
+      %Changeset{errors: [email: {"Invalid format email.", _}]} ->
+        {:error, :invalid_format_email}
+    end
   end
 end

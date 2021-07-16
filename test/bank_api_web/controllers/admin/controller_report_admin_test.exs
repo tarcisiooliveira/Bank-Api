@@ -185,7 +185,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
         |> json_response(:created)
 
       assert %{
-               "message" => "Total moved for the entire period.",
+               "message" => "Total moved for the entire period by all operations.",
                "result" => 26_700
              } = result
     end
@@ -216,7 +216,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
         |> json_response(:created)
 
       assert %{
-               "message" => "Total in determineted day by all operations.",
+               "message" => "Total in seted day by all operations.",
                "result" => 3_100
              } = result
     end
@@ -293,7 +293,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
         |> json_response(:created)
 
       assert %{
-               "message" => "Total in current month by all operations.",
+               "message" => "Total in seted month by all operations.",
                "result" => 2_300
              } = result
     end
@@ -310,7 +310,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
         |> json_response(:created)
 
       assert %{
-               "message" => "Total for the entire period.",
+               "message" => "Total for the entire period by operation.",
                "result" => 2_100,
                "operation" => "Payment"
              } = result
@@ -326,7 +326,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
         |> json_response(:created)
 
       assert %{
-               "message" => "Total trasfered by determineted Account.",
+               "message" => "Total for determineted operation by determineted Account.",
                "operation" => "Payment",
                "result" => 900
              } = result
@@ -340,13 +340,13 @@ defmodule BankApiWeb.ControllerReportAdminTest do
         |> json_response(:created)
 
       assert %{
-               "message" => "Total trasfered by determineted Account.",
+               "message" => "Total for determineted operation by determineted Account.",
                "operation" => "Payment",
                "result" => 600
              } = resultado2
     end
 
-    test "assert Payment efetuada por uma Account e entre datas",
+    test "assert Payment by Account between dates",
          state do
       params = %{
         "initial_date" => "2021-07-01 00:00:01",
@@ -451,13 +451,12 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       result =
         state[:conn]
         |> put_req_header("authorization", "Bearer " <> state[:valores].token)
-        |> post(Routes.report_path(state[:conn], :transfer, params))
+        |> post(Routes.report_path(state[:conn], :report, params))
         |> json_response(:created)
 
       assert %{
-               "message" => "Total for the entire period.",
-               "result" => 18_250,
-               "operation" => "Transfer"
+               "message" => "Total moved for the entire period by all operations.",
+               "result" => 26_700
              } = result
     end
 
@@ -471,7 +470,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
         |> json_response(:created)
 
       assert %{
-               "message" => "Total trasfered by determineted Account.",
+               "message" => "Total for determineted operation by determineted Account.",
                "operation" => "Transfer",
                "result" => 11_000
              } = result
@@ -485,7 +484,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
         |> json_response(:created)
 
       assert %{
-               "message" => "Total trasfered by determineted Account.",
+               "message" => "Total for determineted operation by determineted Account.",
                "operation" => "Transfer",
                "result" => 7250
              } = resultado2
@@ -530,7 +529,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
       assert %{
                "message" => "Total in determineted period for determineted between tow Accounts.",
                "operation" => "Transfer",
-               "result" => 7500
+               "result" => 7_500
              } = result
     end
 
@@ -590,7 +589,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
   end
 
   describe "Withdraw" do
-    test "assert withdraw - all values withdraw in all period", state do
+    test "assert withdraw - all values withdraw in all period by all accounts", state do
       params = %{"period" => "all"}
 
       result =
@@ -600,13 +599,13 @@ defmodule BankApiWeb.ControllerReportAdminTest do
         |> json_response(:created)
 
       assert %{
-               "message" => "Total for the entire period.",
+               "message" => "Total for the entire period by operation.",
                "result" => 6_350,
                "operation" => "Withdraw"
              } = result
     end
 
-    test "assert withdraw - all values withdraw in determineted period", state do
+    test "assert withdraw - all values withdraw in all period by account", state do
       params = %{"from_account_id" => state[:valores].account_id_1}
 
       result =
@@ -616,7 +615,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
         |> json_response(:created)
 
       assert %{
-               "message" => "Total trasfered by determineted Account.",
+               "message" => "Total for determineted operation by determineted Account.",
                "operation" => "Withdraw",
                "result" => 5850
              } = result
@@ -630,7 +629,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
         |> json_response(:created)
 
       assert %{
-               "message" => "Total trasfered by determineted Account.",
+               "message" => "Total for determineted operation by determineted Account.",
                "operation" => "Withdraw",
                "result" => 500
              } = resultado2
@@ -652,7 +651,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
 
       assert %{
                "message" => "Total in determineted period for determineted Account.",
-               "result" => 3850
+               "result" => 3_850
              } = result
     end
 
@@ -690,7 +689,7 @@ defmodule BankApiWeb.ControllerReportAdminTest do
              } = resultado2
     end
 
-    test "assert withdraw between dates - all values withdraw in all period",
+    test "assert withdraw between dates - all values withdraw between period",
          state do
       params = %{
         "initial_date" => "2021-06-15 00:00:01",

@@ -16,6 +16,7 @@ defmodule BankApi.Schemas.Admin do
     timestamps()
   end
 
+  @doc false
   def changeset(params) do
     %__MODULE__{}
     |> cast(params, [:email, :password, :password_validation])
@@ -31,6 +32,7 @@ defmodule BankApi.Schemas.Admin do
     |> put_password()
   end
 
+  @doc false
   def update_changeset(admin, %{email: _email} = params) do
     admin
     |> cast(params, [:email])

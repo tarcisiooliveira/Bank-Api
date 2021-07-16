@@ -4,7 +4,7 @@ defmodule BankApiWeb.SignController do
   alias BankApiWeb.Auth.Guardian
   alias BankApiWeb.FallbackController
   alias BankApi.Multi.Admin, as: MultiAdmin
-  alias BankApi.Schemas.{Admin, User}
+  alias BankApi.Schemas.Admin
 
   def sign_in_admin(conn, params) do
     return = Guardian.authenticate(:admin, params)

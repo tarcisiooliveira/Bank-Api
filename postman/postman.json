@@ -19,7 +19,7 @@
                                 "header": [],
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n    \"email\": \"admin5@email.com\",\n    \"password\": \"12345\",\n    \"password_confirmation\": \"123456\"\n}",
+                                    "raw": "{\n    \"email\": \"admin5@email.com\",\n    \"password\": \"12345\",\n    \"password_validation\": \"123456\"\n}",
                                     "options": {
                                         "raw": {
                                             "language": "json"

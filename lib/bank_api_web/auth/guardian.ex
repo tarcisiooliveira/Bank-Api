@@ -19,7 +19,7 @@ defmodule BankApiWeb.Auth.Guardian do
     # the resource id so here we'll rely on that to look it up.
     claims
     |> Map.get("sub")
-    |> BankApi.Handle.HandleAdmin.get()
+    |> BankApi.Handle.Admin.HandleAdmin.get()
 
     # id = claims["sub"]
     # resource = MyApp.get_resource_by_id(id)

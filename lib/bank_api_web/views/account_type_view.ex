@@ -41,7 +41,7 @@ defmodule BankApiWeb.AccountTypeView do
   end
 
   def render("delete.json", %{
-        account_type: %{delete_operation: %AccountType{account_type_name: account_type_name}}
+        account_type: %{delete_account_type: %AccountType{account_type_name: account_type_name}}
       }) do
     %{
       message: "Account Type deleted successfully!",
@@ -49,14 +49,10 @@ defmodule BankApiWeb.AccountTypeView do
     }
   end
 
-  def render("delete.json", %{account_type: %AccountType{account_type_name: account_type_name}}) do
-    %{
-      message: "Account Type deleted successfully!",
-      Name: account_type_name
-    }
-  end
-
   def render("error.json", %{error: :operation_not_exists}),
+    do: %{error: "Invalid ID or inexistent."}
+
+  def render("error.json", %{error: :account_type_not_exists}),
     do: %{error: "Invalid ID or inexistent."}
 
   def render("error.json", %{error: error}), do: %{error: "#{error}"}

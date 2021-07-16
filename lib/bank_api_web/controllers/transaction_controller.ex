@@ -2,11 +2,19 @@ defmodule BankApiWeb.TransactionController do
   use BankApiWeb, :controller
   alias BankApi.Handle.HandleTransaction
   alias BankApi.Schemas.Transaction
+  alias BankApi.Repo
 
   def show(conn, %{"id" => id}) do
     %{id: to_integer(id)}
-    |> HandleTransaction.get()
+    |> get_transaction()
     |> handle_response(conn, "show.json", :ok)
+  end
+
+  def get_transaction(%{id: id}) do
+    case Repo.get_by(Transaction, id: id) do
+      nil -> {:error, "nvalid ID or inexistent."}
+      transaction -> {:ok, transaction}
+    end
   end
 
   def delete(conn, %{"id" => id}) do
@@ -31,7 +39,6 @@ defmodule BankApiWeb.TransactionController do
       value: value
     }
     |> HandleTransaction.create()
-    |> IO.inspect()
     |> handle_response(conn, "create.json", :created)
   end
 
@@ -53,8 +60,6 @@ defmodule BankApiWeb.TransactionController do
   end
 
   defp handle_response({:error, :balance_not_enough}, conn, _view, status) do
-    IO.inspect("Entrou Correto")
-    IO.inspect("balance_not_enough")
     conn
     |> put_status(status)
     |> render("error.json", error: :balance_not_enough)

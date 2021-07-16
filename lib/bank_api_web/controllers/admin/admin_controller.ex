@@ -1,6 +1,6 @@
 defmodule BankApiWeb.Admin.AdminController do
   use BankApiWeb, :controller
-  alias BankApi.Handle.HandleAdmin
+  alias BankApi.Handle.Admin.HandleAdmin
 
   def index(conn, params) do
     params

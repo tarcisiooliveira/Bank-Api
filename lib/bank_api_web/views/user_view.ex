@@ -16,7 +16,7 @@ defmodule BankApiWeb.UserView do
   end
 
   def render("update.json", %{
-        user: %{update_operation: %User{id: id, name: name, email: email}}
+        user: %{updated_user: %User{id: id, name: name, email: email}}
       }) do
     %{
       message: "User updated successfuly!",

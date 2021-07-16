@@ -7,6 +7,117 @@ defmodule BankApi.Handle.Report.HandleReportAdmin do
   alias BankApi.Repo
   import Ecto.Query
 
+  @doc """
+    ##Example
+    iex> report(%{"operation" => "Withdraw, "period" => "month", "month" => "07"})
+    %{
+      message: "Total in current month by operation.",
+      operation: "Withdraw",
+      result: 0
+    }
+  ##Example
+    iex> report(%{"period" => "month", "month" => month})
+     %{
+      message: "Total in month by all operations.",
+      result: 0
+    }
+  ##Example
+    iex> report(%{"period" => "month"})
+     %{
+      message: "Total in month by all operations.",
+      result: 0
+    }
+  ##Example
+    iex> report(%{"operation" => operation, "period" => "year", "year" => year})
+     %{
+        message: "Total in current year by operations.",
+        operation: operation,
+        result: 0
+      }
+  ##Example
+      iex> report(%{"period" => "year"})
+     %{
+        message: "Total in current year by all operations.",
+        result: 0
+      }
+  ##Example
+      iex> report(%{"operation" => operation, "period" => "day", "day" => day})
+     %{
+        message: "Total in current month by all operations.",
+        result: 0
+      }
+  ##Example
+      iex> report(%{"operation" => operation, "period" => "today"})
+     %{
+          message: "Total in current day by operation.",
+          operation: operation,
+          result: 0
+        }
+  ##Example
+      iex> report(%{"period" => "day", "day" => day})
+     %{
+              message: "Total in determineted day by all operations.",
+              result: 0
+            }
+  ##Example
+      iex> report(%{"period" => "today"})
+     %{
+              message: "Total today by all operations.",
+              result: 0
+            }
+  ##Example
+      iex> report(%{"operation" => operation, "period" => "all"})
+     %{
+          message: "Total for the entire period by operation",
+          operation: operation,
+          result: 0
+        }
+  ##Example
+      iex> report(%{"period" => "all"})
+     %{
+          message: "Total moved for the entire period by all operations.",
+          operation: operation,
+          result: 0
+        }
+
+  ##Example
+      iex> report(
+        %{"initial_date" => initial_date,
+          "final_date" => final_date,
+          "from_account_id" => from_account_id,
+          "to_account_id" => to_account_id,
+          "operation" => operation})
+     %{
+        from_account_id: from_account_id,
+        to_account_id: to_account_id,
+        message: "Total in determineted period for determineted between tow Accounts.",
+        operation: operation,
+        result: 0
+      }
+  ##Example
+      iex> report(
+        %{"initial_date" => initial_date,
+          "final_date" => final_date,
+          "from_account_id" => from_account_id,
+          "operation" => operation})
+     %{
+        from_account_id: from_account_id,
+        message: "Total in determineted period for determineted Account.",
+        operation: operation,
+        result: 0
+      }
+  ##Example
+      iex> report(
+        %{"initial_date" => initial_date,
+        "final_date" => final_date,
+        "operation" => operation})
+     %{
+        message: "Total in determineted period between all Accounts.",
+        operation: operation,
+        result: 0
+      }
+  """
+
   def report(%{"operation" => operation, "period" => "month", "month" => month}) do
     date_time = DateTime.utc_now()
 
@@ -108,7 +219,7 @@ defmodule BankApi.Handle.Report.HandleReportAdmin do
     case quantity do
       0 ->
         return = %{
-          message: "Total in current month by all operations.",
+          message: "Total in seted month by all operations.",
           result: 0
         }
 
@@ -118,7 +229,7 @@ defmodule BankApi.Handle.Report.HandleReportAdmin do
         result = Repo.aggregate(query, :sum, :value)
 
         return = %{
-          message: "Total in current month by all operations.",
+          message: "Total in seted month by all operations.",
           result: result
         }
 
@@ -348,7 +459,7 @@ defmodule BankApi.Handle.Report.HandleReportAdmin do
         case quantity do
           0 ->
             return = %{
-              message: "Total in current month by all operations.",
+              message: "Total in seted day by all operations.",
               result: 0
             }
 
@@ -358,7 +469,7 @@ defmodule BankApi.Handle.Report.HandleReportAdmin do
             result = Repo.aggregate(query, :sum, :value)
 
             return = %{
-              message: "Total in current month by all operations.",
+              message: "Total in seted day by all operations.",
               result: result
             }
 
@@ -475,7 +586,7 @@ defmodule BankApi.Handle.Report.HandleReportAdmin do
         case quantity do
           0 ->
             return = %{
-              message: "Total in determineted day by all operations.",
+              message: "Total in seted day by all operations.",
               result: 0
             }
 
@@ -485,7 +596,7 @@ defmodule BankApi.Handle.Report.HandleReportAdmin do
             result = Repo.aggregate(query, :sum, :value)
 
             return = %{
-              message: "Total in determineted day by all operations.",
+              message: "Total in seted day by all operations.",
               result: result
             }
 
@@ -569,7 +680,7 @@ defmodule BankApi.Handle.Report.HandleReportAdmin do
     case quantity do
       0 ->
         return = %{
-          message: "Total for the entire period.",
+          message: "Total for the entire period by operation.",
           operation: operation,
           result: 0
         }
@@ -580,7 +691,7 @@ defmodule BankApi.Handle.Report.HandleReportAdmin do
         result = Repo.aggregate(query, :sum, :value)
 
         return = %{
-          message: "Total for the entire period.",
+          message: "Total for the entire period by operation.",
           operation: operation,
           result: result
         }
@@ -601,7 +712,7 @@ defmodule BankApi.Handle.Report.HandleReportAdmin do
     case quantity do
       0 ->
         return = %{
-          message: "Total moved for the entire period.",
+          message: "Total moved for the entire period by all operations.",
           result: 0
         }
 
@@ -611,7 +722,7 @@ defmodule BankApi.Handle.Report.HandleReportAdmin do
         result = Repo.aggregate(query, :sum, :value)
 
         return = %{
-          message: "Total moved for the entire period.",
+          message: "Total moved for the entire period by all operations.",
           result: result
         }
 
@@ -806,7 +917,7 @@ defmodule BankApi.Handle.Report.HandleReportAdmin do
         result = Repo.aggregate(query, :sum, :value)
 
         return = %{
-          message: "Total trasfered by determineted Account.",
+          message: "Total for determineted operation by determineted Account.",
           operation: operation,
           result: result
         }
@@ -835,14 +946,14 @@ defmodule BankApi.Handle.Report.HandleReportAdmin do
     end
   end
 
-  def valid_account?(account_id) do
+  defp valid_account?(account_id) do
     case Repo.get_by(Account, id: account_id) do
       %Account{} -> true
       _ -> false
     end
   end
 
-  def valid_accounts?(from_account_id, to_account_id) do
+  defp valid_accounts?(from_account_id, to_account_id) do
     with {:ok, %Account{}} <- Repo.get_by(Account, id: from_account_id),
          {:ok, %Account{}} <- Repo.get_by(Account, id: to_account_id) do
       true

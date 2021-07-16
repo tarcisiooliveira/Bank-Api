@@ -5,9 +5,6 @@ defmodule BankApi.Multi.Transaction do
 
   alias BankApi.Schemas.{Transaction, Account, Operation}
   alias BankApi.Repo
-  alias BankApi.Handle.Repo.Account, as: HandleAccountRepo
-  alias BankApi.Handle.Repo.Operation, as: HandleOperationRepo
-  alias BankApi.Handle.Repo.Transaction, as: HandleTransactionRepo
   alias BankApi.SendEmail.SendEmail
 
   def create(%{
@@ -154,15 +151,15 @@ defmodule BankApi.Multi.Transaction do
     |> Transaction.changeset()
   end
 
-  defp fetch_account(%{id: _id} = params) do
-    case HandleAccountRepo.fetch_account(params) do
+  defp fetch_account(%{id: id}) do
+    case Repo.get_by(Account, id: id) do
       nil -> {:error, :account_not_found}
       account -> {:ok, account}
     end
   end
 
-  defp fetch_transaction(%{id: _id} = params) do
-    case HandleTransactionRepo.fetch_transaction(params) do
+  defp fetch_transaction(%{id: id}) do
+    case Repo.get_by(Transaction, id: id) do
       nil ->
         {:error, :transaction_not_found}
 
@@ -171,8 +168,8 @@ defmodule BankApi.Multi.Transaction do
     end
   end
 
-  defp fetch_operation(%{id: _operation_id} = params) do
-    case HandleOperationRepo.fetch_operation(params) do
+  defp fetch_operation(%{id: operation_id}) do
+    case Repo.get_by(Operation, id: operation_id) do
       nil -> {:error, :operation_not_found}
       operation -> {:ok, operation}
     end

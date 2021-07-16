@@ -1,6 +1,6 @@
 defmodule BankApi.Schemas.AccountType do
   @moduledoc """
-  Modulo de schema de Account Type
+  Module Schema from Account Type
   """
 
   use Ecto.Schema
@@ -15,6 +15,7 @@ defmodule BankApi.Schemas.AccountType do
     timestamps()
   end
 
+  @doc false
   def changeset(params) do
     %__MODULE__{}
     |> cast(params, [:account_type_name])
@@ -22,6 +23,7 @@ defmodule BankApi.Schemas.AccountType do
     |> unique_constraint(:account_type_name)
   end
 
+  @doc false
   def changeset(account_type, %{account_type_name: _account_type_name} = params) do
     account_type
     |> cast(params, [:account_type_name])

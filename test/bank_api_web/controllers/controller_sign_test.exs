@@ -5,8 +5,6 @@ defmodule BankApiWeb.ControllerSignTest do
 
   use BankApiWeb.ConnCase, async: true
 
-  alias BankApiWeb.Auth.Guardian
-
   import BankApi.Factory
 
   test "assert sig_up_admin test", %{conn: conn} do
