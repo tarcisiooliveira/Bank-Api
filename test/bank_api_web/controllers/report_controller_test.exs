@@ -12,6 +12,7 @@ defmodule BankApiWeb.ReportControllerTest do
   setup do
     [conn: "Phoenix.ConnTest.build_conn()"]
     admin = insert(:admin)
+
     {:ok, token, _claims} = GuardianAdmin.encode_and_sign(admin)
 
     %User{id: user_id1} = insert(:user)
@@ -85,7 +86,7 @@ defmodule BankApiWeb.ReportControllerTest do
     )
 
     {:ok,
-     valores: %{
+     value: %{
        account_id_1: account_id_1,
        account_id_2: account_id_2,
        account_id_3: account_id_3,
@@ -93,59 +94,99 @@ defmodule BankApiWeb.ReportControllerTest do
      }}
   end
 
-  test "all transcations today", %{conn: _conn} do
-    result =
-      %{period: :today}
-      |> HandleReport.report()
+  test "all transcations today", state do
+    params = %{"period" => "today"}
 
-    assert {:ok, [result: 100]} = result
+    response =
+      state[:conn]
+      |> put_req_header("authorization", "Bearer " <> state[:value].token)
+      |> post(Routes.report_path(state[:conn], :report, params))
+
+    assert %{"result" => 100} = Jason.decode!(response.resp_body)
   end
 
-  test "all transcations this month", %{conn: _conn} do
-    result =
-      %{period: :month}
-      |> HandleReport.report()
+  test "all transcations this month", state do
+    # result =
+    #   %{period: :month}
+    #   |> HandleReport.report()
 
-    assert {:ok, [result: 400]} = result
+    params = %{"period" => "month"}
+
+    response =
+      state[:conn]
+      |> put_req_header("authorization", "Bearer " <> state[:value].token)
+      |> post(Routes.report_path(state[:conn], :report, params))
+
+    assert %{"result" => 400} = Jason.decode!(response.resp_body)
   end
 
-  test "all transcations different month", %{conn: _conn} do
-    result =
-      %{period: :month, month: "08"}
-      |> HandleReport.report()
+  test "all transcations different month", state do
+    # result =
+    #   %{period: :month, month: "08"}
+    #   |> HandleReport.report()
+    params = %{"period" => "month", "month" => "08"}
 
-    assert {:ok, [result: 400]} = result
+    response =
+      state[:conn]
+      |> put_req_header("authorization", "Bearer " <> state[:value].token)
+      |> post(Routes.report_path(state[:conn], :report, params))
+
+    assert %{"result" => 400} = Jason.decode!(response.resp_body)
   end
 
-  test "transaction in all period", %{conn: _conn} do
-    result =
-      %{period: :all}
-      |> HandleReport.report()
+  test "transaction in all period", state do
+    # result =
+    #   %{period: :all}
+    #   |> HandleReport.report()
 
-    assert {:ok, [result: 900]} = result
+    params = %{"period" => "all"}
+
+    response =
+      state[:conn]
+      |> put_req_header("authorization", "Bearer " <> state[:value].token)
+      |> post(Routes.report_path(state[:conn], :report, params))
+
+    assert %{"result" => 900} = Jason.decode!(response.resp_body)
   end
 
-  test "transaction in 2020", %{conn: _conn} do
-    result =
-      %{period: :year, year: "2020"}
-      |> HandleReport.report()
+  test "transaction in 2020", state do
+    # result =
+    #   %{period: :year, year: "2020"}
+    #   |> HandleReport.report()
 
-    assert {:ok, [result: 100]} = result
+    params = %{"period" => "year", "year" => "2020"}
+
+    response =
+      state[:conn]
+      |> put_req_header("authorization", "Bearer " <> state[:value].token)
+      |> post(Routes.report_path(state[:conn], :report, params))
+
+    assert %{"result" => 100} = Jason.decode!(response.resp_body)
   end
 
-  test "erro when past invalid parameter", %{conn: _conn} do
-    result =
-      %{period: :todays}
-      |> HandleReport.report()
+  test "erro when past invalid parameter", state do
+    params = %{"period" => "todays"}
 
-    assert {:error, :invalid_parameters} = result
+    response =
+      state[:conn]
+      |> put_req_header("authorization", "Bearer " <> state[:value].token)
+      |> post(Routes.report_path(state[:conn], :report, params))
+
+    assert %{"error" => "Invalid Parameters"} = Jason.decode!(response.resp_body)
   end
 
-  test "erro when past invalids parameters", %{conn: _conn} do
-    result =
-      %{period: :year, years: "2020"}
-      |> HandleReport.report()
+  test "erro when past invalids parameters", state do
+    # result =
+    #   %{period: :year, years: "2020"}
+    #   |> HandleReport.report()
 
-    assert {:error, :invalid_parameters} = result
+    params = %{"period" => "year", "years" => "2020"}
+
+    response =
+      state[:conn]
+      |> put_req_header("authorization", "Bearer " <> state[:value].token)
+      |> post(Routes.report_path(state[:conn], :report, params))
+
+    assert %{"error" => "Invalid Parameters"} = Jason.decode!(response.resp_body)
   end
 end

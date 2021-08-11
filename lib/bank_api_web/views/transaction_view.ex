@@ -75,9 +75,7 @@ defmodule BankApiWeb.TransactionView do
             }
           }
         }
-      )  do
-
-
+      ) do
     %{
       message: "Transaction finished successfully",
       Transaction: %{
@@ -87,8 +85,6 @@ defmodule BankApiWeb.TransactionView do
       }
     }
   end
-
-
 
   # def render("error.json", %{error: :balance_not_enough}) do
   #   %{error: "Balance not enough."}

@@ -3,7 +3,7 @@ defmodule BankApiWeb.TransactionControllerTest do
   Module test Transaction Controller
   """
 
-  use BankApiWeb.ConnCase, async: true
+  use BankApiWeb.ConnCase, async: false
   use ExUnit.Case
 
   import BankApi.Factory
@@ -123,8 +123,7 @@ defmodule BankApiWeb.TransactionControllerTest do
       |> put_req_header("authorization", "Bearer " <> state[:value].token)
       |> post(Routes.transaction_path(state[:conn], :create, params))
 
-    assert %{"error" => %{"message" => "Transfer to the same Account"}} =
-             Jason.decode!(response.resp_body)
+    assert %{"error" => "Transfer to the same Account"} = Jason.decode!(response.resp_body)
   end
 
   test "assert ok insert transaction/4 - All parameters ok, create a transaction between two Acccounts",

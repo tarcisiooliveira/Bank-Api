@@ -27,9 +27,7 @@ defmodule BankApi.Multi.Admin do
     multi =
       Ecto.Multi.new()
       |> Ecto.Multi.insert(:insert_admin, fn _ ->
-
         Admin.changeset(params)
-
       end)
 
     case Repo.transaction(multi) do

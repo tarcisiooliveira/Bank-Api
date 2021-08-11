@@ -40,7 +40,7 @@ defmodule BankApiWeb.UserControllerTest do
 
     response =
       state[:conn]
-      |> post(Routes.user_sign_path(state[:conn], :sign_up_user, params))
+      |> post(Routes.user_path(state[:conn], :sign_up, params))
       |> json_response(:ok)
 
     assert %{
@@ -61,7 +61,7 @@ defmodule BankApiWeb.UserControllerTest do
 
     response =
       conn
-      |> get(Routes.user_sign_path(conn, :sign_in_user, params))
+      |> get(Routes.user_path(conn, :sign_in, params))
       |> json_response(:ok)
 
     assert %{
@@ -91,7 +91,7 @@ defmodule BankApiWeb.UserControllerTest do
       |> put_req_header("authorization", "Bearer " <> state[:value].token)
       |> get(Routes.user_path(state[:conn], :show, %{id: Ecto.UUID.autogenerate()}))
 
-    assert %{"error" => %{"message" => "User not Found"}} = Jason.decode!(response.resp_body)
+    assert %{"error" => "User not Found"} = Jason.decode!(response.resp_body)
   end
 
   test "error show - retorna erro quando não passa  toke de autorização", state do
@@ -113,10 +113,10 @@ defmodule BankApiWeb.UserControllerTest do
 
     response =
       state[:conn]
-      |> post(Routes.user_sign_path(state[:conn], :sign_up_user, params))
+      |> post(Routes.user_path(state[:conn], :sign_up, params))
       |> json_response(:unprocessable_entity)
 
-    assert %{"error" => %{"message" => "Email in use. Choose another."}} = response
+    assert %{"error" => "Email in use. Choose another."} = response
   end
 
   test "error insert - try creat user without passwor_validation",
@@ -129,8 +129,8 @@ defmodule BankApiWeb.UserControllerTest do
 
     response =
       state[:conn]
-      |> post(Routes.user_sign_path(state[:conn], :sign_up_user, params))
+      |> post(Routes.user_path(state[:conn], :sign_up, params))
 
-    assert %{"error" => %{"message" => "Invalid parameters"}} = Jason.decode!(response.resp_body)
+    assert %{"error" => "Invalid parameters"} = Jason.decode!(response.resp_body)
   end
 end

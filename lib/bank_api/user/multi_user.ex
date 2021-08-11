@@ -27,7 +27,6 @@ defmodule BankApi.Multi.User do
         create_account(insert_user)
       end)
 
-
     case Repo.transaction(multi) do
       {:ok, params} -> {:ok, params}
       {:error, _, changeset, _} -> {:error, changeset}

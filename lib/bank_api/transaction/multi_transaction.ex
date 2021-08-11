@@ -33,7 +33,6 @@ defmodule BankApi.Multi.Transaction do
         is_same_account?(from_account_id, to_account_id)
       end)
       |> Ecto.Multi.run(:negative_value, fn _, _ ->
-
         is_negative_value?(value)
       end)
       |> Ecto.Multi.run(:from_account, fn _, _ ->
@@ -131,17 +130,12 @@ defmodule BankApi.Multi.Transaction do
   end
 
   defp is_negative_value?(value) do
-
-
     if value < 0 or Decimal.new(value) |> Decimal.negative?() do
       {:error, :value_zero_or_negative}
     else
       {:ok, false}
     end
   end
-
-  defp is_balance_enough?(balance_inicial, value),
-    do: if(balance_inicial - Decimal.new(value) >= 0, do: true, else: false)
 
   defp operation(account, value, :sub) do
     account

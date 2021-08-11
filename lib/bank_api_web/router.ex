@@ -21,21 +21,19 @@ defmodule BankApiWeb.Router do
   scope "/api", BankApiWeb do
     pipe_through(:api)
     get "/admin/sign_in", AdminController, :sign_in
-    get "/user/sign_in", UserSignController, :sign_in_user
-    post "/user/sign_up", UserSignController, :sign_up_user
+    get "/user/sign_in", UserController, :sign_in
+    post "/user/sign_up", UserController, :sign_up
   end
 
-  scope "/api", BankApiWeb do
+  scope "/api/admin", BankApiWeb do
     pipe_through([:api, :authAdmin])
-    post "/admin/sign_up", AdminController, :sign_up
-    get "/admin", ReportController, :show
-    post "/admin", ReportController, :create
+    post "/sign_up", AdminController, :sign_up
     post "/report", ReportController, :report
   end
 
-  scope "/api", BankApiWeb do
+  scope "/api/user", BankApiWeb do
     pipe_through([:api, :authUser])
-    get "/user", UserController, :show
+    get "/", UserController, :show
     get "/transaction", TransactionController, :show
     post "/transaction", TransactionController, :create
   end

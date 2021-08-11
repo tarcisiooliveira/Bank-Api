@@ -23,8 +23,7 @@ defmodule BankApiWeb.ErrorView do
   end
 
   def render("error_message.json", %{message: message} = _params) do
-    %{error: %{message: message}}
-
+    %{error: message}
   end
 
   def template_not_found(template, _assigns) do

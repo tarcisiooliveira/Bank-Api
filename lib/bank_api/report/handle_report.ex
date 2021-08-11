@@ -7,7 +7,7 @@ defmodule BankApi.Report.HandleReport do
   alias BankApi.Repo
   import Ecto.Query
 
-  def report(%{period: :all} = params) when params == %{period: :all} do
+  def report(%{"period" => "all"} = params) when params == %{"period" => "all"} do
     query =
       from t in Transaction,
         select: t.value
@@ -27,7 +27,7 @@ defmodule BankApi.Report.HandleReport do
     end
   end
 
-  def report(%{period: :today} = params) when params == %{period: :today} do
+  def report(%{"period" => "today"} = params) when params == %{"period" => "today"} do
     day =
       Date.utc_today()
       |> to_string
@@ -65,7 +65,7 @@ defmodule BankApi.Report.HandleReport do
     end
   end
 
-  def report(%{period: :month} = params) when params == %{period: :month} do
+  def report(%{"period" => "month"} = params) when params == %{"period" => "month"} do
     {:ok, start_month} =
       Date.utc_today()
       |> Date.beginning_of_month()
@@ -106,11 +106,12 @@ defmodule BankApi.Report.HandleReport do
     end
   end
 
-  def report(%{period: :month, month: month} = params)
-      when params == %{period: :month, month: month} do
+  def report(%{"period" => "month", "month" => month} = params)
+      when params == %{"period" => "month", "month" => month} do
     data = NaiveDateTime.utc_now()
 
-    {:ok, start_month} = NaiveDateTime.new(data.year, String.to_integer(month), 01, 00, 00, 00, 000_000)
+    {:ok, start_month} =
+      NaiveDateTime.new(data.year, String.to_integer(month), 01, 00, 00, 00, 000_000)
 
     {:ok, next_month} =
       start_month
@@ -118,8 +119,6 @@ defmodule BankApi.Report.HandleReport do
       |> to_string()
       |> agregate_end()
       |> NaiveDateTime.from_iso8601()
-
-
 
     query =
       from t in Transaction,
@@ -147,7 +146,7 @@ defmodule BankApi.Report.HandleReport do
     end
   end
 
-  def report(%{period: :year, year: year}) do
+  def report(%{"period" => "year", "year" => year}) do
     {:ok, start_day} = NaiveDateTime.from_iso8601(year <> "-01-01 00:00:00")
 
     {:ok, end_day} = NaiveDateTime.from_iso8601(year <> "-12-31 23:59:59")
@@ -178,7 +177,7 @@ defmodule BankApi.Report.HandleReport do
     end
   end
 
-  def report(params) when params == %{period: :year} do
+  def report(params) when params == %{"period" => "year"} do
     date_time = DateTime.utc_now().year |> to_string()
 
     {:ok, start_day} = NaiveDateTime.from_iso8601(date_time <> "-01-01 00:00:00")

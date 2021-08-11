@@ -19,7 +19,7 @@ defmodule BankApiWeb.ControllerAccountTest do
     {:ok, token, _claims} = GuardianAdmin.encode_and_sign(admin)
 
     {:ok,
-     valores: %{
+     value: %{
        token: token
      }}
   end
@@ -29,12 +29,12 @@ defmodule BankApiWeb.ControllerAccountTest do
       %User{id: user_id} = insert(:user)
 
       %Account{id: id} = insert(:account, user_id: user_id)
-      assert %{balance_account: 10_000} = BankApi.Repo.get_by(Account, id: id)
+      assert %Account{balance_account: 10_000} = BankApi.Repo.get_by(Account, id: id)
 
       %{balance_account: 3_000, id: id}
       |> MultiAccount.update()
 
-      assert %{balance_account: 3_000} = BankApi.Repo.get_by(Account, id: id)
+      assert %Account{balance_account: 3_000} = BankApi.Repo.get_by(Account, id: id)
     end
 
     test "assert update - update balance to value equal zero." do
@@ -48,7 +48,7 @@ defmodule BankApiWeb.ControllerAccountTest do
       assert {:ok, %{ammount_non_negative: :ammount_positive_value}} = response
     end
 
-    test "assert update - try update do insufficente founds." do
+    test "assert update - try withdraw insufficente ammount." do
       %User{id: user_id} = insert(:user)
       %Account{id: id} = insert(:account, user_id: user_id)
 

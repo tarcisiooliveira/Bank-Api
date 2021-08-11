@@ -51,6 +51,34 @@ defmodule BankApi.Multi.Account do
     end
   end
 
+  def update(%{balance_account: balance_account, to_account_id: to_account_id}) do
+    multi =
+      Multi.new()
+      |> Ecto.Multi.run(:ammount_non_negative, fn _, _ ->
+        case is_ammount_non_negative?(balance_account) do
+          false -> {:error, :ammount_negative_value}
+          true -> {:ok, :ammount_positive_value}
+        end
+      end)
+      |> Multi.run(:fetch_account, fn _, _ ->
+        case Repo.get_by(Account, id: to_account_id) do
+          nil -> {:error, "There's no account with this ID."}
+          account -> {:ok, account}
+        end
+      end)
+      |> Multi.update(:update_changeset, fn %{fetch_account: fetch_account} ->
+        Account.update_changeset(fetch_account, %{balance_account: balance_account})
+      end)
+
+    case Repo.transaction(multi) do
+      {:ok, params} ->
+        {:ok, params}
+
+      {:error, _, changeset, _} ->
+        {:error, changeset}
+    end
+  end
+
   def update(%{balance_account: balance_account, id: account_id}) do
     multi =
       Multi.new()
@@ -90,9 +118,5 @@ defmodule BankApi.Multi.Account do
     {:ok,
      %{balance_account: amount, user_id: user_id}
      |> Account.changeset()}
-  end
-
-  defp is_ammount_non_negative?(value) do
-    if value < 0 or Decimal.new(value) |> Decimal.negative?(), do: false, else: true
   end
 end
