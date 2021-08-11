@@ -29,12 +29,20 @@ config :phoenix, :json_library, Jason
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"
 
-config :bank_api, BankApiWeb.Auth.Guardian,
+config :bank_api, BankApiWeb.Auth.GuardianAdmin,
   issuer: "bank_api",
   secret_key: "rFNnxDmG47707Wn4UrKcR8c0M8HbPYpjjZtX4QDhXKgE01DQE9o9o+yXC/7w6BA4"
 
-config :bank_api, BankApiWeb.Auth.Pipeline,
-  module: BankApiWeb.Auth.Guardian,
+config :bank_api, BankApiWeb.Auth.GuardianUser,
+  issuer: "bank_api",
+  secret_key: "wF3cZjflTctAbZE2con/ZVaAQ7jocnrxfSdh9iE7oDn6zyVsdeM30TMhziuMJEgr"
+
+config :bank_api, BankApiWeb.Auth.PipelineUser,
+  module: BankApiWeb.Auth.GuardianUser,
+  error_handler: BankApiWeb.Auth.ErrorHandler
+
+config :bank_api, BankApiWeb.Auth.PipelineAdmin,
+  module: BankApiWeb.Auth.GuardianAdmin,
   error_handler: BankApiWeb.Auth.ErrorHandler
 
 config :bcrypt_elixir, log_rounds: 4

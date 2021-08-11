@@ -1,70 +1,45 @@
 defmodule BankApiWeb.Router do
   use BankApiWeb, :router
 
+  # use Plug.ErrorHandler
   pipeline :api do
     plug(:accepts, ["json"])
   end
 
-  pipeline :auth do
-    plug BankApiWeb.Auth.Pipeline
+  pipeline :authAdmin do
+    plug BankApiWeb.Auth.PipelineAdmin
+  end
+
+  pipeline :authUser do
+    plug BankApiWeb.Auth.PipelineUser
   end
 
   scope "/", BankApiWeb do
     pipe_through(:api)
   end
 
-  scope "/api/admin", BankApiWeb do
+  scope "/api", BankApiWeb do
     pipe_through(:api)
-    post "/sign_in", SignController, :sign_in_admin
-    post "/sign_up", SignController, :sign_up_admin
-  end
-
-  scope "/api/user", BankApiWeb do
-    pipe_through(:api)
-    post "/sign_in", SignController, :sign_in_user
-  end
-
-  scope "/api/report", BankApiWeb do
-    pipe_through([:api, :auth])
-    post "/report", Report.ReportController, :report
-    post "/payment", Report.ReportController, :payment
-    post "/withdraw", Report.ReportController, :withdraw
-    post "/transfer", Report.ReportController, :transfer
+    get "/admin/sign_in", AdminController, :sign_in
+    get "/user/sign_in", UserSignController, :sign_in_user
+    post "/user/sign_up", UserSignController, :sign_up_user
   end
 
   scope "/api", BankApiWeb do
-    pipe_through([:api, :auth])
-
-    resources("/admin", Admin.AdminController,
-      only: [:new, :show, :delete, :update, :index, :create]
-    )
-
-    resources("/user", UserController, only: [:new, :show, :delete, :update, :index, :create])
-
-    resources("/accounttype", AccountTypeController,
-      only: [:new, :show, :delete, :update, :index, :create]
-    )
-
-    resources("/operation", OperationController,
-      only: [:new, :show, :delete, :update, :index, :create]
-    )
-
-    resources("/account", AccountController,
-      only: [:new, :show, :delete, :update, :index, :create]
-    )
-
-    resources("/transaction", TransactionController,
-      only: [:new, :show, :delete, :update, :create]
-    )
+    pipe_through([:api, :authAdmin])
+    post "/admin/sign_up", AdminController, :sign_up
+    get "/admin", ReportController, :show
+    post "/admin", ReportController, :create
+    post "/report", ReportController, :report
   end
 
-  # Enables LiveDashboard only for development
-  #
-  # If you want to use the LiveDashboard in production, you should put
-  # it behind authentication and allow only admins to access it.
-  # If your application does not have an admins-only section yet,
-  # you can use Plug.BasicAuth to set up some basic authentication
-  # as long as you are also using SSL (which you should anyway).
+  scope "/api", BankApiWeb do
+    pipe_through([:api, :authUser])
+    get "/user", UserController, :show
+    get "/transaction", TransactionController, :show
+    post "/transaction", TransactionController, :create
+  end
+
   if Mix.env() in [:dev, :test] do
     import Phoenix.LiveDashboard.Router
 

@@ -18,6 +18,15 @@ defmodule BankApiWeb.ErrorView do
     %{error: error}
   end
 
+  def render("500.json", %{error: error}) do
+    %{error: error}
+  end
+
+  def render("error_message.json", %{message: message} = _params) do
+    %{error: %{message: message}}
+
+  end
+
   def template_not_found(template, _assigns) do
     %{errors: %{detail: Phoenix.Controller.status_message_from_template(template)}}
   end

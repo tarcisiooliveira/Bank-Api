@@ -10,7 +10,9 @@ defmodule BankApi.MixProject do
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: [coveralls: :test, "coveralls.html": :test]
     ]
   end
 
@@ -49,7 +51,8 @@ defmodule BankApi.MixProject do
       {:guardian, "~>2.0"},
       {:bcrypt_elixir, "~> 2.3"},
       {:email_checker, "~> 0.1.2"},
-      {:ex_machina, "~> 2.7.0", only: :test}
+      {:ex_machina, "~> 2.7.0", only: :test},
+      {:distillery, "~> 2.1", runtime: false}
     ]
   end
 
@@ -61,7 +64,7 @@ defmodule BankApi.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      setup: ["deps.get", "ecto.setup"],
+      setup: ["deps.get", "ecto.reset"],
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       # "ecto.retest": ["ecto.drop", "test"],

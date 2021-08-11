@@ -9,3 +9,9 @@
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
+alias BankApi.Repo
+alias BankApi.Admins.Schemas.Admin
+
+%{"email" => "test2@admin.com", "password" => "123456", "password_validation" => "123456"}
+|> Admin.changeset()
+|> Repo.insert()

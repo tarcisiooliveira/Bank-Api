@@ -8,7 +8,7 @@ use Mix.Config
 config :bank_api, BankApi.Repo,
   username: "postgres",
   password: "951753",
-  database: "bank_api_test#{System.get_env("MIX_TEST_PARTITION")}",
+  database: "bank_api_test",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
 

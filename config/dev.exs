@@ -36,7 +36,7 @@ config :bank_api, BankApiWeb.Endpoint,
 # The `http:` config above can be replaced with:
 #
 #     https: [
-#       port: 4001,
+#       port: 4000,
 #       cipher_suite: :strong,
 #       keyfile: "priv/cert/selfsigned_key.pem",
 #       certfile: "priv/cert/selfsigned.pem"
