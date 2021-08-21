@@ -7,35 +7,43 @@ defmodule BankApiWeb.Router do
   end
 
   pipeline :authAdmin do
-    plug BankApiWeb.Auth.PipelineAdmin
+    plug(BankApiWeb.Auth.PipelineAdmin)
   end
 
   pipeline :authUser do
-    plug BankApiWeb.Auth.PipelineUser
+    plug(BankApiWeb.Auth.PipelineUser)
   end
 
   scope "/", BankApiWeb do
     pipe_through(:api)
   end
 
-  scope "/api", BankApiWeb do
+  scope "/api/admin", BankApiWeb do
     pipe_through(:api)
-    get "/admin/sign_in", AdminController, :sign_in
-    post "/users/sign_in", UserController, :sign_in
-    post "/users/sign_up", UserController, :sign_up
+
+    get("/sign_in", AdminController, :sign_in)
   end
 
   scope "/api/admin", BankApiWeb do
     pipe_through([:api, :authAdmin])
-    post "/sign_up", AdminController, :sign_up
-    post "/report", ReportController, :report
+
+    post("/sign_up", AdminController, :sign_up)
+    post("/report", ReportController, :report)
   end
 
-  scope "/api/user", BankApiWeb do
+  scope "/api/users", BankApiWeb do
+    pipe_through(:api)
+
+    post("/sign_in", UserController, :sign_in)
+    post("/sign_up", UserController, :sign_up)
+  end
+
+  scope "/api/users", BankApiWeb do
     pipe_through([:api, :authUser])
-    get "/", UserController, :show
-    get "/transaction", TransactionController, :show
-    post "/transaction", TransactionController, :create
+
+    get("/", UserController, :show)
+    get("/transactions", TransactionController, :show)
+    post("/transactions", TransactionController, :create)
   end
 
   if Mix.env() in [:dev, :test] do
