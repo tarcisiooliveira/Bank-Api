@@ -9,7 +9,7 @@ defmodule BankApiWeb.UserController do
   alias BankApi.Accounts.Schemas.Account
   alias BankApi.Multi.User, as: MultiUser
 
-  action_fallback BankApiWeb.FallbackController
+  action_fallback(BankApiWeb.FallbackController)
 
   def show(conn, %{"id" => id}) do
     with {:ok, user} <- fetch(id) do
@@ -27,11 +27,7 @@ defmodule BankApiWeb.UserController do
     end
   end
 
-  def sign_up(
-        conn,
-        params
-      ) do
-
+  def sign_up(conn, params) do
     with {:ok,
           %{
             insert_user: %User{id: user_id, email: email},

@@ -24,7 +24,7 @@ defmodule BankApiWeb.Auth.GuardianUser do
 
   def authenticate(%{"email" => email, "password" => password}) do
     case Repo.get_by(User, email: email) do
-      nil -> {:error, "Theres no exist this User."}
+      nil -> {:error, :unauthorized}
       user -> validate_password(user, password)
     end
   end

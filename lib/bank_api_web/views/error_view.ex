@@ -22,8 +22,8 @@ defmodule BankApiWeb.ErrorView do
     %{error: error}
   end
 
-  def render("error_message.json", %{message: message} = _params) do
-    %{error: message}
+  def render("error_message.json", %{message: message}) do
+    %{error: %{message: [message]}}
   end
 
   def render("error_changeset.json", %{changeset: changeset}) do

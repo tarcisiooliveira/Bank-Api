@@ -21,8 +21,8 @@ defmodule BankApiWeb.Router do
   scope "/api", BankApiWeb do
     pipe_through(:api)
     get "/admin/sign_in", AdminController, :sign_in
-    get "/user/sign_in", UserController, :sign_in
-    post "/user/sign_up", UserController, :sign_up
+    post "/users/sign_in", UserController, :sign_in
+    post "/users/sign_up", UserController, :sign_up
   end
 
   scope "/api/admin", BankApiWeb do

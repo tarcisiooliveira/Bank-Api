@@ -50,10 +50,10 @@ defmodule BankApiWeb.FallbackController do
     |> render("error_message.json", message: "Not found")
   end
 
-  def call(conn, {:error, _message}) do
+  def call(conn, {:error, message}) do
     conn
     |> put_status(:unauthorized)
     |> put_view(BankApiWeb.ErrorView)
-    |> render("error_message.json", error: "Generic Error")
+    |> render("error_message.json", message: message)
   end
 end
