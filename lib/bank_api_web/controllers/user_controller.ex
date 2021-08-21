@@ -29,25 +29,14 @@ defmodule BankApiWeb.UserController do
 
   def sign_up(
         conn,
-        %{
-          "name" => name,
-          "email" => email,
-          "password" => password,
-          "password_validation" => password_validation
-        }
+        params
       ) do
-    user = %{
-      name: name,
-      email: email,
-      password: password,
-      password_validation: password_validation
-    }
 
     with {:ok,
           %{
             insert_user: %User{id: user_id, email: email},
             insert_account: %Account{id: account_id, balance_account: balance_account}
-          }} <- MultiUser.create(user) do
+          }} <- MultiUser.create(params) do
       conn
       |> put_status(:ok)
       |> render("sign_up.json", %{
@@ -57,15 +46,6 @@ defmodule BankApiWeb.UserController do
         balance_account: balance_account
       })
     end
-  end
-
-  def sign_up(conn, _) do
-    conn
-    |> put_status(:not_found)
-    |> put_view(BankApiWeb.ErrorView)
-    |> render("error_message.json", %{
-      message: "Invalid parameters"
-    })
   end
 
   defp fetch(id) do
