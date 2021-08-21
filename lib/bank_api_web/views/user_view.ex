@@ -40,7 +40,7 @@ defmodule BankApiWeb.UserView do
   end
 
   def render("sign_in.json", %{token: token} = _params) do
-    %{message: token}
+    %{token: token}
   end
 
   def render("error.json", %{error: error}), do: %{error: "#{error}"}
