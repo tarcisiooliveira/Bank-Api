@@ -9,18 +9,11 @@ defmodule BankApiWeb.Auth.ErrorHandler do
   @behaviour Guardian.Plug.ErrorHandler
 
   @impl Guardian.Plug.ErrorHandler
-  def auth_error(conn, {:unauthenticated, _reason}, _opts) do
-    body = Jason.encode!(%{messagem: "Authorization Denied"})
-    send_resp(conn, 401, body)
-  end
+  def auth_error(conn, {_type, _reason}, _opts) do
+    body = Jason.encode!(%{message: "unauthorized"})
 
-  def auth_error(conn, {:unauthorized, _reason}, _opts) do
-    body = Jason.encode!(%{messagem: "Authorization Denied"})
-    send_resp(conn, 401, body)
-  end
-
-  def auth_error(conn, {type, _reason}, _opts) do
-    body = Jason.encode!(%{messagem: to_string(type)})
-    send_resp(conn, 401, body)
+    conn
+    |> put_resp_content_type("application/json")
+    |> send_resp(401, body)
   end
 end
