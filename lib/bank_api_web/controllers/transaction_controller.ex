@@ -4,12 +4,14 @@ defmodule BankApiWeb.TransactionController do
   alias BankApi.Transactions.Schemas.Transaction
   alias BankApi.Repo
   alias BankApi.Multi.Transaction, as: MultiTransaction
+  alias BankApiWeb.Auth.GuardianUser
 
+  action_fallback(BankApiWeb.FallbackController)
 
-  action_fallback BankApiWeb.FallbackController
+  def show(conn) do
+    user = GuardianUser.Plug.curent_resource(conn)
 
-  def show(conn, %{"id" => id}) do
-    with {:ok, transaction} <- fetch(id) do
+    with {:ok, transaction} <- fetch(user.id) do
       conn
       |> put_status(:ok)
       |> render("show.json", transaction: transaction)
@@ -23,19 +25,13 @@ defmodule BankApiWeb.TransactionController do
     end
   end
 
-  def create(
-        conn,
-        %{
-          "from_account_id" => from_account_id,
-          "to_account_id" => to_account_id,
-          "value" => value
-        }
-      ) do
+  def transfer(conn, params) do
+    user = GuardianUser.Plug.curent_resource(conn)
 
     params = %{
-      from_account_id: from_account_id,
-      to_account_id: to_account_id,
-      value: value
+      from_account_id: user.id,
+      to_account_id: params.to_account_id,
+      value: params.value
     }
 
     with {:ok, transaction} <- MultiTransaction.create(params) do
@@ -43,15 +39,11 @@ defmodule BankApiWeb.TransactionController do
     end
   end
 
-  def create(
-        conn,
-        %{
-          "from_account_id" => from_account_id,
-          "value" => value
-        }
-      ) do
+  def withdraw(conn, %{"value" => value}) do
+    user = GuardianUser.Plug.curent_resource(conn)
+
     params = %{
-      from_account_id: from_account_id,
+      from_account_id: user.id,
       value: value
     }
 
