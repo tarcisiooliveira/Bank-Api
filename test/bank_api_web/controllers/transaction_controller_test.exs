@@ -3,7 +3,7 @@ defmodule BankApiWeb.TransactionControllerTest do
   Module test Transaction Controller
   """
 
-  use BankApiWeb.ConnCase, async: false
+  use BankApiWeb.ConnCase
   use ExUnit.Case
 
   import BankApi.Factory
@@ -17,13 +17,13 @@ defmodule BankApiWeb.TransactionControllerTest do
   setup do
     [conn: "Phoenix.ConnTest.build_conn()"]
 
-    user = insert(:user)
 
-    {:ok, token, _claims} = GuardianUser.encode_and_sign(user)
 
-    %User{id: user_id1} = insert(:user)
+    %User{id: user_id1} = user = insert(:user)
     %User{id: user_id2} = insert(:user)
     %User{id: user_id3} = insert(:user)
+
+    {:ok, token, _claims} = GuardianUser.encode_and_sign(user)
 
     %Account{id: account_id1} = insert(:account, user_id: user_id1)
 
@@ -51,7 +51,7 @@ defmodule BankApiWeb.TransactionControllerTest do
        account_id3: account_id3,
        transaction_id1: id,
        transaction_id2: id2,
-       token: token
+       token: token,
      }}
   end
 
@@ -90,15 +90,12 @@ defmodule BankApiWeb.TransactionControllerTest do
   end
 
   test "assert ok insert - alls parameters are ok, User make withdraw", state do
-    params = %{
-      "from_account_id" => state[:value].account_id3,
-      "value" => 1000
-    }
+    params = %{"value" => 1000}
 
     response =
       state[:conn]
       |> put_req_header("authorization", "Bearer " <> state[:value].token)
-      |> post(Routes.transaction_path(state[:conn], :create, params))
+      |> post(Routes.transaction_path(state[:conn], :withdraw, params))
       |> json_response(:ok)
 
     assert %{
@@ -112,8 +109,11 @@ defmodule BankApiWeb.TransactionControllerTest do
 
   test "error, try a transfer to the same account",
        state do
+    state[:conn]
+    |> put_req_header("authorization", "Bearer " <> state[:value].token)
+    |> Guardian.Plug.current_resource()
+
     params = %{
-      "from_account_id" => state[:value].account_id1,
       "to_account_id" => state[:value].account_id1,
       "value" => 600
     }
@@ -121,15 +121,15 @@ defmodule BankApiWeb.TransactionControllerTest do
     response =
       state[:conn]
       |> put_req_header("authorization", "Bearer " <> state[:value].token)
-      |> post(Routes.transaction_path(state[:conn], :create, params))
+      |> post(Routes.transaction_path(state[:conn], :transfer, params))
 
-    assert %{"error" => "Transfer to the same Account"} = Jason.decode!(response.resp_body)
+    assert %{"error" => %{"message" => ["Transfer to the same Account"]}} =
+             Jason.decode!(response.resp_body)
   end
 
   test "assert ok insert transaction/4 - All parameters ok, create a transaction between two Acccounts",
        state do
     params = %{
-      "from_account_id" => state[:value].account_id1,
       "to_account_id" => state[:value].account_id2,
       "value" => 600
     }
@@ -137,7 +137,7 @@ defmodule BankApiWeb.TransactionControllerTest do
     response =
       state[:conn]
       |> put_req_header("authorization", "Bearer " <> state[:value].token)
-      |> post(Routes.transaction_path(state[:conn], :create, params))
+      |> post(Routes.transaction_path(state[:conn], :transfer, params))
       |> json_response(:ok)
 
     assert %{

@@ -172,7 +172,7 @@ defmodule BankApiWeb.ReportControllerTest do
       |> put_req_header("authorization", "Bearer " <> state[:value].token)
       |> post(Routes.report_path(state[:conn], :report, params))
 
-    assert %{"error" => "Invalid Parameters"} = Jason.decode!(response.resp_body)
+    assert %{"error" => %{"message" => ["Invalid Parameters"]}} = Jason.decode!(response.resp_body)
   end
 
   test "erro when past invalids parameters", state do
@@ -187,6 +187,6 @@ defmodule BankApiWeb.ReportControllerTest do
       |> put_req_header("authorization", "Bearer " <> state[:value].token)
       |> post(Routes.report_path(state[:conn], :report, params))
 
-    assert %{"error" => "Invalid Parameters"} = Jason.decode!(response.resp_body)
+    assert %{"error" => %{"message" => ["Invalid Parameters"]}} = Jason.decode!(response.resp_body)
   end
 end

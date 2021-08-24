@@ -1,17 +1,14 @@
 defmodule BankApiWeb.TransactionController do
   use BankApiWeb, :controller
-
+  alias BankApi.Accounts.Schemas.Account
   alias BankApi.Transactions.Schemas.Transaction
   alias BankApi.Repo
   alias BankApi.Multi.Transaction, as: MultiTransaction
-  alias BankApiWeb.Auth.GuardianUser
 
   action_fallback(BankApiWeb.FallbackController)
 
-  def show(conn) do
-    user = GuardianUser.Plug.curent_resource(conn)
-
-    with {:ok, transaction} <- fetch(user.id) do
+  def show(conn, %{"id" => id}) do
+    with {:ok, transaction} <- fetch(id) do
       conn
       |> put_status(:ok)
       |> render("show.json", transaction: transaction)
@@ -26,12 +23,13 @@ defmodule BankApiWeb.TransactionController do
   end
 
   def transfer(conn, params) do
-    user = GuardianUser.Plug.curent_resource(conn)
+    user = GuardianUser.Plug.current_resource(conn)
+    %Account{id: id} = Repo.get_by!(Account, user_id: user.id)
 
     params = %{
-      from_account_id: user.id,
-      to_account_id: params.to_account_id,
-      value: params.value
+      from_account_id: id,
+      to_account_id: params["to_account_id"],
+      value: params["value"]
     }
 
     with {:ok, transaction} <- MultiTransaction.create(params) do
@@ -40,10 +38,14 @@ defmodule BankApiWeb.TransactionController do
   end
 
   def withdraw(conn, %{"value" => value}) do
-    user = GuardianUser.Plug.curent_resource(conn)
+    user =
+      GuardianUser.Plug.current_resource(conn)
+
+    %Account{id: id} =
+      Repo.get_by!(Account, user_id: user.id)
 
     params = %{
-      from_account_id: user.id,
+      from_account_id: id,
       value: value
     }
 
