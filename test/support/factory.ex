@@ -29,7 +29,7 @@ defmodule BankApi.Factory do
     %Admin{
       email: sequence(:email, &"#{&1}tarcisio@admin.com", start_at: 1000),
       password: "123456",
-      password_validation: "123456",
+      password_confirmation: "123456",
       password_hash: Bcrypt.hash_pwd_salt("123456")
     }
   end
