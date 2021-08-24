@@ -1,14 +1,14 @@
 defmodule BankApiWeb.AdminController do
   use BankApiWeb, :controller
 
-  alias BankApiWeb.Auth.GuardianAdmin
+  alias BankApi.Admin.SignIn
   alias BankApi.Multi.Admin, as: MultiAdmin
   alias BankApi.Admins.Schemas.Admin
   alias BankApi.Repo
   action_fallback BankApiWeb.FallbackController
 
   def sign_in(conn, params) do
-    with {:ok, token} <- GuardianAdmin.authenticate(params) do
+    with {:ok, token} <- SignIn.authenticate(params) do
       conn
       |> put_status(:ok)
       |> put_view(BankApiWeb.AdminView)
@@ -21,10 +21,10 @@ defmodule BankApiWeb.AdminController do
         %{
           "email" => email,
           "password" => password,
-          "password_validation" => password_validation
+          "password_confirmation" => password_confirmation
         }
       ) do
-    params = %{email: email, password: password, password_validation: password_validation}
+    params = %{email: email, password: password, password_confirmation: password_confirmation}
 
     with {:ok, %{insert_admin: %Admin{id: id, email: email}}} <-
            MultiAdmin.create(params) do
@@ -55,10 +55,10 @@ defmodule BankApiWeb.AdminController do
         %{
           "email" => email,
           "password" => password,
-          "password_validation" => password_validation
+          "password_confirmation" => password_confirmation
         }
       ) do
-    params = %{email: email, password: password, password_validation: password_validation}
+    params = %{email: email, password: password, password_confirmation: password_confirmation}
 
     with {:ok, admin} <- MultiAdmin.create(params) do
       render(conn, "create.json", admin: admin)

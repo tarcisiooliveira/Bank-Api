@@ -4,15 +4,16 @@ defmodule BankApiWeb.UserController do
   alias BankApi.Multi.User, as: MultiUser
   alias BankApi.Users.Schemas.User
   alias BankApi.Repo
-  alias BankApiWeb.Auth.GuardianUser
+  alias BankApi.User.SignIn
   alias BankApi.Users.Schemas.User
   alias BankApi.Accounts.Schemas.Account
   alias BankApi.Multi.User, as: MultiUser
 
   action_fallback(BankApiWeb.FallbackController)
 
-  def show(conn, %{"id" => id}) do
-    with {:ok, user} <- fetch(id) do
+  def show(conn, %{}) do
+    user = Guardian.Plug.current_resource(conn)
+    with {:ok, user} <- fetch(user.id) do
       conn
       |> put_status(:ok)
       |> render("show.json", user: user)
@@ -20,7 +21,7 @@ defmodule BankApiWeb.UserController do
   end
 
   def sign_in(conn, params) do
-    with {:ok, token} <- GuardianUser.authenticate(params) do
+    with {:ok, token} <- SignIn.authenticate(params) do
       conn
       |> put_status(:ok)
       |> render("sign_in.json", token: token)

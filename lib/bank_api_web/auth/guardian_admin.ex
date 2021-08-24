@@ -13,30 +13,12 @@ defmodule BankApiWeb.Auth.GuardianAdmin do
     {:ok, sub}
   end
 
+  @spec resource_from_claims(any) :: {:error, :unauthorized} | {:ok, any}
   def resource_from_claims(claims) do
     id = claims["sub"]
     resource = Repo.get_by(Admin, id: id)
     {:ok, resource}
   rescue
     Ecto.NoResultsError -> {:error, :unauthorized}
-  end
-
-  def authenticate(%{"email" => email, "password" => password}) do
-    case Repo.get_by(Admin, email: email) do
-      nil -> {:error, "Admin theres no exists."}
-      admin -> validate_password(admin, password)
-    end
-  end
-
-  def validate_password(%Admin{password_hash: hash} = admin, password) do
-    case Bcrypt.verify_pass(password, hash) do
-      true -> create_token(admin)
-      false -> {:error, :unauthorized}
-    end
-  end
-
-  defp create_token(trainer) do
-    {:ok, token, _claim} = encode_and_sign(trainer)
-    {:ok, token}
   end
 end

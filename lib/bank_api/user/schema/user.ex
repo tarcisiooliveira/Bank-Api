@@ -36,7 +36,7 @@ defmodule BankApi.Users.Schemas.User do
     |> validate_format(:email, ~r/@/, message: "Email format invalid")
     |> unique_constraint(:email, message: "Email already used")
     |> validate_confirmation(:password, message: "Passwords are different")
-    # |> put_pass_hash
+    |> put_pass_hash
   end
 
   defp put_pass_hash(%Ecto.Changeset{valid?: true, changes: %{password: password}} = changeset) do
