@@ -13,10 +13,10 @@ defmodule BankApi.Multi.User do
   ## Parameters
     * `email` - String User email
     * `password` - String user password
-    * `password_validation` - Same than password
+    * `password_confirmation` - Same than password
 
   ## Examples
-      iex> create(%{email: "Email@email.com, name: "Name", password: "123456", password_validation: "123456"})
+      iex> create(%{email: "Email@email.com, name: "Name", password: "123456", password_confirmation: "123456"})
       {:ok, %{create_user: %User{}}}
   """
   def create(params) do

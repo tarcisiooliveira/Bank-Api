@@ -12,7 +12,7 @@ defmodule BankApi.Admins.Schemas.Admin do
   schema "admins" do
     field :email, :string
     field :password, :string, virtual: true
-    field :password_validation, :string, virtual: true
+    field :password_confirmation, :string, virtual: true
     field :password_hash, :string
 
     timestamps()
@@ -21,8 +21,8 @@ defmodule BankApi.Admins.Schemas.Admin do
   @doc false
   def changeset(params) do
     %__MODULE__{}
-    |> cast(params, [:email, :password, :password_validation])
-    |> validate_required([:email, :password, :password_validation])
+    |> cast(params, [:email, :password, :password_confirmation])
+    |> validate_required([:email, :password, :password_confirmation])
     |> validate_format(:email, ~r/@/, message: "Invalid format email.")
     |> validate_length(:password,
       min: 6,

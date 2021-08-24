@@ -13,14 +13,14 @@ defmodule BankApi.Multi.Admin do
 
     * `email` - String email of the admin
     * `password` - String password of the admin
-    * `password_validation` - String password_validation of the admin
+    * `password_confirmation` - String password_confirmation of the admin
 
   ## Examples
 
-      iex> create(%{email: "admin@gmail.com", password: "123456", password_validation: "123456"})
+      iex> create(%{email: "admin@gmail.com", password: "123456", password_confirmation: "123456"})
       {:ok, %{inserted_admin: Admin{}}}
 
-      iex> create(%{email: "", password: "123456", password_validation: "123456"})
+      iex> create(%{email: "", password: "123456", password_confirmation: "123456"})
       {:error, "message"}
   """
   def create(params) do

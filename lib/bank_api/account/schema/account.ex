@@ -17,7 +17,7 @@ defmodule BankApi.Accounts.Schemas.Account do
   end
 
   @request_params [:balance_account, :user_id]
-  @balance_account 0..10_000_000
+  @balance_account 0..10_000_000_000
 
   @doc false
   def changeset(params) do

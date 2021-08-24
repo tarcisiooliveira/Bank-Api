@@ -26,7 +26,7 @@ defmodule BankApiWeb.AdminControllerTest do
       params = %{
         "email" => "test22@admin.com",
         "password" => "123456",
-        "password_validation" => "123456"
+        "password_confirmation" => "123456"
       }
 
       response =
@@ -43,7 +43,7 @@ defmodule BankApiWeb.AdminControllerTest do
              } = Jason.decode!(response.resp_body)
     end
 
-    test "error create admin - try create admin without required parameter password_validation",
+    test "error create admin - try create admin without required parameter password_confirmation",
          state do
       params = %{
         "email" => "test2@admin.com",
@@ -79,14 +79,14 @@ defmodule BankApiWeb.AdminControllerTest do
       params = %{
         "email" => "admin@gmail.com",
         "password" => "123456",
-        "password_validation" => "123456"
+        "password_confirmation" => "123456"
       }
 
       response =
         state[:conn]
         |> post(Routes.admin_path(state[:conn], :sign_up, params))
 
-      assert %{"messagem" => "Authorization Denied"} = Jason.decode!(response.resp_body)
+      assert %{"message" => "unauthorized"} = Jason.decode!(response.resp_body)
     end
   end
 end
