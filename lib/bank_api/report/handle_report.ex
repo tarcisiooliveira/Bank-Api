@@ -95,6 +95,38 @@ defmodule BankApi.Report.HandleReport do
     end
   end
 
+  def report(%{"period" => "day", "day" => day} = params)
+      when params == %{"period" => "day", "day" => day} do
+    with {:ok, start_day} <- NaiveDateTime.from_iso8601(day <> " 00:00:00") do
+      end_day = NaiveDateTime.add(start_day, 86399)
+
+      query =
+        from t in Transaction,
+          where:
+            fragment(
+              "? BETWEEN ? AND ?",
+              t.inserted_at,
+              ^start_day,
+              ^end_day
+            ),
+          select: t.value
+
+      quantity =
+        Repo.all(query)
+        |> Enum.count()
+
+      case quantity do
+        0 ->
+          {:ok, result: 0}
+
+        _ ->
+          result = Repo.aggregate(query, :sum, :value)
+
+          {:ok, result: result}
+      end
+    end
+  end
+
   def report(%{"period" => "month"} = params) when params == %{"period" => "month"} do
     {:ok, start_month} =
       Date.utc_today()

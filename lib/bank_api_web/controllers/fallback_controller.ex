@@ -56,4 +56,11 @@ defmodule BankApiWeb.FallbackController do
     |> put_view(BankApiWeb.ErrorView)
     |> render("error_message.json", message: message)
   end
+  def call(conn, :error) do
+
+    conn
+    |> put_status(:unauthorized)
+    |> put_view(BankApiWeb.ErrorView)
+    |> render("error_message.json", message: "Generic error")
+  end
 end
