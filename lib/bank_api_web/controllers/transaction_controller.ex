@@ -70,19 +70,28 @@ defmodule BankApiWeb.TransactionController do
       }
   """
 
-  def transfer(conn, params) do
-    user = Guardian.Plug.current_resource(conn)
-    %Account{id: id} = Repo.get_by!(Account, user_id: user.id)
+  def transfer(conn, %{"to_account_id" => to_account_id, "value" => value}) do
+    with {:ok, _s} <- Ecto.UUID.cast(to_account_id) do
+      user = Guardian.Plug.current_resource(conn)
+      %Account{id: id} = Repo.get_by!(Account, user_id: user.id)
 
-    params = %{
-      from_account_id: id,
-      to_account_id: params["to_account_id"],
-      value: params["value"]
-    }
+      params = %{
+        from_account_id: id,
+        to_account_id: to_account_id,
+        value: value
+      }
 
-    with {:ok, transaction} <- MultiTransaction.create(params) do
-      render(conn, "create.json", transaction: transaction)
+      with {:ok, transaction} <- MultiTransaction.transfer(params) do
+        render(conn, "transfer.json", transaction: transaction)
+      end
     end
+  end
+
+  def transfer(conn, _) do
+    conn
+    |> put_status(:unprocessable_entity)
+    |> put_view(BankApiWeb.ErrorView)
+    |> render("error_message.json", message: "Invalid Parameters")
   end
 
   @doc """
@@ -113,8 +122,15 @@ defmodule BankApiWeb.TransactionController do
       value: value
     }
 
-    with {:ok, transaction} <- MultiTransaction.create(params) do
-      render(conn, "create.json", transaction: transaction)
+    with {:ok, transaction} <- MultiTransaction.withdraw(params) do
+      render(conn, "withdraw.json", transaction: transaction)
     end
+  end
+
+  def withdraw(conn, _) do
+    conn
+    |> put_status(:unprocessable_entity)
+    |> put_view(BankApiWeb.ErrorView)
+    |> render("error_message.json", message: "Invalid Parameters")
   end
 end

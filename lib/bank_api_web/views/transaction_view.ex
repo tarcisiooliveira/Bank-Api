@@ -42,7 +42,7 @@ defmodule BankApiWeb.TransactionView do
   end
 
   def render(
-        "create.json",
+        "withdraw.json",
         %{
           transaction:
             {:ok,
@@ -65,7 +65,7 @@ defmodule BankApiWeb.TransactionView do
   end
 
   def render(
-        "create.json",
+        "transfer.json",
         %{
           transaction: %{
             create_transaction: %Transaction{
@@ -85,12 +85,4 @@ defmodule BankApiWeb.TransactionView do
       }
     }
   end
-
-  # def render("error.json", %{error: :balance_not_enough}) do
-  #   %{error: "Balance not enough."}
-  # end
-
-  # def render("error.json", %{error: error}) do
-  #   %{error: error}
-  # end
 end

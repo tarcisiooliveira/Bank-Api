@@ -19,7 +19,7 @@ defmodule BankApi.Multi.Transaction do
       iex> create(%{from_account_id: from_account_id, to_account_id: from_account_id, value: value})
      {:error, :transfer_to_the_same_account}
   """
-  def create(%{
+  def transfer(%{
         from_account_id: from_account_id,
         to_account_id: to_account_id,
         value: value
@@ -61,7 +61,7 @@ defmodule BankApi.Multi.Transaction do
     end
   end
 
-  def create(%{
+  def withdraw(%{
         from_account_id: from_account_id,
         value: value
       }) do
@@ -92,8 +92,8 @@ defmodule BankApi.Multi.Transaction do
     end
   end
 
-  defp fetch_account(from_account_id) do
-    case Repo.get_by(Account, id: from_account_id) do
+  defp fetch_account(account_id) do
+    case Repo.get_by(Account, id: account_id) do
       nil -> {:error, :account_not_found}
       account -> {:ok, account}
     end
@@ -139,6 +139,7 @@ defmodule BankApi.Multi.Transaction do
     |> Account.update_changeset(%{
       balance_account: account.balance_account() - String.to_integer(value)
     })
+
   end
 
   defp operation(account, value, :add) do
