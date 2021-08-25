@@ -68,7 +68,7 @@ defmodule BankApiWeb.AdminControllerTest do
 
       response =
         state[:conn]
-        |> get(Routes.admin_path(state[:conn], :sign_in, params))
+        |> post(Routes.admin_path(state[:conn], :sign_in, params))
 
       assert %{
                "token" => _token

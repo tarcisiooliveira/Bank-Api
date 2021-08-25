@@ -17,8 +17,6 @@ defmodule BankApiWeb.TransactionControllerTest do
   setup do
     [conn: "Phoenix.ConnTest.build_conn()"]
 
-
-
     %User{id: user_id1} = user = insert(:user)
     %User{id: user_id2} = insert(:user)
     %User{id: user_id3} = insert(:user)
@@ -51,7 +49,7 @@ defmodule BankApiWeb.TransactionControllerTest do
        account_id3: account_id3,
        transaction_id1: id,
        transaction_id2: id2,
-       token: token,
+       token: token
      }}
   end
 
@@ -87,6 +85,20 @@ defmodule BankApiWeb.TransactionControllerTest do
                "value" => 700
              }
            } = response
+  end
+
+  test "error - show error message when sent an invalid id.",
+       state do
+    response =
+      state[:conn]
+      |> put_req_header("authorization", "Bearer " <> state[:value].token)
+      |> get(
+        Routes.transaction_path(state[:conn], :show, id: "c1960fa0-11ae-47fa-b325-68d94a7d7f5d")
+      )
+      |> json_response(:not_found)
+
+    assert %{"error" => %{"message" => ["Transaction not Found"]}} =
+             response
   end
 
   test "assert ok insert - alls parameters are ok, User make withdraw", state do

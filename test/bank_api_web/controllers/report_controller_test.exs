@@ -176,10 +176,6 @@ defmodule BankApiWeb.ReportControllerTest do
   end
 
   test "erro when past invalids parameters", state do
-    # result =
-    #   %{period: :year, years: "2020"}
-    #   |> HandleReport.report()
-
     params = %{"period" => "year", "years" => "2020"}
 
     response =

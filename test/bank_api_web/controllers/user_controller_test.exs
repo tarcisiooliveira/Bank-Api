@@ -73,7 +73,7 @@ defmodule BankApiWeb.UserControllerTest do
     response =
       state[:conn]
       |> put_req_header("authorization", "Bearer " <> state[:value].token)
-      |> get(Routes.user_path(state[:conn], :show))
+      |> post(Routes.user_path(state[:conn], :show))
 
     assert %{
              assigns: %{
@@ -88,7 +88,7 @@ defmodule BankApiWeb.UserControllerTest do
   test "show error when dont sent access token ", state do
     response =
       state[:conn]
-      |> get(Routes.user_path(state[:conn], :show))
+      |> post(Routes.user_path(state[:conn], :show))
 
     assert %{"message" => "unauthorized"} = Jason.decode!(response.resp_body)
   end
