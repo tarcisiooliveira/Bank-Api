@@ -32,5 +32,6 @@ defmodule BankApi.Accounts.Schemas.Account do
     account
     |> cast(params, [:balance_account])
     |> validate_required([:balance_account])
+    |> validate_inclusion(:balance_account, @balance_account)
   end
 end
