@@ -20,10 +20,4 @@ defmodule BankApiWeb.Auth.GuardianUser do
   rescue
     Ecto.NoResultsError -> {:error, :unauthorized}
   end
-
-
-
-
-
-
 end

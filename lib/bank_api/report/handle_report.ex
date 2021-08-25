@@ -7,6 +7,36 @@ defmodule BankApi.Report.HandleReport do
   alias BankApi.Repo
   import Ecto.Query
 
+  @doc """
+  Return report of all period
+
+  ## Parameters
+
+    `period` - Period of report
+
+  ## Examples
+      iex> report(%{"period" => "all"})
+      {:ok, [result: 0]}
+
+      iex> report(%{"period" => "today"})
+      {:ok, [result: 0]}
+
+      iex> report(%{"period" => "month"})
+      {:ok, [result: 0]}
+
+      iex> report(%{"period" => "month", "month" => 07})
+      {:ok, [result: 0]}
+
+      iex> report(%{"period" => "year"})
+      {:ok, [result: 0]}
+
+      iex> report(%{"period" => "year", "year" => 2020})
+      {:ok, [result: 0]}
+
+      iex> report(%{"period" => "erro"})
+      {:ok, :invalid_parameters}
+
+  """
   def report(%{"period" => "all"} = params) when params == %{"period" => "all"} do
     query =
       from t in Transaction,

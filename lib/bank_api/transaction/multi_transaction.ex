@@ -13,9 +13,6 @@ defmodule BankApi.Multi.Transaction do
 
 
   ## Examples
-
-
-
       iex> create(%{from_account_id: invalid_from_account_id, to_account_id: to_account_id, value: value})
      {:error, :account_not_found}
 

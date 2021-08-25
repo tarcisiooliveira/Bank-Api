@@ -1,11 +1,29 @@
 defmodule BankApiWeb.AdminController do
   use BankApiWeb, :controller
 
+
   alias BankApi.Admin.SignIn
   alias BankApi.Multi.Admin, as: MultiAdmin
   alias BankApi.Admins.Schemas.Admin
   alias BankApi.Repo
+
   action_fallback BankApiWeb.FallbackController
+
+  @doc """
+  Valid an Admin, generate a token
+
+  ## Parameters
+
+    * `email` - String email of the admin
+    * `password` - String password of the admin
+
+  ## Examples
+      iex> sign_in(%{"email" => "admin@email.com", "password" => "123456"})
+     %{"token" => "token"}
+
+      iex> sign_in(%{email: "admin@email.com", password: "1234526"})
+      %{"message" => "unauthorized"}
+  """
 
   def sign_in(conn, params) do
     with {:ok, token} <- SignIn.authenticate(params) do
@@ -16,6 +34,28 @@ defmodule BankApiWeb.AdminController do
     end
   end
 
+  @doc """
+  Create an Admin
+
+  ## Parameters
+
+    * `email` - String email of the admin
+    * `password` - String password of the admin
+    * `password_confirmation` - String password confirmation of the admin
+
+  ## Examples
+      iex> sign_up(%{"email" => "test22@admin.com", "password" => "123456", "password_confirmation" => "123456"})
+      %{
+        "admin" => %{
+          "email" => "test22@admin.com",
+          "id" => _new_id
+          },
+          "message" => "Admin Created."
+        }
+
+      iex> sign_up(%{"email" => "test2@admin.com", "password" => "123456"})
+      %{"email" => "test2@admin.com", "password" => "123456"}
+  """
   def sign_up(
         conn,
         %{
@@ -44,24 +84,10 @@ defmodule BankApiWeb.AdminController do
     })
   end
 
+
   def show(conn, %{"email" => email}) do
     with {:ok, admin} <- Repo.get_by(Admin, email: email) do
       render(conn, "show.json", admin: admin)
-    end
-  end
-
-  def create(
-        conn,
-        %{
-          "email" => email,
-          "password" => password,
-          "password_confirmation" => password_confirmation
-        }
-      ) do
-    params = %{email: email, password: password, password_confirmation: password_confirmation}
-
-    with {:ok, admin} <- MultiAdmin.create(params) do
-      render(conn, "create.json", admin: admin)
     end
   end
 end

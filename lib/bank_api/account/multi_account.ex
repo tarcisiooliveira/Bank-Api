@@ -9,21 +9,7 @@ defmodule BankApi.Multi.Account do
   alias BankApi.Repo
 
   @doc """
-  Validate and persist an Account
-
-  ## Parameters
-    `ammount` - Integer non negative number
-    `user_id` - User owner account id
-
-  ## Examples
-
-      iex> create(%{balance_account: balance_account, user_id: user_id})
-      {:ok, %{inserted_account: %Account{}}}
-
-      iex> create(%{balance_account: negative_ammount, user_id: user_id})
-      {:error, :ammount_negative_value}
-
-
+  false
   """
   def create(%{user_id: user_id} = params) do
     multi =
