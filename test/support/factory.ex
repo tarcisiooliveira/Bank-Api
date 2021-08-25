@@ -12,7 +12,7 @@ defmodule BankApi.Factory do
   def user_factory do
     %User{
       name: "Tarcisio",
-      email: sequence(:email, &"#{&1}tarcisio@ymail.com", start_at: 1000),
+      email: sequence(:email, &"#{&1}tarcisio@email.com", start_at: 1000),
       password: "123456",
       password_hash: Bcrypt.hash_pwd_salt("123456")
     }
