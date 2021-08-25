@@ -2,10 +2,10 @@ use Mix.Config
 
 # Configure your database
 config :bank_api, BankApi.Repo,
-  username: "postgres",
-  password: "951753",
-  database: "bank_api_json",
-  hostname: "localhost",
+  username: System.get_env("PG_USERNAME") || "postgres",
+  password: System.get_env("PG_PASSWORD") || "951753",
+  database: System.get_env("PG_DATABASE") || "bank_api_dev",
+  hostname: System.get_env("PG_HOSTNAME") || "localhost",
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
 

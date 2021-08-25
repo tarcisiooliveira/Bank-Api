@@ -5,7 +5,7 @@ services:
     restart: on-failure
     environment:
       PG_USERNAME: postgres
-      PG_PASSWORD: postgres
+      PG_PASSWORD: 951753
       PG_DATABASE: bank_api_test
       PG_PORT: 5432
       PG_HOSTNAME: database_test
@@ -26,7 +26,7 @@ services:
     restart: always
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: 951753
       POSTGRES_DB: bank_api_test
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
