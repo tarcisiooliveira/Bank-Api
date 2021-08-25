@@ -77,7 +77,7 @@ defmodule BankApiWeb.AdminControllerTest do
 
     test "error - trry sig_up_admin without token", state do
       params = %{
-        "email" => "admin@gmail.com",
+        "email" => "admin@email.com",
         "password" => "123456",
         "password_confirmation" => "123456"
       }

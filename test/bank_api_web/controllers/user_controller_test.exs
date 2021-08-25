@@ -14,7 +14,7 @@ defmodule BankApiWeb.UserControllerTest do
     {:ok, %{insert_user: user, insert_account: account}} =
       %{
         name: "Tarcisio",
-        email: "tarcisio2@ymail.com",
+        email: "tarcisio2@email.com",
         password: "123456",
         password_confirmation: "123456"
       }
@@ -33,7 +33,7 @@ defmodule BankApiWeb.UserControllerTest do
   test "assert create - create User and Account", state do
     params = %{
       "name" => "Tarcisio",
-      "email" => "tarcisiooliveira@protonmail.com",
+      "email" => "tarcisiooliveira@email.com",
       "password" => "123456",
       "password_confirmation" => "123456"
     }
@@ -46,7 +46,7 @@ defmodule BankApiWeb.UserControllerTest do
     assert %{
              "message" => "User created sucessfuly!",
              "user" => %{
-               "email" => "tarcisiooliveira@protonmail.com",
+               "email" => "tarcisiooliveira@email.com",
                "user_id" => _user_id
              },
              "account" => %{
@@ -57,7 +57,7 @@ defmodule BankApiWeb.UserControllerTest do
   end
 
   test "assert sig_in_user test", %{conn: conn} do
-    params = %{"email" => "tarcisio2@ymail.com", "password" => "123456"}
+    params = %{"email" => "tarcisio2@email.com", "password" => "123456"}
 
     response =
       conn
@@ -73,7 +73,7 @@ defmodule BankApiWeb.UserControllerTest do
     response =
       state[:conn]
       |> put_req_header("authorization", "Bearer " <> state[:value].token)
-      |> post(Routes.user_path(state[:conn], :show))
+      |> get(Routes.user_path(state[:conn], :show))
 
     assert %{
              assigns: %{

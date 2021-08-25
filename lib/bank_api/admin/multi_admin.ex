@@ -17,7 +17,7 @@ defmodule BankApi.Multi.Admin do
 
   ## Examples
 
-      iex> create(%{email: "admin@gmail.com", password: "123456", password_confirmation: "123456"})
+      iex> create(%{email: "admin@email.com", password: "123456", password_confirmation: "123456"})
       {:ok, %{inserted_admin: %Admin{}}}
 
       iex> create(%{email: "", password: "123456", password_confirmation: "123456"})

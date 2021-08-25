@@ -15,7 +15,7 @@ defmodule BankApi.User.SignIn do
     * `password` - String password of the admin
 
   ## Examples
-      iex> authenticate(%{"email" => "admin@gmail.com", "password" => "123456"})
+      iex> authenticate(%{"email" => "admin@email.com", "password" => "123456"})
      {:ok, "token"}
 
       iex> create(%{email: "", password: "1234526", password_confirmation: "123456"})
