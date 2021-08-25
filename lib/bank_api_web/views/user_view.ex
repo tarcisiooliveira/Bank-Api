@@ -9,6 +9,12 @@ defmodule BankApiWeb.UserView do
       user: %{id: id, name: name, email: email}
     }
   end
+  def render("show_account.json", %{user: %User{id: id, name: name, email: email}}) do
+    %{
+      message: "Show",
+      user: %{id: id, name: name, email: email}
+    }
+  end
 
   def render("create.json", %{
         user_account: %{

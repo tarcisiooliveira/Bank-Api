@@ -18,7 +18,7 @@ defmodule BankApiWeb.Router do
   scope "/api/admin", BankApiWeb do
     pipe_through(:api)
 
-    get("/sign_in", AdminController, :sign_in)
+    post("/sign_in", AdminController, :sign_in)
   end
 
   scope "/api/admin", BankApiWeb do
@@ -38,7 +38,8 @@ defmodule BankApiWeb.Router do
   scope "/api/users", BankApiWeb do
     pipe_through([:api, :authUser])
 
-    get("/", UserController, :show)
+    get("/user", UserController, :show)
+    post("/user/", UserController, :show_account)
     get("/transactions", TransactionController, :show)
     post("/transactions/transfer", TransactionController, :transfer)
     post("/transactions/withdraw", TransactionController, :withdraw)
