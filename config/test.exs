@@ -12,6 +12,13 @@ database: System.get_env("PG_DATABASE") || "bank_api_dev",
 hostname: System.get_env("PG_HOSTNAME") || "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
 
+
+  if System.get_env("GITHUB_ACTIONS") do
+    config :app, App.Repo,
+      username: "postgres",
+      password: "postgres"
+  end
+
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
 config :bank_api, BankApiWeb.Endpoint,
