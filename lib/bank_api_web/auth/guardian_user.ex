@@ -17,7 +17,7 @@ defmodule BankApiWeb.Auth.GuardianUser do
     id = claims["sub"]
     resource = Repo.get_by(User, id: id)
     {:ok, resource}
-  rescue
+  catch
     Ecto.NoResultsError -> {:error, :unauthorized}
   end
 end
