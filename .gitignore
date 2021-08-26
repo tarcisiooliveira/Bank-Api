@@ -27,4 +27,4 @@ bank_api-*.tar
 # this depending on your deployment strategy.
 /priv/static/
 .vscode/launch.json
-test/bank_api_web/controllers/novo_test.exs
+
