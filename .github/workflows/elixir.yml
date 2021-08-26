@@ -2,7 +2,7 @@ on: push
 
 jobs:
   test:
-    runs-on: debian-alpine
+    runs-on: ubuntu-latest
 
     services:
       db:
