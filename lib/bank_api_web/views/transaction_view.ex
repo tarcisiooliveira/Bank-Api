@@ -44,15 +44,13 @@ defmodule BankApiWeb.TransactionView do
   def render(
         "withdraw.json",
         %{
-          transaction:
-            {:ok,
-             %{
-               create_transaction: %Transaction{
-                 from_account_id: from_account_id,
-                 to_account_id: nil,
-                 value: value
-               }
-             }}
+          transaction: %{
+            create_transaction: %Transaction{
+              from_account_id: from_account_id,
+              to_account_id: nil,
+              value: value
+            }
+          }
         }
       ) do
     %{

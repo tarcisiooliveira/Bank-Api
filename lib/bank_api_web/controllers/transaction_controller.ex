@@ -71,19 +71,24 @@ defmodule BankApiWeb.TransactionController do
   """
 
   def transfer(conn, %{"to_account_id" => to_account_id, "value" => value}) do
-    with {:ok, _s} <- Ecto.UUID.cast(to_account_id) do
-      user = Guardian.Plug.current_resource(conn)
-      %Account{id: id} = Repo.get_by!(Account, user_id: user.id)
+    # when valid_uuid(to_account_id) do
+    user = Guardian.Plug.current_resource(conn)
+    %Account{id: id} = Repo.get_by!(Account, user_id: user.id)
 
-      params = %{
-        from_account_id: id,
-        to_account_id: to_account_id,
-        value: value
-      }
+    params = %{
+      from_account_id: id,
+      to_account_id: to_account_id,
+      value: value
+    }
 
-      with {:ok, transaction} <- MultiTransaction.transfer(params) do
-        render(conn, "transfer.json", transaction: transaction)
-      end
+    case Ecto.UUID.cast(to_account_id) do
+      :error ->
+        :invalid_account_uuid
+
+      _ ->
+        with {:ok, transaction} <- MultiTransaction.transfer(params) do
+          render(conn, "transfer.json", transaction: transaction)
+        end
     end
   end
 

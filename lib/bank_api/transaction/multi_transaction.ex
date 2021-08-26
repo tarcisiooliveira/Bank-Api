@@ -29,8 +29,8 @@ defmodule BankApi.Multi.Transaction do
       |> Ecto.Multi.run(:same_account, fn _, _ ->
         is_same_account?(from_account_id, to_account_id)
       end)
-      |> Ecto.Multi.run(:negative_value, fn _, _ ->
-        is_negative_value?(value)
+      |> Ecto.Multi.run(:zero_or_negative_value, fn _, _ ->
+        zero_or_negative_value?(value)
       end)
       |> Ecto.Multi.run(:from_account, fn _, _ ->
         fetch_account(from_account_id)
@@ -68,7 +68,7 @@ defmodule BankApi.Multi.Transaction do
     multi =
       Ecto.Multi.new()
       |> Ecto.Multi.run(:negative_value, fn _, _ ->
-        is_negative_value?(value)
+        zero_or_negative_value?(value)
       end)
       |> Ecto.Multi.run(:from_account, fn _, _ ->
         fetch_account(from_account_id)
@@ -126,8 +126,8 @@ defmodule BankApi.Multi.Transaction do
     end
   end
 
-  defp is_negative_value?(value) do
-    if value < 0 or Decimal.new(value) |> Decimal.negative?() do
+  defp zero_or_negative_value?(value) do
+    if value < 1 or String.to_integer(value) |> Decimal.new() |> Decimal.negative?() do
       {:error, :value_zero_or_negative}
     else
       {:ok, false}
@@ -139,7 +139,6 @@ defmodule BankApi.Multi.Transaction do
     |> Account.update_changeset(%{
       balance_account: account.balance_account() - String.to_integer(value)
     })
-
   end
 
   defp operation(account, value, :add) do
