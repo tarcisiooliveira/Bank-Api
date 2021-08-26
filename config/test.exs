@@ -7,7 +7,7 @@ use Mix.Config
 # Run `mix help test` for more information.
 config :bank_api, BankApi.Repo,
 username: System.get_env("PG_USERNAME") || "postgres",
-password: System.get_env("PG_PASSWORD") || "postgres",
+password: System.get_env("PG_PASSWORD") || "951753",
 database: System.get_env("PG_DATABASE") || "bank_api_dev",
 hostname: System.get_env("PG_HOSTNAME") || "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
