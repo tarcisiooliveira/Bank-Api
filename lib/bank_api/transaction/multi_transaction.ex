@@ -14,41 +14,40 @@ defmodule BankApi.Multi.Transaction do
 
   ## Examples
       iex> create(%{from_account_id: invalid_from_account_id, to_account_id: to_account_id, value: value})
-     {:error, :account_not_found}
+     {:error, :not_found}
 
       iex> create(%{from_account_id: from_account_id, to_account_id: from_account_id, value: value})
      {:error, :transfer_to_the_same_account}
   """
-  def transfer(%{
-        from_account_id: from_account_id,
-        to_account_id: to_account_id,
-        value: value
-      }) do
+  def transfer(params) do
     multi =
       Ecto.Multi.new()
+      |> Ecto.Multi.run(:is_valid_uuid, fn _, _ ->
+        valid_uuid(params.to_account_id)
+      end)
       |> Ecto.Multi.run(:same_account, fn _, _ ->
-        is_same_account?(from_account_id, to_account_id)
+        is_same_account?(params.from_account_id, params.to_account_id)
       end)
       |> Ecto.Multi.run(:zero_or_negative_value, fn _, _ ->
-        zero_or_negative_value?(value)
+        zero_or_negative_value?(params.value)
       end)
       |> Ecto.Multi.run(:from_account, fn _, _ ->
-        fetch_account(from_account_id)
+        get_account(params.from_account_id)
       end)
       |> Ecto.Multi.run(:to_account, fn _, _ ->
-        fetch_account(to_account_id)
+        get_account(params.to_account_id)
       end)
       |> Ecto.Multi.update(:changeset_balance_account_from, fn %{from_account: from_account} ->
-        operation(from_account, value, :sub)
+        operation(from_account, params.value, :sub)
       end)
       |> Ecto.Multi.update(:changeset_balance_account_to, fn %{to_account: to_account} ->
-        operation(to_account, value, :add)
+        operation(to_account, params.value, :add)
       end)
       |> Ecto.Multi.insert(:create_transaction, fn %{
                                                      from_account: from_account,
                                                      to_account: to_account
                                                    } ->
-        create_transaction(from_account.id, to_account.id, value)
+        create_transfer(from_account.id, to_account.id, params.value)
       end)
 
     case Repo.transaction(multi) do
@@ -61,25 +60,22 @@ defmodule BankApi.Multi.Transaction do
     end
   end
 
-  def withdraw(%{
-        from_account_id: from_account_id,
-        value: value
-      }) do
+  def withdraw(params) do
     multi =
       Ecto.Multi.new()
       |> Ecto.Multi.run(:negative_value, fn _, _ ->
-        zero_or_negative_value?(value)
+        zero_or_negative_value?(params.value)
       end)
       |> Ecto.Multi.run(:from_account, fn _, _ ->
-        fetch_account(from_account_id)
+        get_account(params.from_account_id)
       end)
       |> Ecto.Multi.update(:changeset_balance_account_from, fn %{from_account: from_account} ->
-        operation(from_account, value, :sub)
+        operation(from_account, params.value, :sub)
       end)
       |> Ecto.Multi.insert(:create_transaction, fn %{
                                                      from_account: from_account
                                                    } ->
-        create_transaction(from_account.id, value)
+                                                    create_withdraw(from_account.id, params.value)
       end)
 
     case Repo.transaction(multi) do
@@ -92,28 +88,28 @@ defmodule BankApi.Multi.Transaction do
     end
   end
 
-  defp fetch_account(account_id) do
+  defp get_account(account_id) do
     case Repo.get_by(Account, id: account_id) do
-      nil -> {:error, :account_not_found}
+      nil -> {:error, :not_found}
       account -> {:ok, account}
     end
   end
 
-  defp create_transaction(from_account_id, to_account_id, value) do
+  defp create_transfer(from_account_id, to_account_id, value) do
     %{
       from_account_id: from_account_id,
       to_account_id: to_account_id,
       value: value
     }
-    |> Transaction.changeset()
+    |> Transaction.changeset_transfer()
   end
 
-  defp create_transaction(from_account_id, value) do
+  defp create_withdraw(from_account_id, value) do
     %{
       from_account_id: from_account_id,
       value: value
     }
-    |> Transaction.changeset()
+    |> Transaction.changeset_withdraw()
   end
 
   defp is_same_account?(id_origem, id_destino) do
@@ -123,6 +119,16 @@ defmodule BankApi.Multi.Transaction do
 
       false ->
         {:ok, false}
+    end
+  end
+
+  defp valid_uuid(uuid) do
+    case Ecto.UUID.cast(uuid) do
+      :error ->
+        {:error, :invalid_account_uuid}
+
+      _ ->
+        {:ok, :valid_UUID}
     end
   end
 
