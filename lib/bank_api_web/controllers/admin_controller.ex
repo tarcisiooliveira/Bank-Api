@@ -1,7 +1,6 @@
 defmodule BankApiWeb.AdminController do
   use BankApiWeb, :controller
 
-
   alias BankApi.Admin.SignIn
   alias BankApi.Multi.Admin, as: MultiAdmin
   alias BankApi.Admins.Schemas.Admin
@@ -56,16 +55,7 @@ defmodule BankApiWeb.AdminController do
       iex> sign_up(%{"email" => "test2@admin.com", "password" => "123456"})
       %{"email" => "test2@admin.com", "password" => "123456"}
   """
-  def sign_up(
-        conn,
-        %{
-          "email" => email,
-          "password" => password,
-          "password_confirmation" => password_confirmation
-        }
-      ) do
-    params = %{email: email, password: password, password_confirmation: password_confirmation}
-
+  def sign_up(conn, params) do
     with {:ok, %{insert_admin: %Admin{id: id, email: email}}} <-
            MultiAdmin.create(params) do
       conn
@@ -75,18 +65,8 @@ defmodule BankApiWeb.AdminController do
     end
   end
 
-  def sign_up(conn, _) do
-    conn
-    |> put_status(:not_found)
-    |> put_view(BankApiWeb.AdminView)
-    |> render("error.json", %{
-      error: "Invalid parameters."
-    })
-  end
-
-
-  def show(conn, %{"email" => email}) do
-    with {:ok, admin} <- Repo.get_by(Admin, email: email) do
+  def show(conn, params) do
+    with {:ok, admin} <- Repo.get_by(Admin, email: params.email) do
       render(conn, "show.json", admin: admin)
     end
   end

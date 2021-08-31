@@ -5,7 +5,7 @@ defmodule BankApi.Admin.SignIn do
 
   alias BankApi.Admins.Schemas.Admin
   alias BankApi.Repo
-  alias BankApiWeb.Auth.GuardianAdmin, as: GuardianAdmin
+  alias BankApiWeb.Auth.GuardianAdmin
 
   @doc """
   Valid an Admin
@@ -22,15 +22,16 @@ defmodule BankApi.Admin.SignIn do
       iex> create(%{email: "", password: "1234526", password_confirmation: "123456"})
       {:error, :unauthorized}
   """
-  def authenticate(%{"email" => email, "password" => password} = params) do
-    case Repo.get_by(Admin, email: email) do
+  def authenticate(params) do
+
+    case Repo.get_by(Admin, email: params["email"]) do
       nil -> {:error, :unauthorized}
-      admin -> validate_password(admin, password)
+      admin -> validate_password(admin, params["password"])
     end
   end
 
-  defp validate_password(%Admin{password_hash: hash} = admin, password) do
-    case Bcrypt.verify_pass(password, hash) do
+  defp validate_password(admin, password) do
+    case Bcrypt.verify_pass(password, admin.password_hash) do
       true -> create_token(admin)
       false -> {:error, :unauthorized}
     end

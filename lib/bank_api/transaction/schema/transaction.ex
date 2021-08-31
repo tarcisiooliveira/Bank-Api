@@ -22,13 +22,7 @@ defmodule BankApi.Transactions.Schemas.Transaction do
   @required_params [:value, :from_account_id, :to_account_id]
 
   @doc false
-  def changeset(
-        %{
-          from_account_id: _account_origem_id,
-          to_account_id: _account_destino_id,
-          value: _value
-        } = params
-      ) do
+  def changeset_transfer(params) do
     %__MODULE__{}
     |> cast(params, @required_params)
     |> validate_required(@required_params)
@@ -37,7 +31,7 @@ defmodule BankApi.Transactions.Schemas.Transaction do
   @required_params_withdraw [:from_account_id, :value]
 
   @doc false
-  def changeset(params) do
+  def changeset_withdraw(params) do
     %__MODULE__{}
     |> cast(params, @required_params_withdraw)
     |> validate_required(@required_params_withdraw)

@@ -30,23 +30,17 @@ defmodule BankApiWeb.UserController do
   """
 
   def show(conn, _params) do
-    %Plug.Conn{
-      private: %{
-        :guardian_default_claims => %{
-          "sub" => user
-        }
-      }
-    } = conn
+    user = Guardian.Plug.current_resource(conn)
 
-    with {:ok, user} <- fetch_id(user) do
+    with {:ok, user} <- get_by_id(user.id) do
       conn
       |> put_status(:ok)
       |> render("show.json", user: user)
     end
   end
 
-  def show_account(conn, %{"email" => email}) do
-    with {:ok, user} <- fetch_email(email) do
+  def show_account(conn, params) do
+    with {:ok, user} <- get_by_email(params["email"]) do
       conn
       |> put_status(:ok)
       |> render("show_account.json", user: user)
@@ -120,16 +114,16 @@ defmodule BankApiWeb.UserController do
     end
   end
 
-  defp fetch_id(id) do
+  defp get_by_id(id) do
     case Repo.get_by(User, id: id) do
-      nil -> {:error, :theres_no_user}
+      nil -> {:error, :not_found}
       user -> {:ok, user}
     end
   end
 
-  defp fetch_email(email) do
+  defp get_by_email(email) do
     case Repo.get_by(User, email: email) do
-      nil -> {:error, :theres_no_user}
+      nil -> {:error, :not_found}
       user -> {:ok, user}
     end
   end
