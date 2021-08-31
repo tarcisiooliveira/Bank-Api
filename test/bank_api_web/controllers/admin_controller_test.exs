@@ -56,7 +56,7 @@ defmodule BankApiWeb.AdminControllerTest do
         |> post(Routes.admin_path(state[:conn], :sign_up, params))
 
       assert %{
-               "error" => "Invalid parameters."
+               "errors" => %{"password_confirmation" => ["can't be blank"]}
              } = Jason.decode!(response.resp_body)
     end
 

@@ -97,8 +97,7 @@ defmodule BankApiWeb.TransactionControllerTest do
       )
       |> json_response(:not_found)
 
-    assert %{"error" => %{"message" => ["Transaction not Found"]}} =
-             response
+    assert %{"error" => %{"message" => ["Not Found"]}} = response
   end
 
   test "assert ok insert - alls parameters are ok, User make withdraw", state do

@@ -107,20 +107,20 @@ defmodule BankApiWeb.UserControllerTest do
       |> post(Routes.user_path(state[:conn], :sign_up, params))
       |> json_response(:unprocessable_entity)
 
-    assert %{"errors" => %{"email" => ["Email already used"]}} = response
+    assert %{"errors" => %{"email" => ["Email already used."]}} = response
   end
 
   test "error insert - try creat user without passwor_validation",
        state do
-    params = %{
-      "email" => "email@email.com",
-      "name" => "Tarcisio2",
-      "password" => "123456"
-    }
-
     response =
       state[:conn]
-      |> post(Routes.user_path(state[:conn], :sign_up, params))
+      |> post(
+        Routes.user_path(state[:conn], :sign_up, %{
+          "email" => "email@email.com",
+          "name" => "Tarcisio2",
+          "password" => "123456"
+        })
+      )
 
     assert %{"errors" => %{"password_confirmation" => ["can't be blank"]}} =
              Jason.decode!(response.resp_body)
