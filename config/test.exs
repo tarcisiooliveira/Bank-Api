@@ -6,18 +6,17 @@ use Mix.Config
 # to provide built-in test partitioning in CI environment.
 # Run `mix help test` for more information.
 config :bank_api, BankApi.Repo,
-username: System.get_env("PG_USERNAME") || "postgres",
-password: System.get_env("PG_PASSWORD") || "951753",
-database: System.get_env("PG_DATABASE") || "bank_api_dev",
-hostname: System.get_env("PG_HOSTNAME") || "localhost",
+  username: System.get_env("PG_USERNAME") || "postgres",
+  password: System.get_env("PG_PASSWORD") || "postgres",
+  database: System.get_env("PG_DATABASE") || "bank_api_dev",
+  hostname: System.get_env("PG_HOSTNAME") || "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
 
-
-  if System.get_env("GITHUB_ACTIONS") do
-    config :app, App.Repo,
-      username: "postgres",
-      password: "postgres"
-  end
+if System.get_env("GITHUB_ACTIONS") do
+  config :app, App.Repo,
+    username: "postgres",
+    password: "postgres"
+end
 
 # We don't run a server during test. If one is required,
 # you can enable the server option below.

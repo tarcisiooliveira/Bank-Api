@@ -12,7 +12,7 @@ config :bank_api,
 # Configures the endpoint
 config :bank_api, BankApiWeb.Endpoint,
   url: [host: "localhost"],
-  secret_key_base: "P3O+a49KPmhLZpNgFSDRXQGIs4UYFNZiV7SyakO3bip0VUwZMICUDl9+ZwT3ANz/",
+  secret_key_base: "AmwwYvJaXO247x47EcA0FYm49UKdMn/7p/FypNqrmHB7DlONoAATUosJR5GVnfmT",
   render_errors: [view: BankApiWeb.ErrorView, accepts: ~w(json), layout: false],
   pubsub_server: BankApi.PubSub,
   live_view: [signing_salt: "zU05BQD6"]
