@@ -9,12 +9,15 @@ defmodule BankApiWeb.Router do
   pipeline :authAdmin do
     plug(BankApiWeb.Auth.PipelineAdmin)
   end
+
   pipeline :authUser do
     plug(BankApiWeb.Auth.PipelineUser)
   end
+
   scope "/", BankApiWeb do
     pipe_through(:api)
   end
+
   scope "/api/admin", BankApiWeb do
     pipe_through(:api)
 
@@ -43,7 +46,6 @@ defmodule BankApiWeb.Router do
     get("/transactions", TransactionController, :show)
     post("/transactions/transfer", TransactionController, :transfer)
     post("/transactions/withdraw", TransactionController, :withdraw)
-
   end
 
   if Mix.env() in [:dev, :test] do
