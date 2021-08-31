@@ -15,25 +15,11 @@ defmodule BankApiWeb.FallbackController do
     |> render("error_message.json", message: "Transfer to the same Account")
   end
 
-  def call(conn, {:error, message}) when message == :theres_no_user do
+  def call(conn, {:error, message}) when message == :not_found do
     conn
     |> put_status(:not_found)
     |> put_view(BankApiWeb.ErrorView)
-    |> render("error_message.json", message: "User not Found")
-  end
-
-  def call(conn, {:error, message}) when message == :theres_no_account do
-    conn
-    |> put_status(:not_found)
-    |> put_view(BankApiWeb.ErrorView)
-    |> render("error_message.json", message: "Account not Found")
-  end
-
-  def call(conn, {:error, message}) when message == :theres_no_transaction do
-    conn
-    |> put_status(:not_found)
-    |> put_view(BankApiWeb.ErrorView)
-    |> render("error_message.json", message: "Transaction not Found")
+    |> render("error_message.json", message: "Not Found")
   end
 
   def call(conn, {:error, message}) when message == :invalid_parameters do

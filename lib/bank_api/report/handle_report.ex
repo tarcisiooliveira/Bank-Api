@@ -38,249 +38,243 @@ defmodule BankApi.Report.HandleReport do
 
   """
   def report(%{"period" => "all"} = params) when params == %{"period" => "all"} do
-    query =
+    query_withdraw =
       from t in Transaction,
+        where: is_nil(t.to_account_id),
         select: t.value
 
-    quantity =
-      Repo.all(query)
-      |> Enum.count()
+    query_transfer =
+      from t in Transaction,
+        where: is_nil(t.to_account_id) == false,
+        select: t.value
 
-    case quantity do
-      0 ->
-        {:ok, result: 0}
+    quantity_withdraw =
+      case Repo.aggregate(query_withdraw, :sum, :value) do
+        nil -> 0
+        result -> result
+      end
 
-      _ ->
-        result = Repo.aggregate(query, :sum, :value)
+    quantity_transfer =
+      case Repo.aggregate(query_transfer, :sum, :value) do
+        nil -> 0
+        result -> result
+      end
 
-        {:ok, result: result}
-    end
+    result = %{withdraw: quantity_withdraw, transfer: quantity_transfer}
+
+    {:ok, result: result}
   end
 
   def report(%{"period" => "today"} = params) when params == %{"period" => "today"} do
-    day =
-      Date.utc_today()
-      |> to_string
+    day = Date.utc_today()
 
-    {:ok, start_day} =
-      (day <> " 00:00:00")
-      |> NaiveDateTime.from_iso8601()
-
-    {:ok, end_day} =
-      (day <> " 23:59:59")
-      |> NaiveDateTime.from_iso8601()
-
-    query =
+    query_withdraw =
       from t in Transaction,
         where:
-          fragment(
-            "? BETWEEN ? AND ?",
-            t.inserted_at,
-            ^start_day,
-            ^end_day
-          )
+          fragment("date(date_trunc('day', ?))", t.inserted_at) == ^day and
+            is_nil(t.to_account_id)
 
-    quantity =
-      Repo.all(query)
-      |> Enum.count()
+    query_transfer =
+      from t in Transaction,
+        where:
+          fragment("date(date_trunc('day', ?))", t.inserted_at) == ^day and
+            is_nil(t.to_account_id) == false
 
-    case quantity do
-      0 ->
-        {:ok, result: 0}
+    quantity_withdraw =
+      case Repo.aggregate(query_withdraw, :sum, :value) do
+        nil -> 0
+        result -> result
+      end
 
-      _ ->
-        result = Repo.aggregate(query, :sum, :value)
+    quantity_transfer =
+      case Repo.aggregate(query_transfer, :sum, :value) do
+        nil -> 0
+        result -> result
+      end
 
-        {:ok, result: result}
-    end
+    result = %{withdraw: quantity_withdraw, transfer: quantity_transfer}
+
+    {:ok, result: result}
   end
 
   def report(%{"period" => "day", "day" => day} = params)
       when params == %{"period" => "day", "day" => day} do
-    with {:ok, start_day} <- NaiveDateTime.from_iso8601(day <> " 00:00:00") do
-      end_day = NaiveDateTime.add(start_day, 86_399)
-
-      query =
+    with {:ok, day} <- Date.from_iso8601(day) do
+      query_withdraw =
         from t in Transaction,
           where:
-            fragment(
-              "? BETWEEN ? AND ?",
-              t.inserted_at,
-              ^start_day,
-              ^end_day
-            ),
+            fragment("date(date_trunc('month', ?))", t.inserted_at) == ^day and
+              is_nil(t.to_account_id),
           select: t.value
 
-      quantity =
-        Repo.all(query)
-        |> Enum.count()
+      query_transfer =
+        from t in Transaction,
+          where:
+            fragment("date(date_trunc('month', ?))", t.inserted_at) == ^day and
+              is_nil(t.to_account_id) == false,
+          select: t.value
 
-      case quantity do
-        0 ->
-          {:ok, result: 0}
+      quantity_withdraw =
+        case Repo.aggregate(query_withdraw, :sum, :value) do
+          nil -> 0
+          result -> result
+        end
 
-        _ ->
-          result = Repo.aggregate(query, :sum, :value)
+      quantity_transfer =
+        case Repo.aggregate(query_transfer, :sum, :value) do
+          nil -> 0
+          result -> result
+        end
 
-          {:ok, result: result}
-      end
+      result = %{withdraw: quantity_withdraw, transfer: quantity_transfer}
+
+      {:ok, result: result}
     end
   end
 
   def report(%{"period" => "month"} = params) when params == %{"period" => "month"} do
-    {:ok, start_month} =
-      Date.utc_today()
-      |> Date.beginning_of_month()
-      |> Date.to_string()
-      |> agregate_start()
-      |> NaiveDateTime.from_iso8601()
-
-    {:ok, next_month} =
-      NaiveDateTime.utc_now()
-      |> Date.end_of_month()
-      |> Date.to_string()
-      |> agregate_end
-      |> NaiveDateTime.from_iso8601()
-
-    query =
+    query_withdraw =
       from t in Transaction,
         where:
-          fragment(
-            "? BETWEEN ? AND ?",
-            t.inserted_at,
-            ^start_month,
-            ^next_month
-          ),
+          fragment("date(date_trunc('month', ?))", t.inserted_at) ==
+            ^date_trunc(Date.utc_today(), :month) and is_nil(t.to_account_id),
         select: t.value
 
-    quantity =
-      Repo.all(query)
-      |> Enum.count()
+    query_transfer =
+      from t in Transaction,
+        where:
+          fragment("date(date_trunc('month', ?))", t.inserted_at) ==
+            ^date_trunc(Date.utc_today(), :month) and is_nil(t.to_account_id) == false,
+        select: t.value
 
-    case quantity do
-      0 ->
-        {:ok, result: 0}
+    quantity_withdraw = Repo.aggregate(query_withdraw, :sum, :value)
 
-      _ ->
-        result = Repo.aggregate(query, :sum, :value)
+    quantity_transfer = Repo.aggregate(query_transfer, :sum, :value)
 
-        {:ok, result: result}
-    end
+    result = %{withdraw: quantity_withdraw, transfer: quantity_transfer}
+
+    {:ok, result: result}
   end
 
   def report(%{"period" => "month", "month" => month} = params)
       when params == %{"period" => "month", "month" => month} do
-    data = NaiveDateTime.utc_now()
+    data = Date.utc_today()
+    {:ok, data} = "#{data.year}-#{month}-01" |> Date.from_iso8601()
 
-    {:ok, start_month} =
-      NaiveDateTime.new(data.year, String.to_integer(month), 01, 00, 00, 00, 000_000)
-
-    {:ok, next_month} =
-      start_month
-      |> Date.end_of_month()
-      |> to_string()
-      |> agregate_end()
-      |> NaiveDateTime.from_iso8601()
-
-    query =
+    query_withdraw =
       from t in Transaction,
         where:
-          fragment(
-            "? BETWEEN ? AND ?",
-            t.inserted_at,
-            ^start_month,
-            ^next_month
-          ),
+          fragment("date(date_trunc('month', ?))", t.inserted_at) == ^data and
+            is_nil(t.to_account_id),
         select: t.value
 
-    quantity =
-      Repo.all(query)
-      |> Enum.count()
+    query_transfer =
+      from t in Transaction,
+        where:
+          fragment("date(date_trunc('month', ?))", t.inserted_at) == ^data and
+            is_nil(t.to_account_id) == false,
+        select: t.value
 
-    case quantity do
-      0 ->
-        {:ok, result: 0}
+    quantity_withdraw =
+      case Repo.aggregate(query_withdraw, :sum, :value) do
+        nil -> 0
+        result -> result
+      end
 
-      _ ->
-        result = Repo.aggregate(query, :sum, :value)
+    quantity_transfer =
+      case Repo.aggregate(query_transfer, :sum, :value) do
+        nil -> 0
+        result -> result
+      end
 
-        {:ok, result: result}
-    end
+    result = %{withdraw: quantity_withdraw, transfer: quantity_transfer}
+
+    {:ok, result: result}
   end
 
   def report(%{"period" => "year", "year" => year}) do
-    {:ok, start_day} = NaiveDateTime.from_iso8601(year <> "-01-01 00:00:00")
+    {:ok, newdata} = "#{year}-01-01" |> Date.from_iso8601()
 
-    {:ok, end_day} = NaiveDateTime.from_iso8601(year <> "-12-31 23:59:59")
-
-    query =
+    query_withdraw =
       from t in Transaction,
         where:
-          fragment(
-            "? BETWEEN ? AND ?",
-            t.inserted_at,
-            ^start_day,
-            ^end_day
-          ),
+          fragment("date(date_trunc('year', ?))", t.inserted_at) == ^newdata and
+            is_nil(t.to_account_id),
         select: t.value
 
-    quantity =
-      Repo.all(query)
-      |> Enum.count()
+    query_transfer =
+      from t in Transaction,
+        where:
+          fragment("date(date_trunc('year', ?))", t.inserted_at) == ^newdata and
+            is_nil(t.to_account_id) == false,
+        select: t.value
 
-    case quantity do
-      0 ->
-        {:ok, result: 0}
+    quantity_withdraw =
+      case Repo.aggregate(query_withdraw, :sum, :value) do
+        nil -> 0
+        result -> result
+      end
 
-      _ ->
-        result = Repo.aggregate(query, :sum, :value)
+    quantity_transfer =
+      case Repo.aggregate(query_transfer, :sum, :value) do
+        nil -> 0
+        result -> result
+      end
 
-        {:ok, result: result}
-    end
+    result = %{withdraw: quantity_withdraw, transfer: quantity_transfer}
+
+    {:ok, result: result}
   end
 
   def report(params) when params == %{"period" => "year"} do
-    date_time = DateTime.utc_now().year |> to_string()
-
-    {:ok, start_day} = NaiveDateTime.from_iso8601(date_time <> "-01-01 00:00:00")
-
-    {:ok, end_day} = NaiveDateTime.from_iso8601(date_time <> "-12-31 23:59:59")
-
-    query =
+    query_withdraw =
       from t in Transaction,
         where:
-          fragment(
-            "? BETWEEN ? AND ?",
-            t.inserted_at,
-            ^start_day,
-            ^end_day
-          ),
+          fragment("date(date_trunc('year', ?))", t.inserted_at) ==
+            ^date_trunc(Date.utc_today(), :year) and
+            is_nil(t.to_account_id),
         select: t.value
 
-    quantity =
-      Repo.all(query)
-      |> Enum.count()
+    query_transfer =
+      from t in Transaction,
+        where:
+          fragment("date(date_trunc('year', ?))", t.inserted_at) ==
+            ^date_trunc(Date.utc_today(), :year) and
+            is_nil(t.to_account_id) == false,
+        select: t.value
 
-    case quantity do
-      0 ->
-        {:ok, result: 0}
+    quantity_withdraw =
+      case Repo.aggregate(query_withdraw, :sum, :value) do
+        nil -> 0
+        result -> result
+      end
 
-      _ ->
-        result = Repo.aggregate(query, :sum, :value)
+    quantity_transfer =
+      case Repo.aggregate(query_transfer, :sum, :value) do
+        nil -> 0
+        result -> result
+      end
 
-        {:ok, result: result}
-    end
+    result = %{withdraw: quantity_withdraw, transfer: quantity_transfer}
+    {:ok, result: result}
   end
 
   def report(_) do
     {:error, :invalid_parameters}
   end
 
-  defp agregate_start(string) do
-    string <> " 00:00:00"
+  def date_trunc(date, :month) do
+    if date.month <= 9 do
+      {:ok, date} = Date.from_iso8601("#{date.year}-0#{date.month}-01")
+      date
+    else
+      {:ok, date} = Date.from_iso8601("#{date.year}-#{date.month}-01")
+      date
+    end
   end
 
-  defp agregate_end(string) do
-    string <> " 23:59:59"
+  def date_trunc(date, :year) do
+    {:ok, date} = Date.from_iso8601("#{date.year}-01-01")
+    date
   end
 end

@@ -10,10 +10,10 @@ defmodule BankApiWeb.ReportView do
 
   def render(
         "reports.json",
-        %{result: result} = _params
+        params
       ) do
     %{
-      result: result
+      result: %{transfer: params.result.transfer, withdraw: params.result.withdraw}
     }
   end
 
