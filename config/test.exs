@@ -13,7 +13,7 @@ config :bank_api, BankApi.Repo,
   pool: Ecto.Adapters.SQL.Sandbox
 
 if System.get_env("GITHUB_ACTIONS") do
-  config :app, App.Repo,
+  config :bank_api, BankApi.Repo,
     username: "postgres",
     password: "postgres"
 end
