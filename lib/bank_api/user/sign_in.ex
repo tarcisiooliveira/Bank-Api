@@ -22,10 +22,10 @@ defmodule BankApi.User.SignIn do
       iex> create(%{email: "", password: "1234526", password_confirmation: "123456"})
       {:error, :unauthorized}
   """
-    def authenticate(params) do
-      case Repo.get_by(User, email: params["email"]) do
-        nil -> {:error, :unauthorized}
-        user -> validate_password(user, params["password"])
+  def authenticate(params) do
+    case Repo.get_by(User, email: params["email"]) do
+      nil -> {:error, :unauthorized}
+      user -> validate_password(user, params["password"])
     end
   end
 

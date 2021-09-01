@@ -75,7 +75,7 @@ defmodule BankApi.Multi.Transaction do
       |> Ecto.Multi.insert(:create_transaction, fn %{
                                                      from_account: from_account
                                                    } ->
-                                                    create_withdraw(from_account.id, params.value)
+        create_withdraw(from_account.id, params.value)
       end)
 
     case Repo.transaction(multi) do

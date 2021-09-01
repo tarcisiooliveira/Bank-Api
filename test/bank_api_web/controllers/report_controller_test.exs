@@ -113,7 +113,8 @@ defmodule BankApiWeb.ReportControllerTest do
       |> put_req_header("authorization", "Bearer " <> state[:value].token)
       |> post(Routes.report_path(state[:conn], :report, params))
 
-    assert %{"result" => %{"transfer" => 100, "withdraw" => 100}} = Jason.decode!(response.resp_body)
+    assert %{"result" => %{"transfer" => 100, "withdraw" => 100}} =
+             Jason.decode!(response.resp_body)
   end
 
   test "all transcations this on month", state do
@@ -124,7 +125,8 @@ defmodule BankApiWeb.ReportControllerTest do
       |> put_req_header("authorization", "Bearer " <> state[:value].token)
       |> post(Routes.report_path(state[:conn], :report, params))
 
-    assert %{"result" => %{"transfer" => 300, "withdraw" => 100}} = Jason.decode!(response.resp_body)
+    assert %{"result" => %{"transfer" => 300, "withdraw" => 100}} =
+             Jason.decode!(response.resp_body)
   end
 
   test "transcations in seted month", state do
@@ -146,7 +148,8 @@ defmodule BankApiWeb.ReportControllerTest do
       |> put_req_header("authorization", "Bearer " <> state[:value].token)
       |> post(Routes.report_path(state[:conn], :report, params))
 
-    assert %{"result" => %{"transfer" => 100, "withdraw" => 0}} = Jason.decode!(response.resp_body)
+    assert %{"result" => %{"transfer" => 100, "withdraw" => 0}} =
+             Jason.decode!(response.resp_body)
   end
 
   test "erro when past invalid parameter", state do
