@@ -116,7 +116,7 @@ defmodule BankApiWeb.ReportControllerTest do
     assert %{"result" => %{"transfer" => 0, "withdraw" => 100}} = Jason.decode!(response.resp_body)
   end
 
-  test "all transcations this month", state do
+  test "all transcations this on month", state do
     params = %{"period" => "month"}
 
     response =
