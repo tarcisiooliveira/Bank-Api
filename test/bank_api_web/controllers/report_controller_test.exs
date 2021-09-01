@@ -3,10 +3,12 @@ defmodule BankApiWeb.ReportControllerTest do
   Module test Report Controller
   """
   use BankApiWeb.ConnCase, async: false
+
   import BankApi.Factory
-  alias BankApiWeb.Auth.GuardianAdmin
+
   alias BankApi.Accounts.Schemas.Account
   alias BankApi.Users.Schemas.User
+  alias BankApiWeb.Auth.GuardianAdmin
 
   setup do
     [conn: "Phoenix.ConnTest.build_conn()"]

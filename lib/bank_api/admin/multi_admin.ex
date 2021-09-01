@@ -3,8 +3,8 @@ defmodule BankApi.Multi.Admin do
     This Module valid manipulations of Admin and the persist in DataBase or RollBack if something is worng.
   """
 
-  alias BankApi.Repo
   alias BankApi.Admins.Schemas.Admin
+  alias BankApi.Repo
 
   @doc """
   Validate and persist a new Admin

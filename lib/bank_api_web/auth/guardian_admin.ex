@@ -3,8 +3,8 @@ defmodule BankApiWeb.Auth.GuardianAdmin do
   Auth Admin library
   """
 
-  alias BankApi.Repo
   alias BankApi.Admins.Schemas.Admin
+  alias BankApi.Repo
 
   use Guardian, otp_app: :bank_api
 

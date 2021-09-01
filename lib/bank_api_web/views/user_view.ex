@@ -1,7 +1,8 @@
 defmodule BankApiWeb.UserView do
   use BankApiWeb, :view
-  alias BankApi.Users.Schemas.User
+
   alias BankApi.Accounts.Schemas.Account
+  alias BankApi.Users.Schemas.User
 
   def render("show.json", %{user: %User{id: id, name: name, email: email}}) do
     %{

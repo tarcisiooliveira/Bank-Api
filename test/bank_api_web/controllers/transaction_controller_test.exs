@@ -9,8 +9,8 @@ defmodule BankApiWeb.TransactionControllerTest do
   import BankApi.Factory
 
   alias BankApi.Accounts.Schemas.Account
-  alias BankApi.Users.Schemas.User
   alias BankApi.Transactions.Schemas.Transaction
+  alias BankApi.Users.Schemas.User
 
   alias BankApiWeb.Auth.GuardianUser
 

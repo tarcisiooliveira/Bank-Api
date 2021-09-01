@@ -3,10 +3,10 @@ defmodule BankApi.Multi.Transaction do
     This Module valid manipulations of Transactions and the persist in DataBase or RollBack if something is worng.
   """
 
-  alias BankApi.Transactions.Schemas.Transaction
   alias BankApi.Accounts.Schemas.Account
   alias BankApi.Repo
   alias BankApi.SendEmail.SendEmail
+  alias BankApi.Transactions.Schemas.Transaction
 
   @doc """
   Validate and persist an Transactio

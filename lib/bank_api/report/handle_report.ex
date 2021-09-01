@@ -3,8 +3,9 @@ defmodule BankApi.Report.HandleReport do
     This Module generate manipulate all Report request than return result.
   """
 
-  alias BankApi.Transactions.Schemas.Transaction
   alias BankApi.Repo
+  alias BankApi.Transactions.Schemas.Transaction
+
   import Ecto.Query
 
   @doc """

@@ -3,9 +3,9 @@ defmodule BankApi.Multi.User do
     This Module valid manipulations of Users and the persist in DataBase or RollBack if something is worng.
   """
 
-  alias BankApi.Users.Schemas.User
   alias BankApi.Accounts.Schemas.Account
   alias BankApi.Repo
+  alias BankApi.Users.Schemas.User
 
   @doc """
   Validate and persist a new User

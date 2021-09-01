@@ -1,12 +1,11 @@
 defmodule BankApiWeb.UserController do
   use BankApiWeb, :controller
 
-  alias BankApi.Users.Schemas.User
+  alias BankApi.Accounts.Schemas.Account
+  alias BankApi.Multi.User, as: MultiUser
   alias BankApi.Repo
   alias BankApi.User.SignIn
   alias BankApi.Users.Schemas.User
-  alias BankApi.Accounts.Schemas.Account
-  alias BankApi.Multi.User, as: MultiUser
 
   action_fallback(BankApiWeb.FallbackController)
 
