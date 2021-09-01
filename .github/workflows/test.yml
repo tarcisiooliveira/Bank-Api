@@ -3,7 +3,7 @@ on: push
 
 jobs:
   test:
-    runs-on: debian-latest
+    runs-on: ubuntu-latest
 
     env:
       MIX_ENV: test
@@ -26,6 +26,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-elixir@v1
         with:
+          experimental-otp: true
           otp-version: 24.0.2
           elixir-version: 1.12.2
       - uses: actions/cache@v1
