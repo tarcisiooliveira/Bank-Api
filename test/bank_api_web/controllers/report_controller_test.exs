@@ -60,28 +60,28 @@ defmodule BankApiWeb.ReportControllerTest do
       from_account_id: account_id_1,
       to_account_id: account_id_3,
       value: 100,
-      inserted_at: ~N[2021-08-01 02:17:10]
+      inserted_at: ~N[2021-09-01 02:17:10]
     )
 
     insert(:transfer,
       from_account_id: account_id_2,
       to_account_id: account_id_3,
       value: 100,
-      inserted_at: ~N[2021-08-04 02:17:10]
+      inserted_at: ~N[2021-09-04 02:17:10]
     )
 
     insert(:transfer,
       from_account_id: account_id_2,
       to_account_id: account_id_3,
       value: 100,
-      inserted_at: ~N[2021-08-05 02:17:10]
+      inserted_at: ~N[2021-09-05 02:17:10]
     )
 
     insert(:transfer,
       from_account_id: account_id_2,
       to_account_id: account_id_3,
       value: 100,
-      inserted_at: ~N[2020-08-05 02:17:10]
+      inserted_at: ~N[2020-09-05 02:17:10]
     )
 
     {:ok,
@@ -113,7 +113,7 @@ defmodule BankApiWeb.ReportControllerTest do
       |> put_req_header("authorization", "Bearer " <> state[:value].token)
       |> post(Routes.report_path(state[:conn], :report, params))
 
-    assert %{"result" => %{"transfer" => 0, "withdraw" => 100}} = Jason.decode!(response.resp_body)
+    assert %{"result" => %{"transfer" => 100, "withdraw" => 100}} = Jason.decode!(response.resp_body)
   end
 
   test "all transcations this on month", state do
@@ -127,7 +127,7 @@ defmodule BankApiWeb.ReportControllerTest do
     assert %{"result" => %{"transfer" => 300, "withdraw" => 100}} = Jason.decode!(response.resp_body)
   end
 
-  test "all transcations different month", state do
+  test "transcations in seted month", state do
     params = %{"period" => "month", "month" => "08"}
 
     response =
@@ -135,7 +135,7 @@ defmodule BankApiWeb.ReportControllerTest do
       |> put_req_header("authorization", "Bearer " <> state[:value].token)
       |> post(Routes.report_path(state[:conn], :report, params))
 
-    assert %{"result" => %{"transfer" => 300, "withdraw" => 100}} = Jason.decode!(response.resp_body)
+    assert %{"result" => %{"transfer" => 0, "withdraw" => 0}} = Jason.decode!(response.resp_body)
   end
 
   test "transaction in 2020", state do
