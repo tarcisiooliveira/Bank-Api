@@ -3,8 +3,11 @@ on: push
 
 jobs:
   test:
-    runs-on: debian:buster
-
+    runs-on: ubuntu-latest
+    name: Test Enviroment Deploy
+    with:
+      arch: buster
+      distro: debian:buster
     env:
       MIX_ENV: test
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -41,8 +44,8 @@ jobs:
           key: ${{ runner.os }}-build-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}
           restore-keys: |
             ${{ runner.os }}-build-
-      - run: mix deps.get
-      - run: mix compile 
+      # - run: mix deps.get
+      # - run: mix compile 
       # - run: mix test
       # - run: mix format 
       # - run: mix credo 
