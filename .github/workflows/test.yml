@@ -3,7 +3,7 @@ on: push
 
 jobs:
   test:
-    runs-on: buster
+    runs-on: debian:buster
 
     env:
       MIX_ENV: test
