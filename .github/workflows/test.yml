@@ -2,7 +2,7 @@ name: actions
 on: push
 
 jobs:
-  test:
+  
     runs-on: buster
 
     env:
