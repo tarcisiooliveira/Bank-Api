@@ -12,7 +12,6 @@ jobs:
       # - run: gigalixir git:remote ${{ secrets.GIGALIXIR_APP }}
       # - run: git push -f gigalixir HEAD:refs/heads/master
       - run: apt-get update 
-		  - run: apt-get install -y locales 
 		  - run: apt-get install -y inotify-tools 
 		  - run: apt-get install -y postgresql-client
 		  - run: apt-get install -y elixir erlang
