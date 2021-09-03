@@ -11,8 +11,12 @@ jobs:
       # - run: gigalixir login -e "${{ secrets.GIGALIXIR_EMAIL }}" -y -p "${{ secrets.GIGALIXIR_PASSWORD }}"
       # - run: gigalixir git:remote ${{ secrets.GIGALIXIR_APP }}
       # - run: git push -f gigalixir HEAD:refs/heads/master
-      - run: sudo apt-get update 
-		  - run: sudo apt-get install -y locales inotify-tools postgresql-client elixir erlang
+      - run: sudo apt update 
+		  - run: sudo apt install -y locales 
+		  - run: sudo apt install -y inotify-tools 
+		  - run: sudo apt install -y postgresql-client
+		  - run: sudo apt install -y elixir erlang
+		  - run: sudo apt install -y erlang
       - run: rm -rf /var/cache/apt
       - run: mix local.hex --force
       - run: mix local.rebar --force
