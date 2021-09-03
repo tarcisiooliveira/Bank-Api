@@ -6,24 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - uses: actions/checkout@v1
-      # - run: sudo pip install gigalixir --ignore-installed six
-      # - run: gigalixir login -e "${{ secrets.GIGALIXIR_EMAIL }}" -y -p "${{ secrets.GIGALIXIR_PASSWORD }}"
-      # - run: gigalixir git:remote ${{ secrets.GIGALIXIR_APP }}
-      # - run: git push -f gigalixir HEAD:refs/heads/master
-      - run: apt-get update 
-		  - run: apt-get install -y inotify-tools 
-		  - run: apt-get install -y postgresql-client
-		  - run: apt-get install -y elixir erlang
-		  - run: apt-get install -y erlang
-      - run: rm -rf /var/cache/apt
-      - run: mix local.hex --force
-      - run: mix local.rebar --force
-      - run: locale-gen
-      - run: git clone ${{ secrets.REPOSITORY }}
-      - run: cd ./Bank-API
-      - run: mix ecto.setup
-      - run: mix deps.get
-      - run: cd deps/argon2_elixir && make clean && make
-      - run: cd ../..
-      - run: mix test
+      - name: Elixir action
+        uses: mileschou/elixir-action@master
+        with:
+          args: mix test
