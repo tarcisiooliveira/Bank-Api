@@ -16,6 +16,4 @@ jobs:
       - run: mix deps.get
       - run: cd deps/argon2_elixir && make clean && make
       - run: cd ../..
-      - run: mix deps.get
-      - run: mix compile 
       - run: mix test
