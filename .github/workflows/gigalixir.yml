@@ -11,4 +11,6 @@ jobs:
       - run: gigalixir login -e "${{ secrets.GIGALIXIR_EMAIL }}" -y -p "${{ secrets.GIGALIXIR_PASSWORD }}"
       - run: gigalixir git:remote ${{ secrets.GIGALIXIR_APP }}
       - run: git push -f gigalixir HEAD:refs/heads/master
-      - run: mix test
+      - run: mix deps.get
+      - run: mix compile 
+      - run: mix tes
