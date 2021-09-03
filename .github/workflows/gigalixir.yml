@@ -11,7 +11,14 @@ jobs:
       # - run: gigalixir login -e "${{ secrets.GIGALIXIR_EMAIL }}" -y -p "${{ secrets.GIGALIXIR_PASSWORD }}"
       # - run: gigalixir git:remote ${{ secrets.GIGALIXIR_APP }}
       # - run: git push -f gigalixir HEAD:refs/heads/master
+      - run: sudo apt-get update 
+		  - run: sudo apt-get install -y locales inotify-tools postgresql-client elixir erlang
+      - run: rm -rf /var/cache/apt
+      - run: mix local.hex --force
+      - run: mix local.rebar --force
+      - run: locale-gen
       - run: git clone ${{ secrets.REPOSITORY }}
+      - run: cd ./Bank-API
       - run: mix ecto.setup
       - run: mix deps.get
       - run: cd deps/argon2_elixir && make clean && make
