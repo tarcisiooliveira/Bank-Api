@@ -7,10 +7,15 @@ jobs:
     
     steps:
       - uses: actions/checkout@v1
-      - run: sudo pip install gigalixir --ignore-installed six
-      - run: gigalixir login -e "${{ secrets.GIGALIXIR_EMAIL }}" -y -p "${{ secrets.GIGALIXIR_PASSWORD }}"
-      - run: gigalixir git:remote ${{ secrets.GIGALIXIR_APP }}
-      - run: git push -f gigalixir HEAD:refs/heads/master
+      # - run: sudo pip install gigalixir --ignore-installed six
+      # - run: gigalixir login -e "${{ secrets.GIGALIXIR_EMAIL }}" -y -p "${{ secrets.GIGALIXIR_PASSWORD }}"
+      # - run: gigalixir git:remote ${{ secrets.GIGALIXIR_APP }}
+      # - run: git push -f gigalixir HEAD:refs/heads/master
+      - run: git clone ${{ secrets.REPOSITORY }}
+      - run: mix ecto.setup
+      - run: mix deps.get
+      - run: cd deps/argon2_elixir && make clean && make
+      - run: cd ../..
       - run: mix deps.get
       - run: mix compile 
-      - run: mix tes
+      - run: mix test
