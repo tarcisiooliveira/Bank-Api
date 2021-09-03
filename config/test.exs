@@ -14,8 +14,11 @@ config :bank_api, BankApi.Repo,
 
 if System.get_env("GITHUB_ACTIONS") do
   config :bank_api, BankApi.Repo,
-    username: "postgres",
-    password: "postgres"
+  username: ${{ secrets.GIGALIXIR_DB_USER }},
+  password: ${{ secrets.GIGALIXIR_PASSWORD }},
+  database: ${{ secrets.GIGALIXIR_DATABASE }},
+  hostname: ${{ secrets.GIGALIXIR_HOSTNAME }},
+  pool: Ecto.Adapters.SQL.Sandbox
 end
 
 # We don't run a server during test. If one is required,
