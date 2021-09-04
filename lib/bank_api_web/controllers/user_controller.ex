@@ -2,10 +2,9 @@ defmodule BankApiWeb.UserController do
   use BankApiWeb, :controller
 
   alias BankApi.Users.Schemas.User
-  alias BankApi.Repo
   alias BankApi.User.SignIn
-  alias BankApi.Users.Schemas.User
   alias BankApi.Users.CreateUser
+  alias BankApi.Users.GetBy
 
   action_fallback(BankApiWeb.FallbackController)
 
@@ -31,18 +30,10 @@ defmodule BankApiWeb.UserController do
   def show(conn, _params) do
     user = Guardian.Plug.current_resource(conn)
 
-    with {:ok, user} <- get_by_id(user.id) do
+    with {:ok, user} <- GetBy.get_by_id(user.id) |> IO.inspect() do
       conn
       |> put_status(:ok)
       |> render("show.json", user: user)
-    end
-  end
-
-  def show_account(conn, params) do
-    with {:ok, user} <- get_by_email(params["email"]) do
-      conn
-      |> put_status(:ok)
-      |> render("show_account.json", user: user)
     end
   end
 
@@ -104,20 +95,6 @@ defmodule BankApiWeb.UserController do
         user: user,
         account: account
       })
-    end
-  end
-
-  defp get_by_id(id) do
-    case Repo.get_by(User, id: id) do
-      nil -> {:error, :not_found}
-      user -> {:ok, user}
-    end
-  end
-
-  defp get_by_email(email) do
-    case Repo.get_by(User, email: email) do
-      nil -> {:error, :not_found}
-      user -> {:ok, user}
     end
   end
 end
