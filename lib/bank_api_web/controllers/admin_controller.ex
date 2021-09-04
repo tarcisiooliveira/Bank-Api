@@ -4,7 +4,6 @@ defmodule BankApiWeb.AdminController do
   alias BankApi.Admin.SignIn
   alias BankApi.Multi.Admin, as: MultiAdmin
   alias BankApi.Admins.Schemas.Admin
-  alias BankApi.Repo
 
   action_fallback BankApiWeb.FallbackController
 
@@ -62,12 +61,6 @@ defmodule BankApiWeb.AdminController do
       |> put_status(:ok)
       |> put_view(BankApiWeb.AdminView)
       |> render("sign_up.json", %{id: id, email: email})
-    end
-  end
-
-  def show(conn, params) do
-    with {:ok, admin} <- Repo.get_by(Admin, email: params.email) do
-      render(conn, "show.json", admin: admin)
     end
   end
 end
