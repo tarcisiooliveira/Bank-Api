@@ -54,9 +54,6 @@ jobs:
     - name: Setup DB
       run: mix ecto.setup
  
-    - name: Run Tests
-      run: mix test
- 
     - name: Check Formatting
       run: mix format --check-formatted
  
@@ -65,23 +62,3 @@ jobs:
  
     - name: Typecheck With Dialyzer
       run: mix dialyzer
-
-  deploy:
-    needs: test # Will only run if the test job succeeds
-    if: github.ref == 'refs/heads/master' # Only run this job if it is on the master branch
-
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          ref: master # Checkout out master instead of the latest commit
-          fetch-depth: 0 # Checkout the whole branch
-
-      - uses: mhanberg/gigalixir-action@v0.3.0
-        with:
-          GIGALIXIR_USERNAME: ${{ secrets.GIGALIXIR_USERNAME }}
-          GIGALIXIR_PASSWORD: ${{ secrets.GIGALIXIR_PASSWORD }}
-          GIGALIXIR_APP: bankapi 
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          MIGRATIONS: false # defaults to true
