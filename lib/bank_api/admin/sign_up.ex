@@ -1,4 +1,4 @@
-defmodule BankApi.Multi.Admin do
+defmodule BankApi.Admins.SignUp do
   @moduledoc """
     This Module valid manipulations of Admin and the persist in DataBase or RollBack if something is worng.
   """

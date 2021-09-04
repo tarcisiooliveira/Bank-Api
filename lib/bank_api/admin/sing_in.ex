@@ -1,4 +1,4 @@
-defmodule BankApi.Admin.SignIn do
+defmodule BankApi.Admins.SignIn do
   @moduledoc """
   SignIn Admin module
   """

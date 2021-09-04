@@ -1,8 +1,8 @@
 defmodule BankApiWeb.AdminController do
   use BankApiWeb, :controller
 
-  alias BankApi.Admin.SignIn
-  alias BankApi.Multi.Admin, as: MultiAdmin
+  alias BankApi.Admins.SignIn
+  alias BankApi.Admins.SignUp
   alias BankApi.Admins.Schemas.Admin
 
   action_fallback BankApiWeb.FallbackController
@@ -55,8 +55,7 @@ defmodule BankApiWeb.AdminController do
       %{"email" => "test2@admin.com", "password" => "123456"}
   """
   def sign_up(conn, params) do
-    with {:ok, %{insert_admin: %Admin{id: id, email: email}}} <-
-           MultiAdmin.create(params) do
+    with {:ok, %{insert_admin: %Admin{id: id, email: email}}} <- SignUp.create(params) do
       conn
       |> put_status(:ok)
       |> put_view(BankApiWeb.AdminView)
