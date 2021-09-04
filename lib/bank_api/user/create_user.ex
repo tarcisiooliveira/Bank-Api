@@ -1,4 +1,4 @@
-defmodule BankApi.Multi.User do
+defmodule BankApi.Users.CreateUser do
   @moduledoc """
     This Module valid manipulations of Users and the persist in DataBase or RollBack if something is worng.
   """

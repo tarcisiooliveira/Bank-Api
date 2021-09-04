@@ -33,16 +33,19 @@ defmodule BankApiWeb.UserView do
   def render(
         "sign_up.json",
         %{
-          user_id: user_id,
-          email: email,
-          account_id: account_id,
-          balance_account: balance_account
-        } = _params
+          user: user,
+          account: account
+        }
       ) do
     %{
-      message: "User created sucessfuly!",
-      user: %{email: email, user_id: user_id},
-      account: %{account_id: account_id, balance_account: balance_account}
+      user: %{
+        email: user.email,
+        id: user.id,
+        account: %{
+          id: account.id,
+          balance: account.balance_account
+        }
+      }
     }
   end
 

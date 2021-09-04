@@ -18,7 +18,7 @@ defmodule BankApiWeb.UserControllerTest do
         password: "123456",
         password_confirmation: "123456"
       }
-      |> BankApi.Multi.User.create()
+      |> BankApi.Users.CreateUser.create()
 
     {:ok, token, _claims} = GuardianUser.encode_and_sign(user)
 
@@ -44,15 +44,15 @@ defmodule BankApiWeb.UserControllerTest do
       |> json_response(:ok)
 
     assert %{
-             "message" => "User created sucessfuly!",
              "user" => %{
                "email" => "tarcisiooliveira@email.com",
-               "user_id" => _user_id
-             },
-             "account" => %{
-               "account_id" => _account_id,
-               "balance_account" => 10_000
+               "id" => _user_id,
+               "account" => %{
+                "id" => _account_id,
+                "balance" => 10_000
+              }
              }
+
            } = response
   end
 

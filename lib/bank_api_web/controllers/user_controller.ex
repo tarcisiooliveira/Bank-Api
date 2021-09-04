@@ -5,8 +5,7 @@ defmodule BankApiWeb.UserController do
   alias BankApi.Repo
   alias BankApi.User.SignIn
   alias BankApi.Users.Schemas.User
-  alias BankApi.Accounts.Schemas.Account
-  alias BankApi.Multi.User, as: MultiUser
+  alias BankApi.Users.CreateUser
 
   action_fallback(BankApiWeb.FallbackController)
 
@@ -98,18 +97,12 @@ defmodule BankApiWeb.UserController do
   """
 
   def sign_up(conn, params) do
-    with {:ok,
-          %{
-            insert_user: %User{id: user_id, email: email},
-            insert_account: %Account{id: account_id, balance_account: balance_account}
-          }} <- MultiUser.create(params) do
+    with {:ok, %{insert_user: user, insert_account: account}} <- CreateUser.create(params) do
       conn
       |> put_status(:ok)
       |> render("sign_up.json", %{
-        user_id: user_id,
-        email: email,
-        account_id: account_id,
-        balance_account: balance_account
+        user: user,
+        account: account
       })
     end
   end
