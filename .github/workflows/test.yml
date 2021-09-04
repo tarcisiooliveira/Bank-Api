@@ -35,14 +35,14 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Setup Elixir
-      - uses: actions/setup-elixir@v1
+        uses: actions/setup-elixir@v1
         with:
           elixir-version: ${{ matrix.elixir }}  
           otp-version: ${{ matrix.otp }}
           experimental-otp: true
 
       - name: Restore Dependencies, Build & Dialyzer PLTs Cache    
-      - uses: actions/cache@v2
+        uses: actions/cache@v2
         with:
           path: | 
             deps
