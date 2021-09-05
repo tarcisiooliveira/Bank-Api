@@ -1,9 +1,9 @@
 defmodule BankApiWeb.AdminController do
   use BankApiWeb, :controller
 
+  alias BankApi.Admins.Schemas.Admin
   alias BankApi.Admins.SignIn
   alias BankApi.Admins.SignUp
-  alias BankApi.Admins.Schemas.Admin
 
   action_fallback BankApiWeb.FallbackController
 

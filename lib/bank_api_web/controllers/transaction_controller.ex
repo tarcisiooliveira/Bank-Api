@@ -1,9 +1,10 @@
 defmodule BankApiWeb.TransactionController do
   use BankApiWeb, :controller
+
   alias BankApi.Accounts.Schemas.Account
-  alias BankApi.Transactions.Schemas.Transaction
-  alias BankApi.Repo
   alias BankApi.Multi.Transaction, as: MultiTransaction
+  alias BankApi.Repo
+  alias BankApi.Transactions.Schemas.Transaction
 
   action_fallback(BankApiWeb.FallbackController)
 

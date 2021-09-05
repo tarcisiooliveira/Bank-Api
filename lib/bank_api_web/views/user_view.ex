@@ -2,16 +2,16 @@ defmodule BankApiWeb.UserView do
   use BankApiWeb, :view
 
   def render("show.json", %{user: user}) do
-      %{
-        user: %{
-          email: user.email,
-          id: user.id,
-          account: %{
-            id: user.accounts.id,
-            balance: user.accounts.balance_account
-          }
+    %{
+      user: %{
+        email: user.email,
+        id: user.id,
+        account: %{
+          id: user.accounts.id,
+          balance: user.accounts.balance_account
         }
       }
+    }
   end
 
   def render(
