@@ -10,18 +10,9 @@ defmodule BankApiWeb.UserController do
   @doc """
   Show an User
 
-  ## Parameters
-
-    * `email` - String email of the user
-
   ## Examples
-      iex> show(%{"email" => "user@email.com"})
-      %{message: "Show",
-        user: %{id: id, name: name, email: email}
-      }
-
-      iex> show(%{email: "user@email.com", password: "1234526"})
-      %{message: "Show",
+      iex> show(conn, _params)
+      %{
         user: %{id: id, name: name, email: email}
       }
   """
@@ -29,7 +20,7 @@ defmodule BankApiWeb.UserController do
   def show(conn, _params) do
     user = Guardian.Plug.current_resource(conn)
 
-    with {:ok, user} <- GetUser.get_by_id(user.id) |> IO.inspect() do
+    with {:ok, user} <- GetUser.get_by_id(user.id) do
       conn
       |> put_status(:ok)
       |> render("show.json", user: user)
@@ -48,7 +39,7 @@ defmodule BankApiWeb.UserController do
       iex> authenticate(%{"email" => "user@email.com", "password" => "123456"})
      %{"token" => "token"}
 
-      iex> create(%{email: "user@email.com", password: "1234526"})
+      iex> create(%{email: "user@email.com", password: "invalid_password"})
       %{"message" => "unauthorized"}
   """
   def sign_in(conn, params) do
@@ -69,21 +60,32 @@ defmodule BankApiWeb.UserController do
     * `password_confirmation` - String password confirmation of the user
 
   ## Examples
-      iex> sign_up(%{"email" => "test22@user.com", "password" => "123456", "password_confirmation" => "123456"})
+      iex> sign_up(%{"email" => "tarcisio@email.com", "password" => "123456", "password_confirmation" => "123456"})
       {
-       "account": {
-           "account_id": "18e9a6cc-ef35-4154-8a00-96913177b01d",
-           "balance_account": 10000
-       },
-       "message": "User created sucessfuly!",
-       "user": {
-           "email": "tarcisio2@email.com",
-           "user_id": "8ff5decb-e2be-4d5c-929d-6d7e6194e5a1"
-       }
+         "user": {
+          "account": {
+              "balance": 10000,
+              "id": "09927826-fe6a-4b11-b17d-c63be66a962f"
+          },
+          "email": "tarcisio@email.com",
+          "id": "47f0d312-6f8b-44e0-9808-41c414893b30"
+        }
       }
 
       iex> sign_up(%{"email" => "test2@user.com", "password" => "123456", "password_confirmation" => "123s456"})
-      %{"errors": {"password_confirmation": ["Passwords are different"]}}
+      %{"errors": {
+        "password_confirmation": [
+            "Passwords are different."
+        ]
+      }}
+
+      iex> sign_up(%{"email" => "", "password" => "123456", "password_confirmation" => "123s456"})
+      %{"errors": {
+        "email": [
+            "can't be blank"
+        ]
+        }
+      }
   """
 
   def sign_up(conn, params) do

@@ -23,7 +23,6 @@ defmodule BankApi.Admins.SignIn do
       {:error, :unauthorized}
   """
   def authenticate(params) do
-
     case Repo.get_by(Admin, email: params["email"]) do
       nil -> {:error, :unauthorized}
       admin -> validate_password(admin, params["password"])
