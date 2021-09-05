@@ -147,9 +147,17 @@ defmodule BankApi.Report.HandleReport do
             ^date_trunc(Date.utc_today(), :month) and is_nil(t.to_account_id) == false,
         select: t.value
 
-    quantity_withdraw = Repo.aggregate(query_withdraw, :sum, :value)
+    quantity_withdraw =
+      case Repo.aggregate(query_withdraw, :sum, :value) do
+        nil -> 0
+        result -> result
+      end
 
-    quantity_transfer = Repo.aggregate(query_transfer, :sum, :value)
+    quantity_transfer =
+      case Repo.aggregate(query_transfer, :sum, :value) do
+        nil -> 0
+        result -> result
+      end
 
     result = %{withdraw: quantity_withdraw, transfer: quantity_transfer}
 
