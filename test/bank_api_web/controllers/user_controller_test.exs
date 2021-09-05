@@ -7,6 +7,7 @@ defmodule BankApiWeb.UserControllerTest do
 
   alias BankApi.Users.Schemas.User
   alias BankApiWeb.Auth.GuardianUser
+  alias BankApi.Users.CreateUser
 
   setup do
     [conn: "Phoenix.ConnTest.build_conn()"]
@@ -18,7 +19,7 @@ defmodule BankApiWeb.UserControllerTest do
         password: "123456",
         password_confirmation: "123456"
       }
-      |> BankApi.Users.CreateUser.create()
+      |> CreateUser.create()
 
     {:ok, token, _claims} = GuardianUser.encode_and_sign(user)
 
@@ -48,11 +49,10 @@ defmodule BankApiWeb.UserControllerTest do
                "email" => "tarcisiooliveira@email.com",
                "id" => _user_id,
                "account" => %{
-                "id" => _account_id,
-                "balance" => 10_000
-              }
+                 "id" => _account_id,
+                 "balance" => 10_000
+               }
              }
-
            } = response
   end
 
@@ -83,14 +83,6 @@ defmodule BankApiWeb.UserControllerTest do
                }
              }
            } = response
-  end
-
-  test "show error when dont sent access token ", state do
-    response =
-      state[:conn]
-      |> post(Routes.user_path(state[:conn], :show))
-
-    assert %{"message" => "unauthorized"} = Jason.decode!(response.resp_body)
   end
 
   test "error insert - try creat user with email already in use",

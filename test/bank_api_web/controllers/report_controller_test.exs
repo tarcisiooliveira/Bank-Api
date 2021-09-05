@@ -23,10 +23,18 @@ defmodule BankApiWeb.ReportControllerTest do
     %Account{id: account_id_2} = insert(:account, user_id: user_id2)
 
     %Account{id: account_id_3} = insert(:account, user_id: user_id3)
+    # data = DateTime.utc_now()
 
     insert(:withdraw,
       from_account_id: account_id_1,
-      value: 100,
+      value: 130,
+      inserted_at: NaiveDateTime.utc_now()
+    )
+
+    insert(:transfer,
+      from_account_id: account_id_1,
+      to_account_id: account_id_2,
+      value: 120,
       inserted_at: NaiveDateTime.utc_now()
     )
 
@@ -70,6 +78,12 @@ defmodule BankApiWeb.ReportControllerTest do
       inserted_at: ~N[2021-08-04 02:17:10]
     )
 
+    insert(:withdraw,
+      from_account_id: account_id_2,
+      value: 100,
+      inserted_at: ~N[2021-08-04 02:17:10]
+    )
+
     insert(:transfer,
       from_account_id: account_id_2,
       to_account_id: account_id_3,
@@ -101,7 +115,7 @@ defmodule BankApiWeb.ReportControllerTest do
       |> put_req_header("authorization", "Bearer " <> state[:value].token)
       |> post(Routes.report_path(state[:conn], :report, params))
 
-    assert %{"result" => %{"transfer" => 600, "withdraw" => 300}} =
+    assert %{"result" => %{"transfer" => 720, "withdraw" => 430}} =
              Jason.decode!(response.resp_body)
   end
 
@@ -113,7 +127,8 @@ defmodule BankApiWeb.ReportControllerTest do
       |> put_req_header("authorization", "Bearer " <> state[:value].token)
       |> post(Routes.report_path(state[:conn], :report, params))
 
-    assert %{"result" => %{"transfer" => 0, "withdraw" => 100}} = Jason.decode!(response.resp_body)
+    assert %{"result" => %{"transfer" => 120, "withdraw" => 130}} =
+             Jason.decode!(response.resp_body)
   end
 
   test "all transcations this on month", state do
@@ -124,7 +139,8 @@ defmodule BankApiWeb.ReportControllerTest do
       |> put_req_header("authorization", "Bearer " <> state[:value].token)
       |> post(Routes.report_path(state[:conn], :report, params))
 
-    assert %{"result" => %{"transfer" => 300, "withdraw" => 100}} = Jason.decode!(response.resp_body)
+    assert %{"result" => %{"transfer" => 120, "withdraw" => 130}} =
+             Jason.decode!(response.resp_body)
   end
 
   test "all transcations different month", state do
@@ -135,7 +151,8 @@ defmodule BankApiWeb.ReportControllerTest do
       |> put_req_header("authorization", "Bearer " <> state[:value].token)
       |> post(Routes.report_path(state[:conn], :report, params))
 
-    assert %{"result" => %{"transfer" => 300, "withdraw" => 100}} = Jason.decode!(response.resp_body)
+    assert %{"result" => %{"transfer" => 300, "withdraw" => 100}} =
+             Jason.decode!(response.resp_body)
   end
 
   test "transaction in 2020", state do
@@ -146,7 +163,8 @@ defmodule BankApiWeb.ReportControllerTest do
       |> put_req_header("authorization", "Bearer " <> state[:value].token)
       |> post(Routes.report_path(state[:conn], :report, params))
 
-    assert %{"result" => %{"transfer" => 100, "withdraw" => 0}} = Jason.decode!(response.resp_body)
+    assert %{"result" => %{"transfer" => 100, "withdraw" => 0}} =
+             Jason.decode!(response.resp_body)
   end
 
   test "erro when past invalid parameter", state do
