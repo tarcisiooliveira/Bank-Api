@@ -2,9 +2,10 @@ defmodule BankApiWeb.TransactionController do
   use BankApiWeb, :controller
 
   alias BankApi.Accounts.Schemas.Account
-  alias BankApi.Multi.Transaction, as: MultiTransaction
   alias BankApi.Repo
   alias BankApi.Transactions.Schemas.Transaction
+  alias BankApi.Transfer
+  alias BankApi.Withdraw
 
   action_fallback(BankApiWeb.FallbackController)
 
@@ -81,7 +82,7 @@ defmodule BankApiWeb.TransactionController do
       value: params["value"]
     }
 
-    with {:ok, transaction} <- MultiTransaction.transfer(params) do
+    with {:ok, transaction} <- Transfer.run(params) do
       render(conn, "transfer.json", transaction: transaction)
     end
   end
@@ -113,7 +114,7 @@ defmodule BankApiWeb.TransactionController do
       value: params["value"]
     }
 
-    with {:ok, transaction} <- MultiTransaction.withdraw(params) do
+    with {:ok, transaction} <- Withdraw.run(params) do
       render(conn, "withdraw.json", transaction: transaction)
     end
   end
