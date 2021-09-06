@@ -5,7 +5,7 @@ defmodule BankApi.Report.HandleReport do
 
   import Ecto.Query
   alias BankApi.Repo
-  alias BankApi.Transactions.Schemas.Transaction
+  alias BankApi.Transaction.Schemas.Transaction
 
   @doc """
   Return report of all period

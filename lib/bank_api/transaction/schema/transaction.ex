@@ -1,4 +1,4 @@
-defmodule BankApi.Transactions.Schemas.Transaction do
+defmodule BankApi.Transaction.Schemas.Transaction do
   @moduledoc """
   Modulo de schema de Transaction
   """

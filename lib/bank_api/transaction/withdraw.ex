@@ -6,7 +6,7 @@ defmodule BankApi.Withdraw do
   alias BankApi.Accounts.Schemas.Account
   alias BankApi.Repo
   alias BankApi.SendEmail.SendEmail
-  alias BankApi.Transactions.Schemas.Transaction
+  alias BankApi.Transaction.Schemas.Transaction
 
   @doc """
   Validate and persist an Transactio

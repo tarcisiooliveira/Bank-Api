@@ -6,7 +6,7 @@ defmodule BankApi.Factory do
 
   alias BankApi.Accounts.Schemas.Account
   alias BankApi.Admins.Schemas.Admin
-  alias BankApi.Transactions.Schemas.Transaction
+  alias BankApi.Transaction.Schemas.Transaction
   alias BankApi.Users.Schemas.User
 
   def user_factory do

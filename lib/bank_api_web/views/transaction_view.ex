@@ -1,6 +1,6 @@
 defmodule BankApiWeb.TransactionView do
   use BankApiWeb, :view
-  alias BankApi.Transactions.Schemas.Transaction
+  alias BankApi.Transaction.Schemas.Transaction
 
   def render(
         "show.json",
