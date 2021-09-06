@@ -1,4 +1,4 @@
-defmodule BankApi.Users.GetUser do
+defmodule BankApi.Users.GetUserAccount do
   @moduledoc """
     GetUser
     Module use Repo and get users and account in database

@@ -3,9 +3,11 @@ defmodule BankApiWeb.TransactionController do
 
   alias BankApi.Accounts.Schemas.Account
   alias BankApi.Repo
-  alias BankApi.Transactions.Schemas.Transaction
+  alias BankApi.Transaction.Schemas.Transaction
   alias BankApi.Transfer
+  alias BankApi.Users.GetUserAccount
   alias BankApi.Withdraw
+  alias BankApi.Transaction.Tools
 
   action_fallback(BankApiWeb.FallbackController)
 
@@ -39,19 +41,14 @@ defmodule BankApiWeb.TransactionController do
       %{"error" => %{"message" => ["Transaction not Found"]}}
   """
   def show(conn, params) do
-    with {:ok, transaction} <- get_by_id(params["id"]) do
+    with {:ok, transaction} <- Tools.get_by_id(params["id"]) do
       conn
       |> put_status(:ok)
       |> render("show.json", transaction: transaction)
     end
   end
 
-  defp get_by_id(id) do
-    case Repo.get_by(Transaction, id: id) do
-      nil -> {:error, :not_found}
-      transaction -> {:ok, transaction}
-    end
-  end
+
 
   @doc """
     Transfer values between Accounts
@@ -74,10 +71,10 @@ defmodule BankApiWeb.TransactionController do
 
   def transfer(conn, params) do
     user = Guardian.Plug.current_resource(conn)
-    %Account{id: id} = Repo.get_by!(Account, user_id: user.id)
+    {:ok, user_account} = GetUserAccount.get_by_id(user.id)
 
     params = %{
-      from_account_id: id,
+      from_account_id: user_account.accounts.id,
       to_account_id: params["to_account_id"],
       value: params["value"]
     }
@@ -107,10 +104,10 @@ defmodule BankApiWeb.TransactionController do
   """
   def withdraw(conn, params) do
     user = Guardian.Plug.current_resource(conn)
-    %Account{id: id} = Repo.get_by!(Account, user_id: user.id)
+    {:ok, user_account} = GetUserAccount.get_by_id(user.id)
 
     params = %{
-      from_account_id: id,
+      from_account_id: user_account.accounts.id,
       value: params["value"]
     }
 

@@ -3,7 +3,7 @@ defmodule BankApiWeb.UserController do
 
   alias BankApi.User.SignIn
   alias BankApi.Users.CreateUser
-  alias BankApi.Users.GetUser
+  alias BankApi.Users.GetUserAccount
 
   action_fallback(BankApiWeb.FallbackController)
 
@@ -20,7 +20,7 @@ defmodule BankApiWeb.UserController do
   def show(conn, _params) do
     user = Guardian.Plug.current_resource(conn)
 
-    with {:ok, user} <- GetUser.get_by_id(user.id) do
+    with {:ok, user} <- GetUserAccount.get_by_id(user.id) do
       conn
       |> put_status(:ok)
       |> render("show.json", user: user)

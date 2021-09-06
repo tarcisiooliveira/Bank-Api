@@ -6,7 +6,7 @@ defmodule BankApiWeb.ReportController do
   def report(conn, params) do
     with {:ok, result: result} <- HandleReport.report(params) do
       conn
-      |> put_status(:not_found)
+      |> put_status(:accepted)
       |> render("reports.json", result: result)
     end
   end
