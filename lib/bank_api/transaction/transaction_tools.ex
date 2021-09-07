@@ -1,5 +1,7 @@
-defmodule BankApi.Transaction.Tools do
-
+defmodule BankApi.Transaction.TransactionTools do
+  @moduledoc """
+  Tools used in
+  """
   alias BankApi.Repo
   alias BankApi.Transaction.Schemas.Transaction
 
@@ -9,6 +11,4 @@ defmodule BankApi.Transaction.Tools do
       transaction -> {:ok, transaction}
     end
   end
-
-
 end
