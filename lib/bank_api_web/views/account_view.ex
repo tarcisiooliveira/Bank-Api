@@ -9,7 +9,7 @@ defmodule BankApiWeb.AccountView do
         }
       }) do
     %{
-      message: "Account Type found.",
+
       account: %{
         balance_account: balance_account,
         user_id: user_id
@@ -26,7 +26,6 @@ defmodule BankApiWeb.AccountView do
         }
       }) do
     %{
-      message: "Account recorded.",
       account: %{
         balance_account: balance_account,
         user_id: user_id

@@ -13,7 +13,6 @@ defmodule BankApiWeb.TransactionView do
         }
       ) do
     %{
-      message: "Transaction founded",
       Transaction: %{
         from_account_id: from_account_id,
         value: value
@@ -32,7 +31,6 @@ defmodule BankApiWeb.TransactionView do
         }
       ) do
     %{
-      message: "Transaction founded",
       Transaction: %{
         from_account_id: from_account_id,
         to_account_id: to_account_id,
@@ -54,7 +52,6 @@ defmodule BankApiWeb.TransactionView do
         }
       ) do
     %{
-      message: "Transaction finished successfully",
       Transaction: %{
         from_account_id: from_account_id,
         value: value
@@ -75,7 +72,6 @@ defmodule BankApiWeb.TransactionView do
         }
       ) do
     %{
-      message: "Transaction finished successfully",
       Transaction: %{
         from_account_id: from_account_id,
         to_account_id: to_account_id,

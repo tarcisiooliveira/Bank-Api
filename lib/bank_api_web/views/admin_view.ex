@@ -13,7 +13,7 @@ defmodule BankApiWeb.AdminView do
   end
 
   def render("sign_up.json", %{id: id, email: email}) do
-    %{message: "Admin Created.", admin: %{id: id, email: email}}
+    %{admin: %{id: id, email: email}}
   end
 
   def render("error.json", %{error: error} = _params) do

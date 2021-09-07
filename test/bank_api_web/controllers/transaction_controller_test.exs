@@ -112,8 +112,7 @@ defmodule BankApiWeb.TransactionControllerTest do
              "Transaction" => %{
                "from_account_id" => _stateaccount_id3,
                "value" => 1000
-             },
-             "message" => "Transaction finished successfully"
+             }
            } = response
   end
 
@@ -155,8 +154,7 @@ defmodule BankApiWeb.TransactionControllerTest do
                "from_account_id" => _stateaccount_id1,
                "to_account_id" => _stateaccount_id2,
                "value" => 600
-             },
-             "message" => "Transaction finished successfully"
+             }
            } = response
   end
 end
