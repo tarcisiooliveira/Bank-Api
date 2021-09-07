@@ -37,6 +37,9 @@ defmodule BankApi.Transfer do
       |> Ecto.Multi.run(:to_account, fn _, _ ->
         get_account(params.to_account_id)
       end)
+      |> Ecto.Multi.run(:validate_balance_enought, fn _, %{from_account: from_account} ->
+        validate_balance(from_account, params.value, :sub)
+      end)
       |> Ecto.Multi.update(:changeset_balance_account_from, fn %{from_account: from_account} ->
         operation(from_account, params.value, :sub)
       end)
@@ -116,5 +119,12 @@ defmodule BankApi.Transfer do
     |> Account.update_changeset(%{
       balance_account: account.balance_account + String.to_integer(value)
     })
+  end
+
+  defp validate_balance(from_account, value, :sub) do
+    case  operation(from_account, value, :sub) do
+      %Ecto.Changeset{errors: [balance_account: {"is invalid", _}]} -> {:error, :insuficient_ammount}
+      _ -> {:ok, :ammount_enought}
+    end
   end
 end

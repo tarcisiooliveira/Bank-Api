@@ -17,7 +17,7 @@ defmodule BankApi.Withdraw do
      {:error, :not_found}
 
   """
-   def run(params) do
+  def run(params) do
     multi =
       Ecto.Multi.new()
       |> Ecto.Multi.run(:negative_value, fn _, _ ->
@@ -74,5 +74,4 @@ defmodule BankApi.Withdraw do
       balance_account: account.balance_account() - String.to_integer(value)
     })
   end
-
 end

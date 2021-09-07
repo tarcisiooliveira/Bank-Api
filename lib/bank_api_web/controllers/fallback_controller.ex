@@ -8,6 +8,12 @@ defmodule BankApiWeb.FallbackController do
     |> render("error_changeset.json", changeset: changeset)
   end
 
+  def call(conn, {:error, message}) when message == :insuficient_ammount do
+    conn
+    |> put_status(400)
+    |> put_view(BankApiWeb.ErrorView)
+    |> render("error_message.json", message: "Insuficient Ammount")
+  end
   def call(conn, {:error, message}) when message == :transfer_to_the_same_account do
     conn
     |> put_status(400)
