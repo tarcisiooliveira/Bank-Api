@@ -1,13 +1,10 @@
 defmodule BankApiWeb.TransactionController do
   use BankApiWeb, :controller
 
-  alias BankApi.Accounts.Schemas.Account
-  alias BankApi.Repo
-  alias BankApi.Transaction.Schemas.Transaction
+  alias BankApi.Transaction.TransactionTools
   alias BankApi.Transfer
   alias BankApi.Users.GetUserAccount
   alias BankApi.Withdraw
-  alias BankApi.Transaction.Tools
 
   action_fallback(BankApiWeb.FallbackController)
 
@@ -41,14 +38,12 @@ defmodule BankApiWeb.TransactionController do
       %{"error" => %{"message" => ["Transaction not Found"]}}
   """
   def show(conn, params) do
-    with {:ok, transaction} <- Tools.get_by_id(params["id"]) do
+    with {:ok, transaction} <- TransactionTools.get_by_id(params["id"]) do
       conn
       |> put_status(:ok)
       |> render("show.json", transaction: transaction)
     end
   end
-
-
 
   @doc """
     Transfer values between Accounts
@@ -64,8 +59,7 @@ defmodule BankApiWeb.TransactionController do
           "from_account_id" => "UUID_from_account_id",
           "to_account_id" => "UUID_to_account_id"
           "value" => 1000
-        },
-        "message" => "Transaction finished successfully"
+        }
       }
   """
 
@@ -97,8 +91,7 @@ defmodule BankApiWeb.TransactionController do
         "Transaction" => %{
           "from_account_id" => UUID_from_account_id,
           "value" => 1000
-        },
-        "message" => "Transaction finished successfully"
+        }
       }
 
   """
