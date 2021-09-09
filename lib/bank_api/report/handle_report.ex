@@ -5,7 +5,7 @@ defmodule BankApi.Report.HandleReport do
 
   import Ecto.Query
   alias BankApi.Repo
-  alias BankApi.Transaction.Schemas.Transaction
+  alias BankApi.Transactions.Schemas.Transaction
 
   @doc """
   Return report of all period
@@ -103,14 +103,14 @@ defmodule BankApi.Report.HandleReport do
       query_withdraw =
         from t in Transaction,
           where:
-            fragment("date(date_trunc('month', ?))", t.inserted_at) == ^day and
+            fragment("date(date_trunc('day', ?))", t.inserted_at) == ^day and
               is_nil(t.to_account_id),
           select: t.value
 
       query_transfer =
         from t in Transaction,
           where:
-            fragment("date(date_trunc('month', ?))", t.inserted_at) == ^day and
+            fragment("date(date_trunc('day', ?))", t.inserted_at) == ^day and
               is_nil(t.to_account_id) == false,
           select: t.value
 
@@ -167,71 +167,85 @@ defmodule BankApi.Report.HandleReport do
   def report(%{"period" => "month", "month" => month} = params)
       when params == %{"period" => "month", "month" => month} do
     data = Date.utc_today()
-    {:ok, data} = "#{data.year}-#{month}-01" |> Date.from_iso8601()
 
-    query_withdraw =
-      from t in Transaction,
-        where:
-          fragment("date(date_trunc('month', ?))", t.inserted_at) == ^data and
-            is_nil(t.to_account_id),
-        select: t.value
+    case "#{data.year}-#{month}-01" |> Date.from_iso8601() do
+      {:ok, data} ->
+        query_withdraw =
+          from t in Transaction,
+            where:
+              fragment("date(date_trunc('month', ?))", t.inserted_at) == ^data and
+                is_nil(t.to_account_id),
+            select: t.value
 
-    query_transfer =
-      from t in Transaction,
-        where:
-          fragment("date(date_trunc('month', ?))", t.inserted_at) == ^data and
-            is_nil(t.to_account_id) == false,
-        select: t.value
+        query_transfer =
+          from t in Transaction,
+            where:
+              fragment("date(date_trunc('month', ?))", t.inserted_at) == ^data and
+                is_nil(t.to_account_id) == false,
+            select: t.value
 
-    quantity_withdraw =
-      case Repo.aggregate(query_withdraw, :sum, :value) do
-        nil -> 0
-        result -> result
-      end
+        quantity_withdraw =
+          case Repo.aggregate(query_withdraw, :sum, :value) do
+            nil -> 0
+            result -> result
+          end
 
-    quantity_transfer =
-      case Repo.aggregate(query_transfer, :sum, :value) do
-        nil -> 0
-        result -> result
-      end
+        quantity_transfer =
+          case Repo.aggregate(query_transfer, :sum, :value) do
+            nil -> 0
+            result -> result
+          end
 
-    result = %{withdraw: quantity_withdraw, transfer: quantity_transfer}
+        result = %{withdraw: quantity_withdraw, transfer: quantity_transfer}
 
-    {:ok, result: result}
+        {:ok, result: result}
+
+      _ ->
+        {:error, :invalid_date}
+    end
   end
 
   def report(%{"period" => "year", "year" => year}) do
-    {:ok, newdata} = "#{year}-01-01" |> Date.from_iso8601()
+    year
+    |> Decimal.new()
+    |> Decimal.negative?()
+    |> case do
+      true ->
+        {:error, :invalid_date}
 
-    query_withdraw =
-      from t in Transaction,
-        where:
-          fragment("date(date_trunc('year', ?))", t.inserted_at) == ^newdata and
-            is_nil(t.to_account_id),
-        select: t.value
+      _ ->
+        {:ok, newdata} = "#{year}-01-01" |> Date.from_iso8601()
 
-    query_transfer =
-      from t in Transaction,
-        where:
-          fragment("date(date_trunc('year', ?))", t.inserted_at) == ^newdata and
-            is_nil(t.to_account_id) == false,
-        select: t.value
+        query_withdraw =
+          from t in Transaction,
+            where:
+              fragment("date(date_trunc('year', ?))", t.inserted_at) == ^newdata and
+                is_nil(t.to_account_id),
+            select: t.value
 
-    quantity_withdraw =
-      case Repo.aggregate(query_withdraw, :sum, :value) do
-        nil -> 0
-        result -> result
-      end
+        query_transfer =
+          from t in Transaction,
+            where:
+              fragment("date(date_trunc('year', ?))", t.inserted_at) == ^newdata and
+                is_nil(t.to_account_id) == false,
+            select: t.value
 
-    quantity_transfer =
-      case Repo.aggregate(query_transfer, :sum, :value) do
-        nil -> 0
-        result -> result
-      end
+        quantity_withdraw =
+          case Repo.aggregate(query_withdraw, :sum, :value) do
+            nil -> 0
+            result -> result
+          end
 
-    result = %{withdraw: quantity_withdraw, transfer: quantity_transfer}
+        quantity_transfer =
+          case Repo.aggregate(query_transfer, :sum, :value) do
+            nil -> 0
+            result -> result
+          end
 
-    {:ok, result: result}
+        result = %{withdraw: quantity_withdraw, transfer: quantity_transfer}
+
+        {:ok, result: result}
+    end
   end
 
   def report(params) when params == %{"period" => "year"} do
