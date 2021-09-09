@@ -18,10 +18,10 @@ defmodule BankApi.Admins.SignUp do
   ## Examples
 
       iex> create(%{email: "admin@email.com", password: "123456", password_confirmation: "123456"})
-      {:ok, %{inserted_admin: %Admin{}}}
+      {:ok, %{insert_admin: %Admin{}}}
 
       iex> create(%{email: "", password: "123456", password_confirmation: "123456"})
-      {:error, %Changeset{errors: [_], valid?: false}}
+      {:errors, "can't be blank" }
   """
   def create(params) do
     multi =

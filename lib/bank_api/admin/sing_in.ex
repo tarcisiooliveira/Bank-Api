@@ -17,9 +17,15 @@ defmodule BankApi.Admins.SignIn do
 
   ## Examples
       iex> authenticate(%{"email" => "admin@email.com", "password" => "123456"})
-     {:ok, "token"}
+      {:ok, "token"}
 
-      iex> create(%{email: "", password: "1234526", password_confirmation: "123456"})
+      iex> create(%{email: "admin@email.com", password: "1234526"})
+      {:error, :unauthorized}
+
+      iex> create(%{email: "admin@email.com",  password_confirmation: "123456"})
+      {:error, :unauthorized}
+
+      iex> create(%{email: "admin@email.com"})
       {:error, :unauthorized}
   """
   def authenticate(params) do
