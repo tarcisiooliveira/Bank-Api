@@ -10,7 +10,6 @@ defmodule BankApiWeb.ErrorView do
   # By default, Phoenix returns the status message from
   # the template name. For example, "404.json" becomes
   # "Not Found".
-  alias Ecto.Changeset
 
   def render("401.json", %{error: _error}) do
     %{error: "Admin not found."}

@@ -31,7 +31,6 @@ defmodule BankApiWeb.ReportView do
         %{admin: %{insert_admin: %Admin{email: email, id: id}}}
       ) do
     %{
-
       admin: %{email: email, id: id}
     }
   end

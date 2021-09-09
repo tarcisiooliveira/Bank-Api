@@ -9,7 +9,6 @@ defmodule BankApiWeb.AccountView do
         }
       }) do
     %{
-
       account: %{
         balance_account: balance_account,
         user_id: user_id
