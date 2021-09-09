@@ -6,7 +6,7 @@ defmodule BankApi.Transfer do
   alias BankApi.Accounts.Schemas.Account
   alias BankApi.Repo
   alias BankApi.SendEmail.SendEmail
-  alias BankApi.Transaction.Schemas.Transaction
+  alias BankApi.Transactions.Schemas.Transaction
 
   @doc """
   Validate and persist an Transactio
@@ -122,9 +122,12 @@ defmodule BankApi.Transfer do
   end
 
   defp validate_balance(from_account, value, :sub) do
-    case  operation(from_account, value, :sub) do
-      %Ecto.Changeset{errors: [balance_account: {"is invalid", _}]} -> {:error, :insuficient_ammount}
-      _ -> {:ok, :ammount_enought}
+    case operation(from_account, value, :sub) do
+      %Ecto.Changeset{errors: [balance_account: {"is invalid", _}]} ->
+        {:error, :insuficient_ammount}
+
+      _ ->
+        {:ok, :ammount_enought}
     end
   end
 end
