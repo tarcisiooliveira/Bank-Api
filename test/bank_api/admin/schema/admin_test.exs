@@ -4,8 +4,9 @@ defmodule BankApi.AdminTest do
   """
   use BankApiWeb.ConnCase, async: false
 
-  alias BankApi.Admins.SignUp
   alias BankApi.Admins.SignIn
+  alias BankApi.Admins.SignUp
+
   import BankApi.Factory
 
   describe "SIGN UP" do

@@ -3,8 +3,8 @@ defmodule BankApi.ReportTest do
 
   import BankApi.Factory
   alias BankApi.Accounts.Schemas.Account
-  alias BankApi.Users.Schemas.User
   alias BankApi.Report.HandleReport
+  alias BankApi.Users.Schemas.User
 
   setup do
     %User{id: user_id1} = insert(:user)
