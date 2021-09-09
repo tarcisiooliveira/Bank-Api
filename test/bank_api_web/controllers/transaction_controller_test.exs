@@ -9,7 +9,7 @@ defmodule BankApiWeb.TransactionControllerTest do
   import BankApi.Factory
 
   alias BankApi.Accounts.Schemas.Account
-  alias BankApi.Transaction.Schemas.Transaction
+  alias BankApi.Transactions.Schemas.Transaction
   alias BankApi.Users.Schemas.User
   alias BankApiWeb.Auth.GuardianUser
 
@@ -60,7 +60,6 @@ defmodule BankApiWeb.TransactionControllerTest do
       |> json_response(:ok)
 
     assert %{
-             "message" => "Transaction founded",
              "Transaction" => %{
                "from_account_id" => state[:value].account_id1,
                "to_account_id" => state[:value].account_id2,
@@ -78,7 +77,6 @@ defmodule BankApiWeb.TransactionControllerTest do
       |> json_response(:ok)
 
     assert %{
-             "message" => "Transaction founded",
              "Transaction" => %{
                "from_account_id" => _,
                "value" => 700
@@ -96,7 +94,7 @@ defmodule BankApiWeb.TransactionControllerTest do
       )
       |> json_response(:not_found)
 
-    assert %{"error" => %{"message" => ["Not Found"]}} = response
+    assert %{"error" => ["Not Found"]} = response
   end
 
   test "assert ok insert - alls parameters are ok, User make withdraw", state do
@@ -132,8 +130,7 @@ defmodule BankApiWeb.TransactionControllerTest do
       |> put_req_header("authorization", "Bearer " <> state[:value].token)
       |> post(Routes.transaction_path(state[:conn], :transfer, params))
 
-    assert %{"error" => %{"message" => ["Transfer to the same Account"]}} =
-             Jason.decode!(response.resp_body)
+    assert %{"error" => ["Transfer to the same Account"]} = Jason.decode!(response.resp_body)
   end
 
   test "assert ok insert transaction/4 - All parameters ok, create a transaction between two Acccounts",

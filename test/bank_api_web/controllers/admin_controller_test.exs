@@ -38,8 +38,7 @@ defmodule BankApiWeb.AdminControllerTest do
                "admin" => %{
                  "email" => _test2admincom,
                  "id" => _4c1f1713af7749aa8c5e087062392890
-               },
-               "message" => "Admin Created."
+               }
              } = Jason.decode!(response.resp_body)
     end
 

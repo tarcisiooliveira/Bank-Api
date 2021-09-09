@@ -23,7 +23,6 @@ defmodule BankApiWeb.ReportControllerTest do
     %Account{id: account_id_2} = insert(:account, user_id: user_id2)
 
     %Account{id: account_id_3} = insert(:account, user_id: user_id3)
-    # data = DateTime.utc_now()
 
     insert(:withdraw,
       from_account_id: account_id_1,
@@ -175,8 +174,7 @@ defmodule BankApiWeb.ReportControllerTest do
       |> put_req_header("authorization", "Bearer " <> state[:value].token)
       |> post(Routes.report_path(state[:conn], :report, params))
 
-    assert %{"error" => %{"message" => ["Invalid Parameters"]}} =
-             Jason.decode!(response.resp_body)
+    assert %{"error" => ["Invalid Parameters"]} = Jason.decode!(response.resp_body)
   end
 
   test "erro when past invalids parameters", state do
@@ -187,7 +185,6 @@ defmodule BankApiWeb.ReportControllerTest do
       |> put_req_header("authorization", "Bearer " <> state[:value].token)
       |> post(Routes.report_path(state[:conn], :report, params))
 
-    assert %{"error" => %{"message" => ["Invalid Parameters"]}} =
-             Jason.decode!(response.resp_body)
+    assert %{"error" => ["Invalid Parameters"]} = Jason.decode!(response.resp_body)
   end
 end
