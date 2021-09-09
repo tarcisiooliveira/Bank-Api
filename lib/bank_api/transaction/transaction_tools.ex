@@ -3,7 +3,7 @@ defmodule BankApi.Transaction.TransactionTools do
   Tools used in
   """
   alias BankApi.Repo
-  alias BankApi.Transaction.Schemas.Transaction
+  alias BankApi.Transactions.Schemas.Transaction
 
   def get_by_id(id) do
     case Repo.get_by(Transaction, id: id) do

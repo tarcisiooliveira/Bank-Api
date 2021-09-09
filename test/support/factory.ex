@@ -6,7 +6,7 @@ defmodule BankApi.Factory do
 
   alias BankApi.Accounts.Schemas.Account
   alias BankApi.Admins.Schemas.Admin
-  alias BankApi.Transaction.Schemas.Transaction
+  alias BankApi.Transactions.Schemas.Transaction
   alias BankApi.Users.Schemas.User
 
   def user_factory do
@@ -36,8 +36,8 @@ defmodule BankApi.Factory do
 
   def transfer_factory do
     %Transaction{
-      from_account_id: 0,
-      to_account_id: 0,
+      from_account_id: Ecto.UUID.autogenerate(),
+      to_account_id: Ecto.UUID.autogenerate(),
       value: 200_000,
       inserted_at: DateTime.utc_now()
     }
@@ -45,7 +45,7 @@ defmodule BankApi.Factory do
 
   def withdraw_factory do
     %Transaction{
-      from_account_id: 0,
+      from_account_id: Ecto.UUID.autogenerate(),
       value: 200_000,
       inserted_at: DateTime.utc_now()
     }
