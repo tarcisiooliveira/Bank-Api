@@ -1,5 +1,5 @@
 defmodule BankApi.ReportTest do
-  use BankApi.DataCase, async: false
+  use BankApi.DataCase, async: true
 
   import BankApi.Factory
   alias BankApi.Accounts.Schemas.Account
@@ -156,21 +156,5 @@ defmodule BankApi.ReportTest do
       assert {:error, :invalid_parameters} =
                HandleReport.report(%{"period" => "months", "month" => "12"})
     end
-
-    # test "returns total of transactions in one year" do
-    #   {:ok, [result: %{withdraw: quantity_withdraw, transfer: quantity_transfer}]} =
-    #     HandleReport.report(%{"period" => "year", "year" => "2020"})
-
-    #   assert quantity_withdraw == 0
-    #   assert quantity_transfer == 120
-    # end
-
-    # test "returns total of transactions in current year" do
-    #   {:ok, [result: %{withdraw: quantity_withdraw, transfer: quantity_transfer}]} =
-    #     HandleReport.report(%{"period" => "year"})
-
-    #   assert quantity_withdraw == 420
-    #   assert quantity_transfer == 210
-    # end
   end
 end
