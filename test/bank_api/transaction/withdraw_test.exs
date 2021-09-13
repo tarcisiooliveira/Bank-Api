@@ -2,11 +2,13 @@ defmodule BankApi.Transaction.WithdrawTest do
   use BankApi.DataCase, async: true
 
   import BankApi.Factory
+
   alias BankApi.Accounts.Schemas.Account
-  alias BankApi.Report.HandleReport
+
   alias BankApi.Transactions.Schemas.Transaction
   alias BankApi.Users.Schemas.User
   alias BankApi.Withdraw
+  alias Ecto.Changeset
 
   setup do
     %User{id: user_id1} = insert(:user)
@@ -34,40 +36,37 @@ defmodule BankApi.Transaction.WithdrawTest do
 
       assert %{changeset_balance_account_from: %Account{balance_account: 9400}} = result
       assert %{create_transaction: %Transaction{value: 600}} = result
-      assert %{changeset_balance_account_to: %Account{balance_account: 10600}} = result
-      assert %{same_account: false} = result
-      assert %{validate_balance_enought: :ammount_enought} = result
+      assert %{negative_value: false} = result
     end
   end
 
-  # describe "Run/ERROR" do
-  #   test "ERROR transfer to the same account", state do
-  #     params = %{
-  #       from_account_id: "#{state[:value].account_1}",
-  #       value: "600"
-  #     }
+  describe "Run/ERROR" do
+    test "ERROR withdraw invalid account" do
+      params = %{
+        from_account_id: Ecto.UUID.autogenerate(),
+        value: "600"
+      }
 
-  #     assert {:error, :transfer_to_the_same_account} = BankApi.Transfer.run(params)
-  #   end
+      assert {:error, :not_found} = Withdraw.run(params)
+    end
 
-  #   test "ERROR transfer negative value", state do
-  #     params = %{
-  #       from_account_id: "#{state[:value].account_1}",
-  #       to_account_id: "#{state[:value].account_2}",
-  #       value: "-600"
-  #     }
+    test "ERROR withdraw negative value", state do
+      params = %{
+        from_account_id: "#{state[:value].account_1}",
+        value: "-600"
+      }
 
-  #     assert {:error, :value_zero_or_negative} = BankApi.Transfer.run(params)
-  #   end
+      assert {:error, :value_zero_or_negative} = Withdraw.run(params)
+    end
 
-  #   test "ERROR insuficient balance ammount", state do
-  #     params = %{
-  #       from_account_id: "#{state[:value].account_1}",
-  #       to_account_id: "#{state[:value].account_2}",
-  #       value: "10001"
-  #     }
+    test "ERROR withdraw insuficient balance ammount", state do
+      params = %{
+        from_account_id: "#{state[:value].account_1}",
+        value: "10001"
+      }
 
-  #     assert {:error, :insuficient_ammount} = BankApi.Transfer.run(params)
-  #   end
-  # end
+      assert {:error, %Changeset{errors: [balance_account: {"is invalid", _}]}} =
+               Withdraw.run(params)
+    end
+  end
 end

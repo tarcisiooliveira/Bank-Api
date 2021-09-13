@@ -32,9 +32,9 @@ defmodule BankApi.Transaction.TransferTest do
 
       {:ok, result} = BankApi.Transfer.run(params)
 
-      assert %{changeset_balance_account_from: %Account{balance_account: 9400}} = result
+      assert %{changeset_balance_account_from: %Account{balance_account: 9_400}} = result
       assert %{create_transaction: %Transaction{value: 600}} = result
-      assert %{changeset_balance_account_to: %Account{balance_account: 10600}} = result
+      assert %{changeset_balance_account_to: %Account{balance_account: 10_600}} = result
       assert %{same_account: false} = result
       assert %{validate_balance_enought: :ammount_enought} = result
     end
