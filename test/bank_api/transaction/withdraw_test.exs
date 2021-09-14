@@ -29,13 +29,13 @@ defmodule BankApi.Transaction.WithdrawTest do
     test "assert withdraw", state do
       params = %{
         from_account_id: "#{state[:value].account_2}",
-        value: "600"
+        value: "6000"
       }
 
       {:ok, result} = Withdraw.run(params)
 
-      assert %{changeset_balance_account_from: %Account{balance_account: 9400}} = result
-      assert %{create_transaction: %Transaction{value: 600}} = result
+      assert %{changeset_balance_account_from: %Account{balance_account: 94000}} = result
+      assert %{create_transaction: %Transaction{value: 6000}} = result
       assert %{negative_value: false} = result
     end
   end
@@ -62,7 +62,7 @@ defmodule BankApi.Transaction.WithdrawTest do
     test "ERROR withdraw insuficient balance ammount", state do
       params = %{
         from_account_id: "#{state[:value].account_1}",
-        value: "10001"
+        value: "100001"
       }
 
       assert {:error, %Changeset{errors: [balance_account: {"is invalid", _}]}} =

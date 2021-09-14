@@ -1,6 +1,6 @@
 defmodule BankApi.UserTest do
   @moduledoc """
-    Module test Admin
+    Module test User
   """
   use BankApiWeb.ConnCase, async: false
 
@@ -21,7 +21,7 @@ defmodule BankApi.UserTest do
       {:ok, %{insert_user: user, insert_account: account}} = CreateUser.create(params)
       assert "tarcisio@email.com" = user.email
       assert "123456" = user.password_confirmation
-      assert 10_000 = account.balance_account
+      assert 100_000 = account.balance_account
     end
 
     test "invalid email create an user" do
@@ -105,12 +105,11 @@ defmodule BankApi.UserTest do
 
   describe "SIGN IN" do
     test "assert sign in" do
-      user =
-        insert(:user,
-          email: "user@user.com",
-          password: "123456",
-          password_confirmation: "123456"
-        )
+      insert(:user,
+        email: "user@user.com",
+        password: "123456",
+        password_confirmation: "123456"
+      )
 
       assert {:ok, _token} =
                SignIn.authenticate(%{
@@ -120,12 +119,11 @@ defmodule BankApi.UserTest do
     end
 
     test "error invalid email sign in" do
-      user =
-        insert(:user,
-          email: "user@user.com",
-          password: "123456",
-          password_confirmation: "123456"
-        )
+      insert(:user,
+        email: "user@user.com",
+        password: "123456",
+        password_confirmation: "123456"
+      )
 
       assert {:error, :unauthorized} =
                SignIn.authenticate(%{
@@ -135,12 +133,11 @@ defmodule BankApi.UserTest do
     end
 
     test "error invalid password sign in" do
-      user =
-        insert(:user,
-          email: "user@user.com",
-          password: "123456",
-          password_confirmation: "123456"
-        )
+      insert(:user,
+        email: "user@user.com",
+        password: "123456",
+        password_confirmation: "123456"
+      )
 
       assert {:error, :unauthorized} =
                SignIn.authenticate(%{

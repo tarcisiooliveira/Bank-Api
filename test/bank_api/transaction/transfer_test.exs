@@ -27,14 +27,14 @@ defmodule BankApi.Transaction.TransferTest do
       params = %{
         from_account_id: "#{state[:value].account_1}",
         to_account_id: "#{state[:value].account_2}",
-        value: "600"
+        value: "6000"
       }
 
       {:ok, result} = BankApi.Transfer.run(params)
 
-      assert %{changeset_balance_account_from: %Account{balance_account: 9_400}} = result
-      assert %{create_transaction: %Transaction{value: 600}} = result
-      assert %{changeset_balance_account_to: %Account{balance_account: 10_600}} = result
+      assert %{changeset_balance_account_from: %Account{balance_account: 94_000}} = result
+      assert %{create_transaction: %Transaction{value: 6_000}} = result
+      assert %{changeset_balance_account_to: %Account{balance_account: 106_000}} = result
       assert %{same_account: false} = result
       assert %{validate_balance_enought: :ammount_enought} = result
     end
@@ -65,7 +65,7 @@ defmodule BankApi.Transaction.TransferTest do
       params = %{
         from_account_id: "#{state[:value].account_1}",
         to_account_id: "#{state[:value].account_2}",
-        value: "10001"
+        value: "100001"
       }
 
       assert {:error, :insuficient_ammount} = BankApi.Transfer.run(params)

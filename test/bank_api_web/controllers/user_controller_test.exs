@@ -50,7 +50,7 @@ defmodule BankApiWeb.UserControllerTest do
                "id" => _user_id,
                "account" => %{
                  "id" => _account_id,
-                 "balance" => 10_000
+                 "balance" => 100_000
                }
              }
            } = response

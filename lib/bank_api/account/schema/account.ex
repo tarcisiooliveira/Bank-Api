@@ -11,7 +11,7 @@ defmodule BankApi.Accounts.Schemas.Account do
   @foreign_key_type Ecto.UUID
 
   schema "accounts" do
-    field :balance_account, :integer, default: 10_000
+    field :balance_account, :integer, default: 100_000
     belongs_to(:user, User)
     timestamps()
   end
