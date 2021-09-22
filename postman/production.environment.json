@@ -1,0 +1,24 @@
+{
+	"id": "22d08d12-0ccc-4563-bc75-3ee17edc8f98",
+	"name": "Production",
+	"values": [
+		{
+			"key": "url",
+			"value": "https://bankapi.gigalixirapp.com",
+			"enabled": true
+		},
+		{
+			"key": "token_admin",
+			"value": "token_admin",
+			"enabled": true
+		},
+		{
+			"key": "token_user",
+			"value": "token_user",
+			"enabled": true
+		}
+	],
+	"_postman_variable_scope": "environment",
+	"_postman_exported_at": "2021-09-22T23:28:53.692Z",
+	"_postman_exported_using": "Postman/8.12.2"
+}

@@ -1,0 +1,24 @@
+{
+	"id": "3961cf17-a7b0-4aef-b3c0-f2e7ef14f54d",
+	"name": "Development",
+	"values": [
+		{
+			"key": "url",
+			"value": "localhost:4000",
+			"enabled": true
+		},
+		{
+			"key": "token_admin",
+			"value": "token_admin",
+			"enabled": true
+		},
+		{
+			"key": "token_user",
+			"value": "token_user",
+			"enabled": true
+		}
+	],
+	"_postman_variable_scope": "environment",
+	"_postman_exported_at": "2021-09-22T23:28:40.864Z",
+	"_postman_exported_using": "Postman/8.12.2"
+}
