@@ -16,39 +16,39 @@ defmodule BankApi.ReportTest do
       from_account_id: account_1,
       to_account_id: account_2,
       inserted_at: NaiveDateTime.utc_now(),
-      value: 100
+      value: 1000
     )
 
     insert(:transfer,
       from_account_id: account_1,
       to_account_id: account_2,
       inserted_at: ~N[2021-08-23 12:12:10],
-      value: 110
+      value: 1100
     )
 
     insert(:transfer,
       from_account_id: account_2,
       to_account_id: account_1,
       inserted_at: ~N[2020-04-23 12:12:10],
-      value: 120
+      value: 1200
     )
 
     insert(:withdraw,
       from_account_id: account_2,
       inserted_at: ~N[2021-07-23 12:12:10],
-      value: 130
+      value: 1300
     )
 
     insert(:withdraw,
       from_account_id: account_2,
       inserted_at: ~N[2021-08-23 12:12:10],
-      value: 140
+      value: 1400
     )
 
     insert(:withdraw,
       from_account_id: account_1,
       inserted_at: ~N[2021-04-23 12:12:10],
-      value: 150
+      value: 1500
     )
 
     :ok
@@ -59,8 +59,8 @@ defmodule BankApi.ReportTest do
       {:ok, [result: %{withdraw: quantity_withdraw, transfer: quantity_transfer}]} =
         HandleReport.report(%{"period" => "all"})
 
-      assert quantity_withdraw == 420
-      assert quantity_transfer == 330
+      assert quantity_withdraw == 4200
+      assert quantity_transfer == 3300
     end
 
     test "returns total of transactions today" do
@@ -68,15 +68,15 @@ defmodule BankApi.ReportTest do
         HandleReport.report(%{"period" => "today"})
 
       assert quantity_withdraw == 0
-      assert quantity_transfer == 100
+      assert quantity_transfer == 1000
     end
 
     test "returns total of transactions in date" do
       {:ok, [result: %{withdraw: quantity_withdraw, transfer: quantity_transfer}]} =
         HandleReport.report(%{"period" => "day", "day" => "2021-08-23"})
 
-      assert quantity_withdraw == 140
-      assert quantity_transfer == 110
+      assert quantity_withdraw == 1400
+      assert quantity_transfer == 1100
     end
 
     test "returns total of transactions in curent month" do
@@ -84,15 +84,15 @@ defmodule BankApi.ReportTest do
         HandleReport.report(%{"period" => "month"})
 
       assert quantity_withdraw == 0
-      assert quantity_transfer == 100
+      assert quantity_transfer == 1000
     end
 
     test "returns total of transactions in one month" do
       {:ok, [result: %{withdraw: quantity_withdraw, transfer: quantity_transfer}]} =
         HandleReport.report(%{"period" => "month", "month" => "08"})
 
-      assert quantity_withdraw == 140
-      assert quantity_transfer == 110
+      assert quantity_withdraw == 1400
+      assert quantity_transfer == 1100
     end
 
     test "returns total of transactions in one year" do
@@ -100,15 +100,15 @@ defmodule BankApi.ReportTest do
         HandleReport.report(%{"period" => "year", "year" => "2020"})
 
       assert quantity_withdraw == 0
-      assert quantity_transfer == 120
+      assert quantity_transfer == 1200
     end
 
     test "returns total of transactions in current year" do
       {:ok, [result: %{withdraw: quantity_withdraw, transfer: quantity_transfer}]} =
         HandleReport.report(%{"period" => "year"})
 
-      assert quantity_withdraw == 420
-      assert quantity_transfer == 210
+      assert quantity_withdraw == 4200
+      assert quantity_transfer == 2100
     end
   end
 
