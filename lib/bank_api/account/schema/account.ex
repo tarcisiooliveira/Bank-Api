@@ -1,6 +1,6 @@
 defmodule BankApi.Accounts.Schemas.Account do
   @moduledoc """
-  Modulo de schema de Accounts
+    Module schemas from Accounts
   """
 
   use Ecto.Schema

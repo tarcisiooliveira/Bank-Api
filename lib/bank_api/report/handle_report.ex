@@ -13,28 +13,33 @@ defmodule BankApi.Report.HandleReport do
   ## Parameters
 
     `period` - Period of report
+    `month` - Decimal number of month.
+    `year` - Decimal number of year.
 
   ## Examples
       iex> report(%{"period" => "all"})
-      {:ok, [result: 0]}
+      {:ok, [result: %{withdraw: 0, transfer: 0}]}
 
       iex> report(%{"period" => "today"})
-      {:ok, [result: 0]}
+      {:ok, [result: %{withdraw: 0, transfer: 0}]}
 
       iex> report(%{"period" => "month"})
-      {:ok, [result: 0]}
+      {:ok, [result: %{withdraw: 0, transfer: 0}]}
 
       iex> report(%{"period" => "month", "month" => 07})
-      {:ok, [result: 0]}
+      {:ok, [result: %{withdraw: 0, transfer: 0}]}
 
       iex> report(%{"period" => "year"})
-      {:ok, [result: 0]}
+      {:ok, [result: %{withdraw: 0, transfer: 0}]}
 
-      iex> report(%{"period" => "year", "year" => 2020})
-      {:ok, [result: 0]}
+      iex> report(%{"period" => "year"})
+      {:ok, [result: %{withdraw: 0, transfer: 0}]}
 
-      iex> report(%{"period" => "erro"})
-      {:ok, :invalid_parameters}
+      iex> report(%{"period" => "year", "year" => "2020"})
+      {:ok, [result: %{withdraw: 0, transfer: 0}]}
+
+      iex> report(%{"period" => "day", "day" => "2021-13-23"})
+      {:error, :invalid_date}
 
   """
   def report(%{"period" => "all"} = params) when params == %{"period" => "all"} do

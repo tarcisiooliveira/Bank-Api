@@ -16,17 +16,17 @@ defmodule BankApi.Admins.SignIn do
     * `password` - String password of the admin
 
   ## Examples
-      iex> authenticate(%{"email" => "admin@email.com", "password" => "123456"})
-      {:ok, "token"}
+      iex> authenticate(%{"email": "admin@email.com", "password": "123456"})
+      { "token": "token"}
 
-      iex> create(%{email: "admin@email.com", password: "1234526"})
-      {:error, :unauthorized}
+      iex> create(%{email: "invalid-admin@email.com", password: "1234526"})
+      {"error": ["unauthorized"]}
 
-      iex> create(%{email: "admin@email.com",  password_confirmation: "123456"})
-      {:error, :unauthorized}
+      iex> create(%{email: "", password: "1234526"})
+      {"error": ["unauthorized"]}
 
-      iex> create(%{email: "admin@email.com"})
-      {:error, :unauthorized}
+      iex> create(%{email: "admin@email.com", password: ""})
+      {"error": ["unauthorized"]}
   """
   def authenticate(params) do
     case Repo.get_by(Admin, email: params["email"]) do
