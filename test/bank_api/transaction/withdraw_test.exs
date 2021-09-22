@@ -34,8 +34,8 @@ defmodule BankApi.Transaction.WithdrawTest do
 
       {:ok, result} = Withdraw.run(params)
 
-      assert %{changeset_balance_account_from: %Account{balance_account: 94000}} = result
-      assert %{create_transaction: %Transaction{value: 6000}} = result
+      assert %{changeset_balance_account_from: %Account{balance_account: 94_000}} = result
+      assert %{create_transaction: %Transaction{value: 6_000}} = result
       assert %{negative_value: false} = result
     end
   end
