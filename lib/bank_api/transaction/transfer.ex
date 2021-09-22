@@ -100,7 +100,8 @@ defmodule BankApi.Transfer do
   end
 
   defp zero_or_negative_value?(value) do
-    if value < 1 or String.to_integer(value) |> Decimal.new() |> Decimal.negative?() do
+    if String.to_integer(value) == 0 or
+         String.to_integer(value) |> Decimal.new() |> Decimal.negative?() do
       {:error, :value_zero_or_negative}
     else
       {:ok, false}
