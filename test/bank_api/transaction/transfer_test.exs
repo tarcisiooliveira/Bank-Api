@@ -65,7 +65,7 @@ defmodule BankApi.Transaction.TransferTest do
       params = %{
         from_account_id: "#{state[:value].account_1}",
         to_account_id: "#{state[:value].account_2}",
-        value: "100_001"
+        value: "100001"
       }
 
       assert {:error, :insuficient_ammount} = BankApi.Transfer.run(params)
