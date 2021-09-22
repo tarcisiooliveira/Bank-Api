@@ -1,6 +1,6 @@
 defmodule BankApi.Transactions.Schemas.Transaction do
   @moduledoc """
-  Modulo de schema de Transaction
+    Modulo de schema de Transaction
   """
 
   use Ecto.Schema

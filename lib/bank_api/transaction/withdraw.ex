@@ -13,8 +13,15 @@ defmodule BankApi.Withdraw do
 
 
   ## Examples
-      iex> run(%{value: value})
-     {:error, :not_found}
+      iex> run(%{from_account_id: from_account_id, value: 6000})
+      {:ok, %{changeset_balance_account_from: %Account{balance_account: 94000},
+        create_transaction: %Transaction{value: 6000}, negative_value: false }}
+
+      iex> run(%{from_account_id: from_account_id, value: -6_000})
+      {:error, :value_zero_or_negative}
+
+      iex> run(%{from_account_id: from_account_id, value: 100_001})
+      {:error, %Changeset{errors: [balance_account: {"is invalid", _}]}}
 
   """
   def run(params) do
@@ -61,7 +68,8 @@ defmodule BankApi.Withdraw do
   end
 
   defp zero_or_negative_value?(value) do
-    if String.to_integer(value) == 0 or String.to_integer(value) |> Decimal.new() |> Decimal.negative?() do
+    if String.to_integer(value) == 0 or
+         String.to_integer(value) |> Decimal.new() |> Decimal.negative?() do
       {:error, :value_zero_or_negative}
     else
       {:ok, false}

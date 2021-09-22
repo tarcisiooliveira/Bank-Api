@@ -16,14 +16,18 @@ defmodule BankApi.Users.CreateUser do
     * `password_confirmation` - Same than password
 
   ## Examples
-      iex> create(%{email: "Email@email.com", name: "Name", password: "123456", password_confirmation: "123456"})
-      {:ok, %{insert_account: %Account{}, insert_user: %User{}}}
+      iex> create(%{email: "tarcisio@email.com", name: "Name", password: "123456", password_confirmation: "123456"})
+      {"user": {"account": {"balance": 100000, "id": "8f641449-ebfc-48c4-a57f-9c98688c4855"},
+      "email": "tarcisio@email.com","id": "bec4dee4-9887-4297-9ef3-9d98feec8d1b" }}
 
       iex> create(%{email: "", name: "Name", password: "123456", password_confirmation: "123456"})
-      {:error, %Changeset{errors: [_], valid?: false}}
+      {"errors": {"email": ["can't be blank"]}}
+
+      iex> create(%{email: "", name: "Name", password: "123456"})
+      {"errors": {"email": ["can't be blank"],"password_confirmation": ["can't be blank"]}}
 
       iex> create(%{email: "email@email.com", name: "Name", password: "1234561", password_confirmation: "123456"})
-      {:error, %Changeset{errors: [_], valid?: false}}
+      {"errors": { "password_confirmation": ["Passwords are different."]}}
   """
   def create(params) do
     multi =

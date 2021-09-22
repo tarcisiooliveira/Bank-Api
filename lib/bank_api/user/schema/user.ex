@@ -1,6 +1,6 @@
 defmodule BankApi.Users.Schemas.User do
   @moduledoc """
-  Modulo de schema de User
+  Module Schema from User
   """
   alias BankApi.Accounts.Schemas.Account
 

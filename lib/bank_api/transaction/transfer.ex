@@ -9,15 +9,25 @@ defmodule BankApi.Transfer do
   alias BankApi.Transactions.Schemas.Transaction
 
   @doc """
-  Validate and persist an Transactio
+  Validate and persist an Transaction
 
 
   ## Examples
-      iex> run(%{to_account_id: to_account_id, value: value})
-     {:error, :not_found}
+      iex> run(%{from_account_id: from_account_id, to_account_id: to_account_id, value: 6_000})
+      %{changeset_balance_account_from: %Account{balance_account: 94_000},
+        create_transaction: %Transaction{value: 6_000},
+        changeset_balance_account_to: %Account{balance_account: 106_000},
+        same_account: false,
+        validate_balance_enought: :ammount_enought}
 
-      iex> run(%{to_account_id: from_account_id, value: value})
-     {:error, :transfer_to_the_same_account}
+      iex> run(%{from_account_id: from_account_id, to_account_id: from_account_id, value: 6_000})
+      {:error, :transfer_to_the_same_account}
+
+      iex> run(%{from_account_id: from_account_id, to_account_id: to_account_id, value: 6_000})
+      {:error, :value_zero_or_negative}
+
+      iex> run(%{from_account_id: from_account_id, to_account_id: to_account_id, value: 100_001})
+      {:error, :insuficient_ammount}
   """
   def run(params) do
     multi =
