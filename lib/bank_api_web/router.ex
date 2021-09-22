@@ -42,7 +42,6 @@ defmodule BankApiWeb.Router do
     pipe_through([:api, :authUser])
 
     get("/user", UserController, :show)
-    get("/transactions", TransactionController, :show)
     post("/transactions/transfer", TransactionController, :transfer)
     post("/transactions/withdraw", TransactionController, :withdraw)
   end

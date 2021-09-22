@@ -69,22 +69,6 @@ defmodule BankApiWeb.UserControllerTest do
            } = response
   end
 
-  test "assert show user data when send valid id", state do
-    response =
-      state[:conn]
-      |> put_req_header("authorization", "Bearer " <> state[:value].token)
-      |> get(Routes.user_path(state[:conn], :show))
-
-    assert %{
-             assigns: %{
-               user: %User{
-                 email: _email,
-                 id: _id
-               }
-             }
-           } = response
-  end
-
   test "error insert - try creat user with email already in use",
        state do
     params = %{

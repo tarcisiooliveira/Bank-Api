@@ -52,51 +52,6 @@ defmodule BankApiWeb.TransactionControllerTest do
      }}
   end
 
-  test "assert get - Show payment data.", state do
-    response =
-      state[:conn]
-      |> put_req_header("authorization", "Bearer " <> state[:value].token)
-      |> get(Routes.transaction_path(state[:conn], :show, id: state[:value].transaction_id2))
-      |> json_response(:ok)
-
-    assert %{
-             "Transaction" => %{
-               "from_account_id" => state[:value].account_id1,
-               "to_account_id" => state[:value].account_id2,
-               "value" => 650
-             }
-           } == response
-  end
-
-  test "assert get - Show withdraw data when is past valid parameters.",
-       state do
-    response =
-      state[:conn]
-      |> put_req_header("authorization", "Bearer " <> state[:value].token)
-      |> get(Routes.transaction_path(state[:conn], :show, id: state[:value].transaction_id1))
-      |> json_response(:ok)
-
-    assert %{
-             "Transaction" => %{
-               "from_account_id" => _,
-               "value" => 700
-             }
-           } = response
-  end
-
-  test "error - show error message when sent an invalid id.",
-       state do
-    response =
-      state[:conn]
-      |> put_req_header("authorization", "Bearer " <> state[:value].token)
-      |> get(
-        Routes.transaction_path(state[:conn], :show, id: "c1960fa0-11ae-47fa-b325-68d94a7d7f5d")
-      )
-      |> json_response(:not_found)
-
-    assert %{"error" => ["Not Found"]} = response
-  end
-
   test "assert ok insert - alls parameters are ok, User make withdraw", state do
     params = %{"value" => 1000}
 

@@ -1,49 +1,11 @@
 defmodule BankApiWeb.TransactionController do
   use BankApiWeb, :controller
 
-  alias BankApi.Transaction.TransactionTools
   alias BankApi.Transfer
   alias BankApi.Users.GetUserAccount
   alias BankApi.Withdraw
 
   action_fallback(BankApiWeb.FallbackController)
-
-  @doc """
-    Show transaction Data
-
-  ## Parameters
-
-    * `id` - Id of transaction
-
-  ## Examples
-      iex> show(%{"id" => "12312312312312313"})
-      %{
-        "message" => "Transaction founded",
-        "Transaction" => %{
-          "from_account_id" => _,
-          "value" => 700
-        }
-      }
-      iex> show(%{"id" => "12312312312312313"})
-      %{
-       "message" => "Transaction founded",
-       "Transaction" => %{
-         "from_account_id" => _,
-         "to_account_id" => _,
-         "value" => 700
-       }
-      }
-
-      iex> show(%{"id" => "c1960fa0-11ae-47fa-b325-68d94a7d7f5a"})
-      %{"error" => %{"message" => ["Transaction not Found"]}}
-  """
-  def show(conn, params) do
-    with {:ok, transaction} <- TransactionTools.get_by_id(params["id"]) do
-      conn
-      |> put_status(:ok)
-      |> render("show.json", transaction: transaction)
-    end
-  end
 
   @doc """
     Transfer values between Accounts
