@@ -11,4 +11,4 @@ done
 mix deps.get
 cd deps/argon2_elixir && make clean && make
 cd ../..
-mix test
+mix test --warnings-as-errors

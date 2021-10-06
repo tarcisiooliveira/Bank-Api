@@ -27,5 +27,4 @@ bank_api-*.tar
 # this depending on your deployment strategy.
 /priv/static/
 .vscode/launch.json
-/assets/
 .directory

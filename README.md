@@ -1,4 +1,4 @@
-# Bank API ![actions](https://github.com/richardherald/bank_api/workflows/actions/badge.svgkkkkkkkk) [![Coverage Status](https://coveralls.io/repos/github/richardherald/bank_api/badge.svg?branch=masterddddddddd)](https://coveralls.io/github/richardherald/bank_api?branch=masterdddddd)
+# Bank API ![actions](https://github.com/tarcisiooliveira/bank_api/workflows/actions/badge.svg) [![Coverage Status](https://coveralls.io/repos/github/tarcisiooliveira/Bank-Api/badge.svg?branch=master)](https://coveralls.io/github/tarcisiooliveira/Bank-Api?branch=master)
 
 
 ## Introduction

@@ -6,7 +6,6 @@ defmodule BankApiWeb.UserControllerTest do
   use BankApiWeb.ConnCase, async: true
 
   alias BankApi.Users.CreateUser
-  alias BankApi.Users.Schemas.User
   alias BankApiWeb.Auth.GuardianUser
 
   setup do
