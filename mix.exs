@@ -48,7 +48,7 @@ defmodule BankApi.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:credo, "~> 1.5"},
       {:argon2_elixir, "~> 2.4"},
-      {:guardian, "~>2.0"},
+      {:guardian, "~>2.2"},
       {:bcrypt_elixir, "~> 2.3"},
       {:email_checker, "~> 0.1.2"},
       {:ex_machina, "~> 2.7.0", only: :test},

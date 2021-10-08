@@ -9,8 +9,8 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-20.04]
-        elixir: [1.11.2]
-        otp: [23.3.4]
+        elixir: [1.12.2]
+        otp: [24]
 
     env:
       MIX_ENV: test

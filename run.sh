@@ -8,6 +8,7 @@ do
 done
 
 mix ecto.setup
+mix local.hex
 mix deps.get
 cd deps/argon2_elixir && make clean && make
 cd ../..

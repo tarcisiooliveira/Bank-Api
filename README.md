@@ -1,5 +1,4 @@
-# Bank API ![actions](https://github.com/tarcisiooliveira/bank_api/workflows/actions/badge.svg) [![Coverage Status](https://coveralls.io/repos/github/tarcisiooliveira/Bank-Api/badge.svg?branch=master)](https://coveralls.io/github/tarcisiooliveira/Bank-Api?branch=master)
-
+# Bank API
 
 ## Introduction
 
@@ -24,17 +23,18 @@ The Api is organized into the contexts below:
 ## Admins
 
 - Sign up new Admin
-> This feature creates an administrator. They have access to the transaction report
+> This feature creates an administrator. They have access to the transaction report.
 - Sign in Admin
-> This feature requires that the administrator's credentials (email and password), if the credentials are valid, the response will have a token that allow the access to protected resources
-- report
+> This feature requires that the administrator's credentials (email and password), if the credentials are valid, the response will have a token that allow the access to protected resources.
+By default, you have `admin@email.com` and `123456` as password to try the API.
+- Report
 > This feature returns the sum of all transactions for a period
 
 ## Setup
 
 There is a Makefile that call some docker commands to start the application and test it.
 
-To start the application:
+To start the application: 
 > make up
 
 To start application in iterative mode:
@@ -49,7 +49,7 @@ To stop the containers:
 ## Deployment
 
 The api use the github actions for CI/CD and is hosted at https://gigalixir.com/ on a free plan.
-The public endpoint is: https://bankstone.gigalixirapp.com/api/v1
+The public endpoint is: https://bankapi.gigalixirapp.com/api/v1
 
 An api example of utilization is provided here:
 
