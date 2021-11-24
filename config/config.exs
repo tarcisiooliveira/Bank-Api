@@ -5,7 +5,7 @@
 
 # General application configuration
 use Mix.Config
-
+#
 config :bank_api,
   ecto_repos: [BankApi.Repo]
 
